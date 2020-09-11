@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id "io.quarkus" version "1.7.0.Final"
+    id "io.quarkus" version "1.8.0.Final"
     id "java"
 }
 
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    implementation platform("io.quarkus:quarkus-universe-bom:1.7.0.Final")
+    implementation platform("io.quarkus:quarkus-universe-bom:1.7.0.Final") //TODO: Update once the BOM becomes available.
     implementation "org.optaplanner:optaplanner-quarkus:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-quarkus-jackson:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-test:${optaplannerVersion}"
@@ -64,4 +64,13 @@ java {
 
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+}
+
+repositories {
+    maven {
+        url "https://repository.jboss.org/nexus/content/groups/public/"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
 }
