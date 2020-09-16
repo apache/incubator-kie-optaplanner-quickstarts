@@ -30,6 +30,7 @@ import org.acme.schooltimetabling.domain.Room;
 import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.domain.Timeslot;
 import org.optaplanner.core.api.score.ScoreManager;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 
@@ -45,7 +46,7 @@ public class TimeTableResource {
     @Inject
     SolverManager<TimeTable, Long> solverManager;
     @Inject
-    ScoreManager<TimeTable> scoreManager;
+    ScoreManager<TimeTable, HardSoftScore> scoreManager;
 
     // To try, open http://localhost:8080/timeTable
     @GET

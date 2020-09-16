@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import org.acme.facilitylocation.domain.FacilityLocationProblem;
 import org.acme.facilitylocation.persistence.FacilityLocationProblemRepository;
 import org.optaplanner.core.api.score.ScoreManager;
+import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.solver.SolverManager;
 
 @Path("/flp")
@@ -42,12 +43,12 @@ public class SolverResource {
 
     private final FacilityLocationProblemRepository repository;
     private final SolverManager<FacilityLocationProblem, Long> solverManager;
-    private final ScoreManager<FacilityLocationProblem> scoreManager;
+    private final ScoreManager<FacilityLocationProblem, HardSoftLongScore> scoreManager;
 
     public SolverResource(
             FacilityLocationProblemRepository repository,
             SolverManager<FacilityLocationProblem, Long> solverManager,
-            ScoreManager<FacilityLocationProblem> scoreManager) {
+            ScoreManager<FacilityLocationProblem, HardSoftLongScore> scoreManager) {
         this.repository = repository;
         this.solverManager = solverManager;
         this.scoreManager = scoreManager;
