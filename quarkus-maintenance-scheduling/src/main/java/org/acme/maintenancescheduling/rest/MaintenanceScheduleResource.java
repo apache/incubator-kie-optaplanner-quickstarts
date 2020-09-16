@@ -24,6 +24,7 @@ import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
 import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
 import org.acme.maintenancescheduling.domain.TimeGrain;
 import org.optaplanner.core.api.score.ScoreManager;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 
@@ -46,7 +47,7 @@ public class MaintenanceScheduleResource {
     @Inject
     SolverManager<MaintenanceSchedule, Long> solverManager;
     @Inject
-    ScoreManager<MaintenanceSchedule> scoreManager;
+    ScoreManager<MaintenanceSchedule, HardSoftScore> scoreManager;
 
     // To try, open http://localhost:8080/schedule
     @GET

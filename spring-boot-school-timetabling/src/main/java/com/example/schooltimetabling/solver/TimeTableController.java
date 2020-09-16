@@ -17,6 +17,7 @@
 package com.example.schooltimetabling.solver;
 
 import org.optaplanner.core.api.score.ScoreManager;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class TimeTableController {
     @Autowired
     private SolverManager<TimeTable, Long> solverManager;
     @Autowired
-    private ScoreManager<TimeTable> scoreManager;
+    private ScoreManager<TimeTable, HardSoftScore> scoreManager;
 
     // To try, GET http://localhost:8080/timeTable
     @GetMapping()
