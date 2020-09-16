@@ -27,7 +27,7 @@ const stopSolvingButton = $('#stopSolvingButton');
 const facilitiesTable = $('#facilities');
 
 const colorById = (i) => colors[i % colors.length];
-const colorByFacility = (facility) => facility === null ? {} : { color: colorById(facility.id) };
+const colorByFacility = (facility) => facility === null ? null : colorById(facility.id);
 
 const defaultIcon = new L.Icon.Default();
 const greyIcon = new L.Icon({
@@ -160,10 +160,12 @@ const autoRefresh = () => {
   }
 };
 
-const facilityPopupContent = (facility, cost) => `<h5>Facility ${facility.id}</h5>
+const facilityPopupContent = (facility, cost, color) => `<h5>Facility ${facility.id}</h5>
 <ul class="list-unstyled">
 <li>Usage: ${facility.usedCapacity}/${facility.capacity}</li>
 <li>Setup cost: ${cost}</li>
+<li><span style="background-color: ${color}; display: inline-block; width: 12px; height: 12px; text-align: center">
+</span> ${color}</li>
 </ul>`;
 
 const getFacilityMarker = ({ id, location }) => {
@@ -187,28 +189,32 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
   solution.facilities.forEach((facility) => {
     const { id, setupCost, capacity, usedCapacity, used } = facility;
     const percentage = usedCapacity / capacity * 100;
-    const color = facility.used ? colorByFacility(facility) : { color: 'white' };
+    const color = colorByFacility(facility);
+    const colorIfUsed = facility.used ? color : 'white';
     const icon = facility.used ? defaultIcon : greyIcon;
     const marker = getFacilityMarker(facility);
     marker.setIcon(icon);
-    marker.setPopupContent(facilityPopupContent(facility, longCostFormat.format(facility.setupCost)));
+    marker.setPopupContent(facilityPopupContent(facility, longCostFormat.format(facility.setupCost), color));
     facilitiesTable.append(`<tr class="${used ? 'table-active' : 'text-muted'}">
-<td><span data-toggle="tooltip" title="${color.color}"
-style="background-color: ${color.color}; display: inline-block; width: 1rem; height: 1rem;">
-</span></td><td>Facility ${id}</td>
+<td><i class="fa fa-crosshairs" id="crosshairs-${id}"
+style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
+</i></td><td>Facility ${id}</td>
 <td><div class="progress">
 <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${usedCapacity}/${capacity}</div>
 </div></td>
 <td class="text-right">${shortCostFormat.format(setupCost)}</td>
 </tr>`);
+    $(`#crosshairs-${id}`)
+      .mouseenter(() => marker.openPopup())
+      .mouseleave(() => marker.closePopup());
   });
   // Consumers
   consumerGroup.clearLayers();
   solution.consumers.forEach((consumer) => {
     const color = colorByFacility(consumer.facility);
-    L.circleMarker(consumer.location, color).addTo(consumerGroup);
-    if (consumer.facility !== null) {
-      L.polyline([consumer.location, consumer.facility.location], color).addTo(consumerGroup);
+    L.circleMarker(consumer.location, consumer.assigned ? { color } : {}).addTo(consumerGroup);
+    if (consumer.assigned) {
+      L.polyline([consumer.location, consumer.facility.location], { color }).addTo(consumerGroup);
     }
   });
   // Summary
@@ -217,10 +223,6 @@ style="background-color: ${color.color}; display: inline-block; width: 1rem; hei
   $('#cost-percentage').text(Math.round(solution.totalCost * 1000 / solution.potentialCost) / 10);
   $('#distance').text(solution.totalDistance);
   $('#scoreInfo').text(scoreExplanation);
-  $('[data-toggle="tooltip"]').tooltip({
-    placement: 'top',
-    delay: 250,
-  });
   updateSolvingStatus(isSolving);
 };
 
