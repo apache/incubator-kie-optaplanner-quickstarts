@@ -22,16 +22,15 @@ import java.time.LocalTime;
 import com.example.schooltimetabling.domain.Lesson;
 import com.example.schooltimetabling.domain.Room;
 import com.example.schooltimetabling.domain.Timeslot;
+import com.example.schooltimetabling.persistence.LessonRepository;
+import com.example.schooltimetabling.persistence.RoomRepository;
+import com.example.schooltimetabling.persistence.TimeslotRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Sort;
-
-import com.example.schooltimetabling.persistence.LessonRepository;
-import com.example.schooltimetabling.persistence.RoomRepository;
-import com.example.schooltimetabling.persistence.TimeslotRepository;
 
 @SpringBootApplication
 public class TimeTableSpringBootApp {
@@ -201,6 +200,7 @@ public class TimeTableSpringBootApp {
             Lesson lesson = lessonRepository.findAll(Sort.by("id")).iterator().next();
             lesson.setTimeslot(timeslotRepository.findAll(Sort.by("id")).iterator().next());
             lesson.setRoom(roomRepository.findAll(Sort.by("id")).iterator().next());
+
             lessonRepository.save(lesson);
         };
     }
