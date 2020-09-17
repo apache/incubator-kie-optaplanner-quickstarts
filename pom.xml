@@ -82,10 +82,11 @@
   </mailingLists>
 
   <modules>
-    <module>spring-boot-school-timetabling</module>
     <module>quarkus-school-timetabling</module>
     <module>quarkus-facility-location</module>
     <module>quarkus-maintenance-scheduling</module>
+    <module>spring-boot-school-timetabling</module>
+    <module>kotlin-quarkus-school-timetabling</module>
   </modules>
 
 </project>

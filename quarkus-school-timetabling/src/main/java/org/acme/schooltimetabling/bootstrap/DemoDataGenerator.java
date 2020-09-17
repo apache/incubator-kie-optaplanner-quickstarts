@@ -20,17 +20,15 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.transaction.Transactional;
 
+import io.quarkus.runtime.StartupEvent;
 import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Room;
 import org.acme.schooltimetabling.domain.Timeslot;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
 public class DemoDataGenerator {
@@ -198,6 +196,7 @@ public class DemoDataGenerator {
         Lesson lesson = lessonList.get(0);
         lesson.setTimeslot(timeslotList.get(0));
         lesson.setRoom(roomList.get(0));
+
         Lesson.persist(lessonList);
     }
 
