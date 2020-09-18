@@ -57,9 +57,6 @@ class Lesson {
 
     constructor(id: Long?, subject: String, teacher: String, studentGroup: String, timeslot: Timeslot?, room: Room?) : this(subject, teacher, studentGroup) {
         this.id = id
-        this.subject = subject
-        this.teacher = teacher
-        this.studentGroup = studentGroup
         this.timeslot = timeslot
         this.room = room
     }
