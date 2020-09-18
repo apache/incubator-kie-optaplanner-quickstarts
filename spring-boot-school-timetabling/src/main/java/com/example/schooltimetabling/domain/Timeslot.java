@@ -18,7 +18,6 @@ package com.example.schooltimetabling.domain;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,6 +44,7 @@ public class Timeslot {
     @NotNull
     private LocalTime endTime;
 
+    // No-arg constructor required for Hibernate
     private Timeslot() {
     }
 

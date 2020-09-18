@@ -38,6 +38,7 @@ public class Room extends PanacheEntityBase {
     @NotBlank
     private String name;
 
+    // No-arg constructor required for Hibernate
     public Room() {
     }
 

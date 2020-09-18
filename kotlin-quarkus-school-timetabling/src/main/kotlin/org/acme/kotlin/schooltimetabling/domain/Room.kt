@@ -31,12 +31,17 @@ class Room {
 
     lateinit var name: String
 
+    // No-arg constructor required for Hibernate
+    constructor()
+
     constructor(name: String) {
         this.name = name
     }
 
-    // No-arg constructor required for Hibernate
-    constructor()
+    constructor(id: Long?, name: String) {
+        this.id = id
+        this.name = name
+    }
 
     override fun toString(): String = name
 

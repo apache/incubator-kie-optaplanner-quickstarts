@@ -39,6 +39,7 @@ public class Room {
     @NotBlank
     private String name;
 
+    // No-arg constructor required for Hibernate
     private Room() {
     }
 

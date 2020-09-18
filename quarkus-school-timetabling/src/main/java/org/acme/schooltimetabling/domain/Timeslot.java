@@ -18,16 +18,14 @@ package org.acme.schooltimetabling.domain;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
-import org.optaplanner.core.api.domain.lookup.PlanningId;
-
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 @Entity
 public class Timeslot extends PanacheEntityBase {
@@ -45,6 +43,7 @@ public class Timeslot extends PanacheEntityBase {
     @NotNull
     private LocalTime endTime;
 
+    // No-arg constructor required for Hibernate
     public Timeslot() {
     }
 
