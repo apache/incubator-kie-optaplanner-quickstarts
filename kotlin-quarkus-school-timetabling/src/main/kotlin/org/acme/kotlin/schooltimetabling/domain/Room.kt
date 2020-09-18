@@ -38,9 +38,8 @@ class Room {
         this.name = name
     }
 
-    constructor(id: Long?, name: String) {
+    constructor(id: Long?, name: String) : this(name) {
         this.id = id
-        this.name = name
     }
 
     override fun toString(): String = name
