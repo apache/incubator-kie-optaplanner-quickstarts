@@ -55,7 +55,7 @@ class Lesson {
         this.studentGroup = studentGroup.trim()
     }
 
-    constructor(id: Long?, subject: String, teacher: String, studentGroup: String, timeslot: Timeslot?, room: Room?) {
+    constructor(id: Long?, subject: String, teacher: String, studentGroup: String, timeslot: Timeslot?, room: Room?) : this(subject, teacher, studentGroup) {
         this.id = id
         this.subject = subject
         this.teacher = teacher
