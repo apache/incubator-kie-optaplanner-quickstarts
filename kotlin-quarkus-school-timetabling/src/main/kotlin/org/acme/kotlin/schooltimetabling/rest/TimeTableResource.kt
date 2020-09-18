@@ -71,8 +71,8 @@ class TimeTableResource {
     @Path("/solve")
     fun solve() {
         solverManager.solveAndListen(SINGLETON_TIME_TABLE_ID,
-                { id: Long -> findById(id) },
-                { timeTable: TimeTable -> save(timeTable) })
+                this::findById,
+                this::save)
     }
 
     fun getSolverStatus(): SolverStatus {

@@ -44,7 +44,8 @@ class Timeslot {
         this.endTime = endTime
     }
 
-    constructor(id: Long?, dayOfWeek: DayOfWeek, startTime: LocalTime, endTime: LocalTime) : this(dayOfWeek, startTime, endTime) {
+    constructor(id: Long?, dayOfWeek: DayOfWeek, startTime: LocalTime, endTime: LocalTime)
+            : this(dayOfWeek, startTime, endTime) {
         this.id = id
     }
 

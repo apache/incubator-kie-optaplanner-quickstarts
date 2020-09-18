@@ -38,7 +38,8 @@ class Room {
         this.name = name
     }
 
-    constructor(id: Long?, name: String) : this(name) {
+    constructor(id: Long?, name: String)
+            : this(name) {
         this.id = id
     }
 
