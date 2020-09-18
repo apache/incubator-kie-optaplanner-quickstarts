@@ -46,6 +46,7 @@ public class TimeTable {
     // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
     private SolverStatus solverStatus;
 
+    // No-arg constructor required for OptaPlanner
     private TimeTable() {
     }
 

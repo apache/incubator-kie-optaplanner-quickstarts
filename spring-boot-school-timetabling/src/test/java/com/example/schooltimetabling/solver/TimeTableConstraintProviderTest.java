@@ -19,13 +19,12 @@ package com.example.schooltimetabling.solver;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-import org.junit.jupiter.api.Test;
-import org.optaplanner.test.api.score.stream.ConstraintVerifier;
-
 import com.example.schooltimetabling.domain.Lesson;
 import com.example.schooltimetabling.domain.Room;
 import com.example.schooltimetabling.domain.TimeTable;
 import com.example.schooltimetabling.domain.Timeslot;
+import org.junit.jupiter.api.Test;
+import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
 class TimeTableConstraintProviderTest {
 
@@ -41,9 +40,9 @@ class TimeTableConstraintProviderTest {
 
     @Test
     void roomConflict() {
-        Lesson firstLesson = new Lesson(1, "Subject1", "Teacher1", "Group1", ROOM1, TIMESLOT1);
-        Lesson conflictingLesson = new Lesson(2, "Subject2", "Teacher2", "Group2", ROOM1, TIMESLOT1);
-        Lesson nonConflictingLesson = new Lesson(3, "Subject3", "Teacher3", "Group3", ROOM1, TIMESLOT2);
+        Lesson firstLesson = new Lesson(1, "Subject1", "Teacher1", "Group1", TIMESLOT1, ROOM1);
+        Lesson conflictingLesson = new Lesson(2, "Subject2", "Teacher2", "Group2", TIMESLOT1, ROOM1);
+        Lesson nonConflictingLesson = new Lesson(3, "Subject3", "Teacher3", "Group3", TIMESLOT2, ROOM1);
         constraintVerifier.verifyThat(TimeTableConstraintProvider::roomConflict)
                 .given(firstLesson, conflictingLesson, nonConflictingLesson)
                 .penalizesBy(1);
@@ -52,9 +51,9 @@ class TimeTableConstraintProviderTest {
     @Test
     void teacherConflict() {
         String conflictingTeacher = "Teacher1";
-        Lesson firstLesson = new Lesson(1, "Subject1", conflictingTeacher, "Group1", ROOM1, TIMESLOT1);
-        Lesson conflictingLesson = new Lesson(2, "Subject2", conflictingTeacher, "Group2", ROOM2, TIMESLOT1);
-        Lesson nonConflictingLesson = new Lesson(3, "Subject3", "Teacher2", "Group3", ROOM1, TIMESLOT2);
+        Lesson firstLesson = new Lesson(1, "Subject1", conflictingTeacher, "Group1", TIMESLOT1, ROOM1);
+        Lesson conflictingLesson = new Lesson(2, "Subject2", conflictingTeacher, "Group2", TIMESLOT1, ROOM2);
+        Lesson nonConflictingLesson = new Lesson(3, "Subject3", "Teacher2", "Group3", TIMESLOT2, ROOM1);
         constraintVerifier.verifyThat(TimeTableConstraintProvider::teacherConflict)
                 .given(firstLesson, conflictingLesson, nonConflictingLesson)
                 .penalizesBy(1);
@@ -63,9 +62,9 @@ class TimeTableConstraintProviderTest {
     @Test
     void studentGroupConflict() {
         String conflictingGroup = "Group1";
-        Lesson firstLesson = new Lesson(1, "Subject1", "Teacher1", conflictingGroup, ROOM1, TIMESLOT1);
-        Lesson conflictingLesson = new Lesson(2, "Subject2", "Teacher2", conflictingGroup, ROOM2, TIMESLOT1);
-        Lesson nonConflictingLesson = new Lesson(3, "Subject3", "Teacher3", "Group3", ROOM1, TIMESLOT2);
+        Lesson firstLesson = new Lesson(1, "Subject1", "Teacher1", conflictingGroup, TIMESLOT1, ROOM1);
+        Lesson conflictingLesson = new Lesson(2, "Subject2", "Teacher2", conflictingGroup, TIMESLOT1, ROOM2);
+        Lesson nonConflictingLesson = new Lesson(3, "Subject3", "Teacher3", "Group3", TIMESLOT2, ROOM1);
         constraintVerifier.verifyThat(TimeTableConstraintProvider::studentGroupConflict)
                 .given(firstLesson, conflictingLesson, nonConflictingLesson)
                 .penalizesBy(1);
@@ -74,9 +73,9 @@ class TimeTableConstraintProviderTest {
     @Test
     void teacherRoomStability() {
         String teacher = "Teacher1";
-        Lesson lessonInFirstRoom = new Lesson(1, "Subject1", teacher, "Group1", ROOM1, TIMESLOT1);
-        Lesson lessonInSameRoom = new Lesson(2, "Subject2", teacher, "Group2", ROOM1, TIMESLOT1);
-        Lesson lessonInDifferentRoom = new Lesson(3, "Subject3", teacher, "Group3", ROOM2, TIMESLOT1);
+        Lesson lessonInFirstRoom = new Lesson(1, "Subject1", teacher, "Group1", TIMESLOT1, ROOM1);
+        Lesson lessonInSameRoom = new Lesson(2, "Subject2", teacher, "Group2", TIMESLOT1, ROOM1);
+        Lesson lessonInDifferentRoom = new Lesson(3, "Subject3", teacher, "Group3", TIMESLOT1, ROOM2);
         constraintVerifier.verifyThat(TimeTableConstraintProvider::teacherRoomStability)
                 .given(lessonInFirstRoom, lessonInDifferentRoom, lessonInSameRoom)
                 .penalizesBy(2);
@@ -85,10 +84,10 @@ class TimeTableConstraintProviderTest {
     @Test
     void teacherTimeEfficiency() {
         String teacher = "Teacher1";
-        Lesson singleLessonOnMonday = new Lesson(1, "Subject1", teacher, "Group1", ROOM1, TIMESLOT1);
-        Lesson firstTuesdayLesson = new Lesson(2, "Subject2", teacher, "Group2", ROOM1, TIMESLOT2);
-        Lesson secondTuesdayLesson = new Lesson(3, "Subject3", teacher, "Group3", ROOM1, TIMESLOT3);
-        Lesson thirdTuesdayLessonWithGap = new Lesson(4, "Subject4", teacher, "Group4", ROOM1, TIMESLOT4);
+        Lesson singleLessonOnMonday = new Lesson(1, "Subject1", teacher, "Group1", TIMESLOT1, ROOM1);
+        Lesson firstTuesdayLesson = new Lesson(2, "Subject2", teacher, "Group2", TIMESLOT2, ROOM1);
+        Lesson secondTuesdayLesson = new Lesson(3, "Subject3", teacher, "Group3", TIMESLOT3, ROOM1);
+        Lesson thirdTuesdayLessonWithGap = new Lesson(4, "Subject4", teacher, "Group4", TIMESLOT4, ROOM1);
         constraintVerifier.verifyThat(TimeTableConstraintProvider::teacherTimeEfficiency)
                 .given(singleLessonOnMonday, firstTuesdayLesson, secondTuesdayLesson, thirdTuesdayLessonWithGap)
                 .rewardsWith(1); // Second tuesday lesson immediately follows the first.
@@ -98,11 +97,11 @@ class TimeTableConstraintProviderTest {
     void studentGroupSubjectVariety() {
         String studentGroup = "Group1";
         String repeatedSubject = "Subject1";
-        Lesson mondayLesson = new Lesson(1, repeatedSubject, "Teacher1", studentGroup, ROOM1, TIMESLOT1);
-        Lesson firstTuesdayLesson = new Lesson(2, repeatedSubject, "Teacher2", studentGroup, ROOM1, TIMESLOT2);
-        Lesson secondTuesdayLesson = new Lesson(3, repeatedSubject, "Teacher3", studentGroup, ROOM1, TIMESLOT3);
-        Lesson thirdTuesdayLessonWithDifferentSubject = new Lesson(4, "Subject2", "Teacher4", studentGroup, ROOM1, TIMESLOT4);
-        Lesson lessonInAnotherGroup = new Lesson(5, repeatedSubject, "Teacher5", "Group2", ROOM1, TIMESLOT1);
+        Lesson mondayLesson = new Lesson(1, repeatedSubject, "Teacher1", studentGroup, TIMESLOT1, ROOM1);
+        Lesson firstTuesdayLesson = new Lesson(2, repeatedSubject, "Teacher2", studentGroup, TIMESLOT2, ROOM1);
+        Lesson secondTuesdayLesson = new Lesson(3, repeatedSubject, "Teacher3", studentGroup, TIMESLOT3, ROOM1);
+        Lesson thirdTuesdayLessonWithDifferentSubject = new Lesson(4, "Subject2", "Teacher4", studentGroup, TIMESLOT4, ROOM1);
+        Lesson lessonInAnotherGroup = new Lesson(5, repeatedSubject, "Teacher5", "Group2", TIMESLOT1, ROOM1);
         constraintVerifier.verifyThat(TimeTableConstraintProvider::studentGroupSubjectVariety)
                 .given(mondayLesson, firstTuesdayLesson, secondTuesdayLesson, thirdTuesdayLessonWithDifferentSubject,
                         lessonInAnotherGroup)

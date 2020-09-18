@@ -52,6 +52,7 @@ public class Lesson {
     @ManyToOne
     private Room room;
 
+    // No-arg constructor required for Hibernate and OptaPlanner
     private Lesson() {
     }
 
@@ -61,11 +62,11 @@ public class Lesson {
         this.studentGroup = studentGroup.trim();
     }
 
-    public Lesson(long id, String subject, String teacher, String studentGroup, Room room, Timeslot timeslot) {
+    public Lesson(long id, String subject, String teacher, String studentGroup, Timeslot timeslot, Room room) {
         this(subject, teacher, studentGroup);
         this.id = id;
-        this.room = room;
         this.timeslot = timeslot;
+        this.room = room;
     }
 
     @Override

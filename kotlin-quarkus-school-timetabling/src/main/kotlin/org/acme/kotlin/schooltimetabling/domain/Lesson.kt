@@ -46,14 +46,24 @@ class Lesson {
     @ManyToOne
     var room: Room? = null
 
+    // No-arg constructor required for Hibernate and OptaPlanner
+    constructor()
+
     constructor(subject: String, teacher: String, studentGroup: String) {
+        this.subject = subject.trim()
+        this.teacher = teacher.trim()
+        this.studentGroup = studentGroup.trim()
+    }
+
+    constructor(id: Long?, subject: String, teacher: String, studentGroup: String, timeslot: Timeslot?, room: Room?) {
+        this.id = id
         this.subject = subject
         this.teacher = teacher
         this.studentGroup = studentGroup
+        this.timeslot = timeslot
+        this.room = room
     }
 
-    // No-arg constructor required for Hibernate and OptaPlanner
-    constructor()
 
     override fun toString(): String = "$subject($id)"
 

@@ -42,13 +42,13 @@ class TimeTable {
     // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
     var solverStatus: SolverStatus? = null
 
+    // No-arg constructor required for OptaPlanner
+    private constructor() {}
+
     constructor(timeslotList: List<Timeslot>, roomList: List<Room>, lessonList: List<Lesson>) {
         this.timeslotList = timeslotList
         this.roomList = roomList
         this.lessonList = lessonList
     }
-
-    // No-arg constructor required for OptaPlanner
-    constructor() {}
 
 }
