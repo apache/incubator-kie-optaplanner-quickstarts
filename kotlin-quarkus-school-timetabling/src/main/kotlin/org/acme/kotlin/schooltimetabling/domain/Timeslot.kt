@@ -46,9 +46,6 @@ class Timeslot {
 
     constructor(id: Long?, dayOfWeek: DayOfWeek, startTime: LocalTime, endTime: LocalTime) : this(dayOfWeek, startTime, endTime) {
         this.id = id
-        this.dayOfWeek = dayOfWeek
-        this.startTime = startTime
-        this.endTime = endTime
     }
 
     override fun toString(): String = "$dayOfWeek $startTime"
