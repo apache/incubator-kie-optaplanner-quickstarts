@@ -32,7 +32,7 @@ class TimeTableResourceTest {
     lateinit var timeTableResource: TimeTableResource
 
     @Test
-    @Timeout(600000)
+    @Timeout(600_000)
     @Throws(InterruptedException::class)
     fun solveDemoDataUntilFeasible() {
         timeTableResource.solve()
