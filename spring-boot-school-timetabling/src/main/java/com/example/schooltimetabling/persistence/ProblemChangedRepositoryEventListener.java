@@ -16,10 +16,6 @@
 
 package com.example.schooltimetabling.persistence;
 
-import com.example.schooltimetabling.domain.Lesson;
-import com.example.schooltimetabling.domain.Room;
-import com.example.schooltimetabling.domain.Timeslot;
-import com.example.schooltimetabling.rest.TimeTableController;
 import org.optaplanner.core.api.solver.SolverStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
@@ -27,6 +23,11 @@ import org.springframework.data.rest.core.annotation.HandleBeforeDelete;
 import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
+
+import com.example.schooltimetabling.domain.Lesson;
+import com.example.schooltimetabling.domain.Room;
+import com.example.schooltimetabling.domain.Timeslot;
+import com.example.schooltimetabling.rest.TimeTableController;
 
 /**
  * This class ensures that during solving, no CRUD operations are allowed.

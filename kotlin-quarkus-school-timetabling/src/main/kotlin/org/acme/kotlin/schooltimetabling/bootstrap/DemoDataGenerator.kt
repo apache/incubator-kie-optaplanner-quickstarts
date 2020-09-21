@@ -10,7 +10,6 @@ import org.acme.kotlin.schooltimetabling.persistence.TimeslotRepository
 import org.eclipse.microprofile.config.inject.ConfigProperty
 import java.time.DayOfWeek
 import java.time.LocalTime
-import java.util.ArrayList
 import javax.enterprise.context.ApplicationScoped
 import javax.enterprise.event.Observes
 import javax.inject.Inject

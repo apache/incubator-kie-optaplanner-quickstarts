@@ -26,9 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.acme.schooltimetabling.domain.Lesson;
-import org.acme.schooltimetabling.domain.Room;
 import org.acme.schooltimetabling.domain.TimeTable;
-import org.acme.schooltimetabling.domain.Timeslot;
 import org.acme.schooltimetabling.persistence.LessonRepository;
 import org.acme.schooltimetabling.persistence.RoomRepository;
 import org.acme.schooltimetabling.persistence.TimeslotRepository;

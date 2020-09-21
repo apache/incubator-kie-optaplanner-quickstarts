@@ -16,12 +16,11 @@
 
 package org.acme.schooltimetabling.persistence;
 
-import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.GET;
+
+import org.acme.schooltimetabling.domain.Room;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
-import org.acme.schooltimetabling.domain.Room;
 
 @ApplicationScoped
 public class RoomRepository implements PanacheRepository<Room> {
