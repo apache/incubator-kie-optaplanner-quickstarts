@@ -25,7 +25,8 @@ import javax.persistence.Id
 
 
 @Entity
-class Timeslot {
+// Open for quarkus-hibernate performance
+open class Timeslot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
