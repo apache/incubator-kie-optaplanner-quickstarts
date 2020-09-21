@@ -24,7 +24,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.validation.constraints.NotNull;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,7 +32,6 @@ public class MutuallyExclusiveJobs extends PanacheEntityBase {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Long id;
 
     @OneToMany(fetch = FetchType.EAGER)

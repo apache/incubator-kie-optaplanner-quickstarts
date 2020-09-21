@@ -21,8 +21,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
@@ -34,14 +32,10 @@ public class Lesson {
 
     @PlanningId
     @Id @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Long id;
 
-    @NotBlank
     private String subject;
-    @NotBlank
     private String teacher;
-    @NotBlank
     private String studentGroup;
 
     @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
@@ -53,7 +47,7 @@ public class Lesson {
     private Room room;
 
     // No-arg constructor required for Hibernate and OptaPlanner
-    private Lesson() {
+    public Lesson() {
     }
 
     public Lesson(String subject, String teacher, String studentGroup) {

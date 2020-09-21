@@ -29,36 +29,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
+import io.quarkus.rest.data.panache.ResourceProperties;
+import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Timeslot;
 
 import io.quarkus.panache.common.Sort;
+import org.acme.schooltimetabling.persistence.LessonRepository;
+import org.acme.schooltimetabling.persistence.TimeslotRepository;
 
-@Path("/timeslots")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Transactional
-public class TimeslotResource {
-
-    @GET
-    public List<Timeslot> getAllTimeslots() {
-        return Timeslot.listAll(Sort.by("dayOfWeek").and("startTime").and("endTime").and("id"));
-    }
-
-    @POST
-    public Response add(Timeslot timeslot) {
-        Timeslot.persist(timeslot);
-        return Response.accepted(timeslot).build();
-    }
-
-    @DELETE
-    @Path("{timeslotId}")
-    public Response delete(@PathParam("timeslotId") Long timeslotId) {
-        Timeslot timeslot = Timeslot.findById(timeslotId);
-        if (timeslot == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        timeslot.delete();
-        return Response.status(Response.Status.OK).build();
-    }
+@ResourceProperties(path = "timeslots")
+public interface TimeslotResource extends PanacheRepositoryResource<TimeslotRepository, Timeslot, Long> {
 
 }

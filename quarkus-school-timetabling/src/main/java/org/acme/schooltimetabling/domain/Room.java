@@ -20,22 +20,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 @Entity
-public class Room extends PanacheEntityBase {
+public class Room {
 
     @PlanningId
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Long id;
 
-    @NotBlank
     private String name;
 
     // No-arg constructor required for Hibernate
@@ -51,16 +46,20 @@ public class Room extends PanacheEntityBase {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
+
     public Long getId() {
         return id;
     }
 
     public String getName() {
-        return name;
-    }
-
-    @Override
-    public String toString() {
         return name;
     }
 

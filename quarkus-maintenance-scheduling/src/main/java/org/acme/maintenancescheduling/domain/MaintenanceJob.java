@@ -27,8 +27,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @PlanningEntity
@@ -37,19 +35,13 @@ public class MaintenanceJob extends PanacheEntityBase {
     @PlanningId
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Long id;
 
-    @NotBlank
     private String jobName;
-    @NotNull
     @ManyToOne(cascade = CascadeType.ALL)
     private MaintainableUnit maintainableUnit;
-    @NotNull
     private int readyGrainIndex;
-    @NotNull
     private int deadlineGrainIndex;
-    @NotNull
     private int durationInGrains;
 
     // TODO: Add configuration option for how long each TimeGrain is
@@ -62,7 +54,6 @@ public class MaintenanceJob extends PanacheEntityBase {
     private MaintenanceCrew assignedCrew;
 
     // TODO: Make it an enum? Range of priorities (not in MVP, but make it easy for users to do)
-    @NotNull
     private boolean critical;
 
     // TODO: Add safetyMargin
