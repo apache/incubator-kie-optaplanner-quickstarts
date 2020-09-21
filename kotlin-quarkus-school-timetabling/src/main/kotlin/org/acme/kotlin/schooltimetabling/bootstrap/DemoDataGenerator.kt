@@ -21,7 +21,7 @@ import javax.transaction.Transactional
 class DemoDataGenerator {
 
     @ConfigProperty(name = "timeTable.demoData", defaultValue = "SMALL")
-    var demoData: DemoData? = null
+    lateinit var demoData: DemoData
 
     @Inject
     lateinit var timeslotRepository: TimeslotRepository

@@ -28,7 +28,8 @@ import javax.persistence.ManyToOne
 
 @PlanningEntity
 @Entity
-class Lesson {
+// Open for quarkus-hibernate performance
+open class Lesson {
 
     @PlanningId
     @Id

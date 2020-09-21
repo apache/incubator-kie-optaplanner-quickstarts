@@ -23,7 +23,8 @@ import javax.persistence.Id
 
 
 @Entity
-class Room {
+// Open for quarkus-hibernate performance
+open class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
