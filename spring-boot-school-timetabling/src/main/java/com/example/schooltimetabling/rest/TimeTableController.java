@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling.solver;
+package com.example.schooltimetabling.rest;
 
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;

@@ -45,7 +45,7 @@ public class TimeTable {
     private SolverStatus solverStatus;
 
     // No-arg constructor required for OptaPlanner
-    private TimeTable() {
+    public TimeTable() {
     }
 
     public TimeTable(List<Timeslot> timeslotList, List<Room> roomList, List<Lesson> lessonList) {
@@ -53,6 +53,10 @@ public class TimeTable {
         this.roomList = roomList;
         this.lessonList = lessonList;
     }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
 
     public List<Timeslot> getTimeslotList() {
         return timeslotList;

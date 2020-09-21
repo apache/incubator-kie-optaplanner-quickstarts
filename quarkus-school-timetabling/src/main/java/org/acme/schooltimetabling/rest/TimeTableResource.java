@@ -29,6 +29,9 @@ import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Room;
 import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.domain.Timeslot;
+import org.acme.schooltimetabling.persistence.LessonRepository;
+import org.acme.schooltimetabling.persistence.RoomRepository;
+import org.acme.schooltimetabling.persistence.TimeslotRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -36,12 +39,19 @@ import org.optaplanner.core.api.solver.SolverStatus;
 
 import io.quarkus.panache.common.Sort;
 
-@Path("/timeTable")
+@Path("timeTable")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TimeTableResource {
 
     public static final Long SINGLETON_TIME_TABLE_ID = 1L;
+
+    @Inject
+    TimeslotRepository timeslotRepository;
+    @Inject
+    RoomRepository roomRepository;
+    @Inject
+    LessonRepository lessonRepository;
 
     @Inject
     SolverManager<TimeTable, Long> solverManager;
@@ -61,7 +71,7 @@ public class TimeTableResource {
     }
 
     @POST
-    @Path("/solve")
+    @Path("solve")
     public void solve() {
         solverManager.solveAndListen(SINGLETON_TIME_TABLE_ID,
                 this::findById,
@@ -73,7 +83,7 @@ public class TimeTableResource {
     }
 
     @POST
-    @Path("/stopSolving")
+    @Path("stopSolving")
     public void stopSolving() {
         solverManager.terminateEarly(SINGLETON_TIME_TABLE_ID);
     }
@@ -86,16 +96,16 @@ public class TimeTableResource {
         // Occurs in a single transaction, so each initialized lesson references the same timeslot/room instance
         // that is contained by the timeTable's timeslotList/roomList.
         return new TimeTable(
-                Timeslot.listAll(Sort.by("dayOfWeek").and("startTime").and("endTime").and("id")),
-                Room.listAll(Sort.by("name").and("id")),
-                Lesson.listAll(Sort.by("subject").and("teacher").and("studentGroup").and("id")));
+                timeslotRepository.listAll(Sort.by("dayOfWeek").and("startTime").and("endTime").and("id")),
+                roomRepository.listAll(Sort.by("name").and("id")),
+                lessonRepository.listAll(Sort.by("subject").and("teacher").and("studentGroup").and("id")));
     }
 
     @Transactional
     protected void save(TimeTable timeTable) {
         for (Lesson lesson : timeTable.getLessonList()) {
             // TODO this is awfully naive: optimistic locking causes issues if called by the SolverManager
-            Lesson attachedLesson = Lesson.findById(lesson.getId());
+            Lesson attachedLesson = lessonRepository.findById(lesson.getId());
             attachedLesson.setTimeslot(lesson.getTimeslot());
             attachedLesson.setRoom(lesson.getRoom());
         }

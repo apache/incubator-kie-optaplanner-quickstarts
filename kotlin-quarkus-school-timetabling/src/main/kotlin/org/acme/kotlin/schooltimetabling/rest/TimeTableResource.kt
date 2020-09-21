@@ -36,7 +36,7 @@ import javax.ws.rs.Produces
 import javax.ws.rs.core.MediaType
 
 
-@Path("/timeTable")
+@Path("timeTable")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 class TimeTableResource {
@@ -68,7 +68,7 @@ class TimeTableResource {
     }
 
     @POST
-    @Path("/solve")
+    @Path("solve")
     fun solve() {
         solverManager.solveAndListen(SINGLETON_TIME_TABLE_ID,
                 this::findById,
@@ -80,7 +80,7 @@ class TimeTableResource {
     }
 
     @POST
-    @Path("/stopSolving")
+    @Path("stopSolving")
     fun stopSolving() {
         solverManager.terminateEarly(SINGLETON_TIME_TABLE_ID)
     }

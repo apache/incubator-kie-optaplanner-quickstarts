@@ -20,17 +20,15 @@ import javax.transaction.Transactional
 @ApplicationScoped
 class DemoDataGenerator {
 
-    @Inject
-    lateinit var timeslotRepository: TimeslotRepository
-
-    @Inject
-    lateinit var roomRepository: RoomRepository
-
-    @Inject
-    lateinit var lessonRepository: LessonRepository
-
     @ConfigProperty(name = "timeTable.demoData", defaultValue = "SMALL")
     var demoData: DemoData? = null
+
+    @Inject
+    lateinit var timeslotRepository: TimeslotRepository
+    @Inject
+    lateinit var roomRepository: RoomRepository
+    @Inject
+    lateinit var lessonRepository: LessonRepository
 
     @Transactional
     fun generateDemoData(@Observes startupEvent: StartupEvent) {

@@ -21,29 +21,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 @PlanningEntity
 @Entity
-public class Lesson extends PanacheEntityBase {
+public class Lesson {
 
     @PlanningId
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @NotNull
     private Long id;
 
-    @NotBlank
     private String subject;
-    @NotBlank
     private String teacher;
-    @NotBlank
     private String studentGroup;
 
     @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
@@ -69,6 +62,15 @@ public class Lesson extends PanacheEntityBase {
         this.timeslot = timeslot;
         this.room = room;
     }
+
+    @Override
+    public String toString() {
+        return subject + "(" + id + ")";
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
 
     public Long getId() {
         return id;
@@ -100,11 +102,6 @@ public class Lesson extends PanacheEntityBase {
 
     public void setRoom(Room room) {
         this.room = room;
-    }
-
-    @Override
-    public String toString() {
-        return subject + "(" + id + ")";
     }
 
 }

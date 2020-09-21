@@ -29,36 +29,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
+import io.quarkus.rest.data.panache.ResourceProperties;
+import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Room;
 
 import io.quarkus.panache.common.Sort;
+import org.acme.schooltimetabling.persistence.LessonRepository;
+import org.acme.schooltimetabling.persistence.RoomRepository;
 
-@Path("/rooms")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Transactional
-public class RoomResource {
-
-    @GET
-    public List<Room> getAllRooms() {
-        return Room.listAll(Sort.by("name").and("id"));
-    }
-
-    @POST
-    public Response add(Room room) {
-        Room.persist(room);
-        return Response.accepted(room).build();
-    }
-
-    @DELETE
-    @Path("{roomId}")
-    public Response delete(@PathParam("roomId") Long roomId) {
-        Room room = Room.findById(roomId);
-        if (room == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        room.delete();
-        return Response.status(Response.Status.OK).build();
-    }
+@ResourceProperties(path = "rooms")
+public interface RoomResource extends PanacheRepositoryResource<RoomRepository, Room, Long> {
 
 }

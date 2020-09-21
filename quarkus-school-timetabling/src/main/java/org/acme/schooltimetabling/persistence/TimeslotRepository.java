@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-package org.acme.schooltimetabling.rest;
+package org.acme.schooltimetabling.persistence;
 
 import java.util.List;
-
-import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
-import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
-import io.quarkus.rest.data.panache.ResourceProperties;
-import org.acme.schooltimetabling.domain.Lesson;
-
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.quarkus.panache.common.Sort;
-import org.acme.schooltimetabling.persistence.LessonRepository;
+import org.acme.schooltimetabling.domain.Timeslot;
 
-@ResourceProperties(path = "lessons")
-public interface LessonResource extends PanacheRepositoryResource<LessonRepository, Lesson, Long> {
+@ApplicationScoped
+public class TimeslotRepository implements PanacheRepository<Timeslot> {
 
 }
