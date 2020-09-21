@@ -18,6 +18,7 @@ package org.acme.schooltimetabling.domain;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

@@ -18,8 +18,9 @@ package com.example.schooltimetabling.persistence;
 
 import java.util.List;
 
-import com.example.schooltimetabling.domain.Lesson;
 import org.springframework.data.repository.PagingAndSortingRepository;
+
+import com.example.schooltimetabling.domain.Lesson;
 
 public interface LessonRepository extends PagingAndSortingRepository<Lesson, Long> {
 
