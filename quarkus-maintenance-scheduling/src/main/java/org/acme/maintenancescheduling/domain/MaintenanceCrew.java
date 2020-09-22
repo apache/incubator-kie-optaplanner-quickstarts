@@ -29,7 +29,7 @@ public class MaintenanceCrew extends PanacheEntityBase {
 
     @PlanningId
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private String crewName;

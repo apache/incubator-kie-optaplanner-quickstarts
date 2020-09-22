@@ -34,7 +34,7 @@ public class MaintenanceJob extends PanacheEntityBase {
 
     @PlanningId
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private String jobName;

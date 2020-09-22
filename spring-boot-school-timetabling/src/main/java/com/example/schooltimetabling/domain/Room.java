@@ -27,7 +27,7 @@ import org.optaplanner.core.api.domain.lookup.PlanningId;
 public class Room {
 
     @PlanningId
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue
     private Long id;
 
     private String name;

@@ -31,7 +31,7 @@ import java.util.List;
 public class MutuallyExclusiveJobs extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     @OneToMany(fetch = FetchType.EAGER)

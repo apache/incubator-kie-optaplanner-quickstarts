@@ -29,7 +29,7 @@ public class TimeGrain extends PanacheEntityBase {
 
     @PlanningId
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private int grainIndex; // unique

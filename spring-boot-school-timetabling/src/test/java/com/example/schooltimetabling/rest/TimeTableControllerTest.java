@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling.solver;
+package com.example.schooltimetabling.rest;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

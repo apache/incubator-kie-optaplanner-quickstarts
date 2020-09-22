@@ -30,7 +30,7 @@ import org.optaplanner.core.api.domain.lookup.PlanningId;
 public class Timeslot {
 
     @PlanningId
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue
     private Long id;
 
     private DayOfWeek dayOfWeek;
