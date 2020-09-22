@@ -43,7 +43,7 @@ class TimeTable {
     var solverStatus: SolverStatus? = null
 
     // No-arg constructor required for OptaPlanner
-    private constructor() {}
+    constructor() {}
 
     constructor(timeslotList: List<Timeslot>, roomList: List<Room>, lessonList: List<Lesson>) {
         this.timeslotList = timeslotList

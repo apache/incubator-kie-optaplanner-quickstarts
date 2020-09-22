@@ -31,7 +31,7 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
 public class Lesson {
 
     @PlanningId
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue
     private Long id;
 
     private String subject;

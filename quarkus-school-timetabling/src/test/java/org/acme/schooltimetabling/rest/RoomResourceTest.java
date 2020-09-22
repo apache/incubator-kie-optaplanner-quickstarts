@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import java.util.List;
 
 import org.acme.schooltimetabling.domain.Room;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import io.quarkus.test.junit.QuarkusTest;
@@ -43,7 +44,7 @@ public class RoomResourceTest {
         assertEquals("Room A", firstRoom.getName());
     }
 
-    @Test
+    @Test @Disabled("TODO Blocked by https://github.com/quarkusio/quarkus/issues/9510")
     void addAndRemove() {
         Room room = given()
                 .when()

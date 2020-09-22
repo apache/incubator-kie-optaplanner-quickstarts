@@ -25,11 +25,10 @@ import javax.persistence.Id
 
 
 @Entity
-// Open for quarkus-hibernate performance
-open class Timeslot {
+class Timeslot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     var id: Long? = null
 
     lateinit var dayOfWeek: DayOfWeek

@@ -28,12 +28,11 @@ import javax.persistence.ManyToOne
 
 @PlanningEntity
 @Entity
-// Open for quarkus-hibernate performance
-open class Lesson {
+class Lesson {
 
     @PlanningId
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     var id: Long? = null
 
     lateinit var subject: String

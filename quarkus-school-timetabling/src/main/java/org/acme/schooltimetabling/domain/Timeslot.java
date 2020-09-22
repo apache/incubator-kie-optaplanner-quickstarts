@@ -31,7 +31,7 @@ public class Timeslot {
 
     @PlanningId
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     private Long id;
 
     private DayOfWeek dayOfWeek;
