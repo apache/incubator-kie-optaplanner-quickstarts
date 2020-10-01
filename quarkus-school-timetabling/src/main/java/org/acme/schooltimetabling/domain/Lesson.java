@@ -76,6 +76,11 @@ public class Lesson {
         return id;
     }
 
+    // Setter is workaround for native build issue https://github.com/quarkusio/quarkus/issues/12458
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getSubject() {
         return subject;
     }
