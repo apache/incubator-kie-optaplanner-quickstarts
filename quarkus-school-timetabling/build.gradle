@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id "io.quarkus" version "1.8.0.Final"
+    id "io.quarkus" version "1.8.1.Final"
     id "java"
 }
 
