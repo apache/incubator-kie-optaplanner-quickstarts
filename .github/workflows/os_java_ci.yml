@@ -5,10 +5,10 @@ name: OptaPlanner CI
 on:
   push:
     branches:
-      - master
+      - development
   pull_request:
     branches:
-      - master
+      - development
 
 env:
   # To prevent build failures due to "Connection reset" during artifact download.
@@ -38,7 +38,7 @@ jobs:
   # Early feedback on a compatibility with the newest Java version.
   # TODO: update each time a new major Java version is released.
   latest-jdk:
-    name: Java 14
+    name: Java 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
