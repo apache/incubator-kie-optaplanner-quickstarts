@@ -107,6 +107,6 @@ public class Consumer {
 
     @Override
     public String toString() {
-        return "Demand " + id + " (" + demand + " dem)";
+        return "Consumer " + id + " (" + demand + " dem)";
     }
 }
