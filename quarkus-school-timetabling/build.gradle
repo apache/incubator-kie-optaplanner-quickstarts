@@ -60,4 +60,7 @@ compileTestJava {
 
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+    // Gradle needs native tests in src/native-test/java, but maven needs them in src/test/java instead.
+    // Maven first, so we skip them in Gradle unfortunately.
+    exclude '**/**IT.class'
 }
