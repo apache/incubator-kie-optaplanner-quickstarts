@@ -17,12 +17,13 @@
 package org.acme.maintenancescheduling.rest;
 
 import io.quarkus.panache.common.Sort;
-import org.acme.maintenancescheduling.domain.MaintainableUnit;
-import org.acme.maintenancescheduling.domain.MaintenanceCrew;
 import org.acme.maintenancescheduling.domain.MaintenanceJob;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
-import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
-import org.acme.maintenancescheduling.domain.TimeGrain;
+import org.acme.maintenancescheduling.persistence.MaintainableUnitRepository;
+import org.acme.maintenancescheduling.persistence.MaintenanceCrewRepository;
+import org.acme.maintenancescheduling.persistence.MaintenanceJobRepository;
+import org.acme.maintenancescheduling.persistence.MutuallyExclusiveJobsRepository;
+import org.acme.maintenancescheduling.persistence.TimeGrainRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -43,6 +44,17 @@ import javax.ws.rs.core.MediaType;
 public class MaintenanceScheduleResource {
 
     public static final Long SINGLETON_SCHEDULE_ID = 1L;
+
+    @Inject
+    MaintainableUnitRepository maintainableUnitRepository;
+    @Inject
+    MaintenanceCrewRepository maintenanceCrewRepository;
+    @Inject
+    MaintenanceJobRepository maintenanceJobRepository;
+    @Inject
+    MutuallyExclusiveJobsRepository mutuallyExclusiveJobsRepository;
+    @Inject
+    TimeGrainRepository timeGrainRepository;
 
     @Inject
     SolverManager<MaintenanceSchedule, Long> solverManager;
@@ -66,7 +78,7 @@ public class MaintenanceScheduleResource {
     }
 
     @POST
-    @Path("/solve")
+    @Path("solve")
     public void solve() {
         solverManager.solveAndListen(SINGLETON_SCHEDULE_ID,
                 this::findById,
@@ -74,7 +86,7 @@ public class MaintenanceScheduleResource {
     }
 
     @POST
-    @Path("/stopSolving")
+    @Path("stopSolving")
     public void stopSolving() {
         solverManager.terminateEarly(SINGLETON_SCHEDULE_ID);
     }
@@ -86,11 +98,11 @@ public class MaintenanceScheduleResource {
         }
 
         return new MaintenanceSchedule(
-                MaintainableUnit.listAll(Sort.by("unitName").and("id")),
-                MutuallyExclusiveJobs.listAll(Sort.by("id")),
-                MaintenanceCrew.listAll(Sort.by("crewName").and("id")),
-                TimeGrain.listAll(Sort.by("grainIndex").and("id")),
-                MaintenanceJob.listAll(Sort.by("maintainableUnit")
+                maintainableUnitRepository.listAll(Sort.by("unitName").and("id")),
+                mutuallyExclusiveJobsRepository.listAll(Sort.by("id")),
+                maintenanceCrewRepository.listAll(Sort.by("crewName").and("id")),
+                timeGrainRepository.listAll(Sort.by("grainIndex").and("id")),
+                maintenanceJobRepository.listAll(Sort.by("maintainableUnit")
                         .and("startingTimeGrain").and("readyGrainIndex").and("deadlineGrainIndex").and("id")));
     }
 
@@ -98,7 +110,7 @@ public class MaintenanceScheduleResource {
     protected void save(MaintenanceSchedule schedule) {
         for (MaintenanceJob job : schedule.getMaintenanceJobList()) {
             // TODO this is awfully naive: optimistic locking causes issues if called by the SolverManager
-            MaintenanceJob persistedJob = MaintenanceJob.findById(job.getId());
+            MaintenanceJob persistedJob = maintenanceJobRepository.findById(job.getId());
             persistedJob.setStartingTimeGrain(job.getStartingTimeGrain());
             persistedJob.setAssignedCrew(job.getAssignedCrew());
         }

@@ -70,6 +70,10 @@ public class MaintenanceSchedule {
         this.maintenanceJobList = maintenanceJobList;
     }
 
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
+
     public MaintenanceSchedulingConstraintConfiguration getConstraintConfiguration() {
         return constraintConfiguration;
     }

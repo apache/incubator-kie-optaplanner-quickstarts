@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.acme.maintenancescheduling.rest;
+package org.acme.maintenancescheduling.persistence;
 
-import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
-import io.quarkus.rest.data.panache.ResourceProperties;
-import org.acme.maintenancescheduling.domain.MaintainableUnit;
-import org.acme.maintenancescheduling.persistence.MaintainableUnitRepository;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import org.acme.maintenancescheduling.domain.MaintenanceJob;
 
-@ResourceProperties(path = "units")
-public interface MaintainableUnitResource extends PanacheRepositoryResource<MaintainableUnitRepository, MaintainableUnit, Long> {
+import javax.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class MaintenanceJobRepository implements PanacheRepository<MaintenanceJob> {
 
 }

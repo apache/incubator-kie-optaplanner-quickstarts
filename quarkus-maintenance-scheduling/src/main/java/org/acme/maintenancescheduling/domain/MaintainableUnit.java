@@ -16,15 +16,12 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class MaintainableUnit extends PanacheEntityBase {
+public class MaintainableUnit {
 
     @Id
     @GeneratedValue
@@ -38,6 +35,18 @@ public class MaintainableUnit extends PanacheEntityBase {
     public MaintainableUnit(String unitName) {
         this.unitName = unitName;
     }
+
+    @Override
+    public String toString() {
+        return "MaintainableUnit{" +
+                "id=" + id +
+                ", unitName='" + unitName + '\'' +
+                '}';
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
 
     public Long getId() {
         return id;
@@ -53,13 +62,5 @@ public class MaintainableUnit extends PanacheEntityBase {
 
     public void setUnitName(String unitName) {
         this.unitName = unitName;
-    }
-
-    @Override
-    public String toString() {
-        return "MaintainableUnit{" +
-                "id=" + id +
-                ", unitName='" + unitName + '\'' +
-                '}';
     }
 }

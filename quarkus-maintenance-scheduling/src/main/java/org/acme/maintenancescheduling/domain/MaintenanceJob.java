@@ -16,7 +16,6 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
@@ -24,13 +23,12 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
 @PlanningEntity
-public class MaintenanceJob extends PanacheEntityBase {
+public class MaintenanceJob {
 
     @PlanningId
     @Id
@@ -70,6 +68,44 @@ public class MaintenanceJob extends PanacheEntityBase {
         this.durationInGrains = durationInGrains;
         this.critical = critical;
     }
+
+    // ************************************************************************
+    // Complex methods
+    // ************************************************************************
+
+    public int calculateOverlap(MaintenanceJob other) {
+        if (startingTimeGrain == null || other.getStartingTimeGrain() == null) {
+            return 0;
+        }
+        int start = startingTimeGrain.getGrainIndex();
+        int end = start + durationInGrains;
+        int otherStart = other.getStartingTimeGrain().getGrainIndex();
+        int otherEnd = otherStart + other.getDurationInGrains();
+
+        if (end < otherStart) {
+            return 0;
+        } else if (otherEnd < start) {
+            return 0;
+        }
+        return Math.min(end, otherEnd) - Math.max(start, otherStart);
+    }
+
+    @Override
+    public String toString() {
+        return "MaintenanceJob{" +
+                "id=" + id +
+                ", jobName='" + jobName + '\'' +
+                ", maintainableUnit=" + maintainableUnit +
+                ", readyGrainIndex=" + readyGrainIndex +
+                ", deadlineGrainIndex=" + deadlineGrainIndex +
+                ", durationInGrains=" + durationInGrains +
+                ", isCritical=" + critical +
+                '}';
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
 
     public Long getId() {
         return id;
@@ -141,39 +177,5 @@ public class MaintenanceJob extends PanacheEntityBase {
 
     public void setCritical(boolean critical) {
         this.critical = critical;
-    }
-
-    // ************************************************************************
-    // Complex methods
-    // ************************************************************************
-
-    public int calculateOverlap(MaintenanceJob other) {
-        if (startingTimeGrain == null || other.getStartingTimeGrain() == null) {
-            return 0;
-        }
-        int start = startingTimeGrain.getGrainIndex();
-        int end = start + durationInGrains;
-        int otherStart = other.getStartingTimeGrain().getGrainIndex();
-        int otherEnd = otherStart + other.getDurationInGrains();
-
-        if (end < otherStart) {
-            return 0;
-        } else if (otherEnd < start) {
-            return 0;
-        }
-        return Math.min(end, otherEnd) - Math.max(start, otherStart);
-    }
-
-    @Override
-    public String toString() {
-        return "MaintenanceJob{" +
-                "id=" + id +
-                ", jobName='" + jobName + '\'' +
-                ", maintainableUnit=" + maintainableUnit +
-                ", readyGrainIndex=" + readyGrainIndex +
-                ", deadlineGrainIndex=" + deadlineGrainIndex +
-                ", durationInGrains=" + durationInGrains +
-                ", isCritical=" + critical +
-                '}';
     }
 }

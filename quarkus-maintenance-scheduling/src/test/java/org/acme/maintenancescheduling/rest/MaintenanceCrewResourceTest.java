@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 public class MaintenanceCrewResourceTest {
@@ -39,7 +39,7 @@ public class MaintenanceCrewResourceTest {
                 .extract().body().jsonPath().getList(".", MaintenanceCrew.class);
         assertFalse(crewList.isEmpty());
         MaintenanceCrew firstCrew = crewList.get(0);
-        assertEquals("Crew 1", firstCrew.getCrewName());
+        assertNotNull(firstCrew.getCrewName());
     }
 
     @Test
@@ -50,13 +50,13 @@ public class MaintenanceCrewResourceTest {
                 .body(new MaintenanceCrew("Test crew"))
                 .post("/crews")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(MaintenanceCrew.class);
 
         given()
                 .when()
                 .delete("/crews/{id}", crew.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 }

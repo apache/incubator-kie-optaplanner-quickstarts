@@ -22,10 +22,16 @@ import org.acme.maintenancescheduling.domain.MaintenanceCrew;
 import org.acme.maintenancescheduling.domain.MaintenanceJob;
 import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
 import org.acme.maintenancescheduling.domain.TimeGrain;
+import org.acme.maintenancescheduling.persistence.MaintainableUnitRepository;
+import org.acme.maintenancescheduling.persistence.MaintenanceCrewRepository;
+import org.acme.maintenancescheduling.persistence.MaintenanceJobRepository;
+import org.acme.maintenancescheduling.persistence.MutuallyExclusiveJobsRepository;
+import org.acme.maintenancescheduling.persistence.TimeGrainRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +47,17 @@ public class DemoDataGenerator {
         SMALL,
         SMALLEST
     }
+
+    @Inject
+    MaintainableUnitRepository maintainableUnitRepository;
+    @Inject
+    MaintenanceCrewRepository maintenanceCrewRepository;
+    @Inject
+    MaintenanceJobRepository maintenanceJobRepository;
+    @Inject
+    MutuallyExclusiveJobsRepository mutuallyExclusiveJobsRepository;
+    @Inject
+    TimeGrainRepository timeGrainRepository;
 
     @Transactional
     public void generateDemoData(@Observes StartupEvent startupEvent) {
@@ -69,7 +86,7 @@ public class DemoDataGenerator {
             maintainableUnitList.add(new MaintainableUnit("Yard 5"));
             maintainableUnitList.add(new MaintainableUnit("Yard 6"));
         }
-        MaintainableUnit.persist(maintainableUnitList);
+        maintainableUnitRepository.persist(maintainableUnitList);
 
         List<MaintenanceCrew> maintenanceCrewList = new ArrayList<>();
         maintenanceCrewList.add(new MaintenanceCrew("Crew 1"));
@@ -80,7 +97,7 @@ public class DemoDataGenerator {
             maintenanceCrewList.add(new MaintenanceCrew("Crew 5"));
             maintenanceCrewList.add(new MaintenanceCrew("Crew 6"));
         }
-        MaintenanceCrew.persist(maintenanceCrewList);
+        maintenanceCrewRepository.persist(maintenanceCrewList);
 
         List<TimeGrain> timeGrainList = new ArrayList<>();
         for (int i = 0; i <= 24; i++) {
@@ -91,7 +108,7 @@ public class DemoDataGenerator {
                 timeGrainList.add(new TimeGrain(i));
             }
         }
-        TimeGrain.persist(timeGrainList);
+        timeGrainRepository.persist(timeGrainList);
 
         List<MaintenanceJob> maintenanceJobList = new ArrayList<>();
         maintenanceJobList.add(new MaintenanceJob("Bolt tightening 1", maintainableUnitList.get(0), 0, 24, 1, true));
@@ -127,7 +144,7 @@ public class DemoDataGenerator {
             maintenanceJobList.add(new MaintenanceJob("Yard sanding 3", maintainableUnitList.get(8), 0, 48, 4, false));
             maintenanceJobList.add(new MaintenanceJob("Track sanding 1", maintainableUnitList.get(0), 0, 48, 8, false));
         }
-        MaintenanceJob.persist(maintenanceJobList);
+        maintenanceJobRepository.persist(maintenanceJobList);
 
         List<MutuallyExclusiveJobs> mutuallyExclusiveJobsList = new ArrayList<>();
         mutuallyExclusiveJobsList.add(
@@ -144,6 +161,6 @@ public class DemoDataGenerator {
             mutuallyExclusiveJobsList.add(new MutuallyExclusiveJobs(maintenanceJobList.get(16), maintenanceJobList.get(17),
                     maintenanceJobList.get(18)));
         }
-        MutuallyExclusiveJobs.persist(mutuallyExclusiveJobsList);
+        mutuallyExclusiveJobsRepository.persist(mutuallyExclusiveJobsList);
     }
 }

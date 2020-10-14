@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 public class MaintainableUnitResourceTest {
@@ -39,7 +39,7 @@ public class MaintainableUnitResourceTest {
                 .extract().body().jsonPath().getList(".", MaintainableUnit.class);
         assertFalse(unitList.isEmpty());
         MaintainableUnit firstUnit = unitList.get(0);
-        assertEquals("Switch 1", firstUnit.getUnitName());
+        assertNotNull(firstUnit.getUnitName());
     }
 
     @Test
@@ -50,13 +50,13 @@ public class MaintainableUnitResourceTest {
                 .body(new MaintainableUnit("Test unit"))
                 .post("/units")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(MaintainableUnit.class);
 
         given()
                 .when()
                 .delete("/units/{id}", unit.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 }
