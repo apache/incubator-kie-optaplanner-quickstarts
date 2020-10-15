@@ -44,7 +44,7 @@ public class RoomResourceTest {
         assertEquals("Room A", firstRoom.getName());
     }
 
-    @Test @Disabled("TODO Blocked by https://github.com/quarkusio/quarkus/issues/9510")
+    @Test
     void addAndRemove() {
         Room room = given()
                 .when()
@@ -52,14 +52,14 @@ public class RoomResourceTest {
                 .body(new Room("Test room"))
                 .post("/rooms")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(Room.class);
 
         given()
                 .when()
                 .delete("/rooms/{id}", room.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 
 }
