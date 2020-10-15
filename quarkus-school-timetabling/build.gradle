@@ -23,8 +23,7 @@ repositories {
 
 dependencies {
     // Alternatively, use "io.quarkus:quarkus-universe-bom" which includes both quarkus-bom and optaplanner-bom.
-    // TODO use enforcedPlatform instead. Workaround for https://github.com/quarkusio/quarkus/issues/12632
-    implementation platform("io.quarkus:quarkus-bom:${quarkusVersion}")
+    implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
     implementation "org.optaplanner:optaplanner-quarkus:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-quarkus-jackson:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-test:${optaplannerVersion}"
