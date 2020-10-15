@@ -21,12 +21,11 @@ import io.restassured.http.ContentType;
 import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
 import org.junit.jupiter.api.Test;
 
-import java.util.Collections;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 public class MutuallyExclusiveJobsResourceTest {
@@ -40,7 +39,7 @@ public class MutuallyExclusiveJobsResourceTest {
                 .extract().body().jsonPath().getList(".", MutuallyExclusiveJobs.class);
         assertFalse(mutuallyExclusiveJobsList.isEmpty());
         MutuallyExclusiveJobs firstMutuallyExclusiveJobs = mutuallyExclusiveJobsList.get(0);
-        assertEquals(3, firstMutuallyExclusiveJobs.getMutexJobs().size());
+        assertNotNull(firstMutuallyExclusiveJobs.getMutexJobs());
     }
 
     @Test
@@ -51,13 +50,13 @@ public class MutuallyExclusiveJobsResourceTest {
                 .body(new MutuallyExclusiveJobs())
                 .post("/mutuallyExclusiveJobs")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(MutuallyExclusiveJobs.class);
 
         given()
                 .when()
                 .delete("/mutuallyExclusiveJobs/{id}", mutuallyExclusiveJobs.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 }

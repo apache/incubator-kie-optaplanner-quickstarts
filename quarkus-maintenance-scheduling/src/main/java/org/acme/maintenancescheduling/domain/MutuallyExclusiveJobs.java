@@ -16,19 +16,16 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.Arrays;
 import java.util.List;
 
 @Entity
-public class MutuallyExclusiveJobs extends PanacheEntityBase {
+public class MutuallyExclusiveJobs {
 
     @Id
     @GeneratedValue
@@ -42,22 +39,6 @@ public class MutuallyExclusiveJobs extends PanacheEntityBase {
 
     public MutuallyExclusiveJobs(MaintenanceJob... mutexJobs) {
         this.mutexJobs = Arrays.asList(mutexJobs);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<MaintenanceJob> getMutexJobs() {
-        return mutexJobs;
-    }
-
-    public void setMutexJobs(List<MaintenanceJob> mutexJobs) {
-        this.mutexJobs = mutexJobs;
     }
 
     // ************************************************************************
@@ -77,5 +58,25 @@ public class MutuallyExclusiveJobs extends PanacheEntityBase {
                 "id=" + id +
                 ", mutexJobs=" + mutexJobs +
                 '}';
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<MaintenanceJob> getMutexJobs() {
+        return mutexJobs;
+    }
+
+    public void setMutexJobs(List<MaintenanceJob> mutexJobs) {
+        this.mutexJobs = mutexJobs;
     }
 }

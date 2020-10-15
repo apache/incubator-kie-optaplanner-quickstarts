@@ -25,9 +25,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 public class MaintenanceJobResourceTest {
@@ -41,12 +40,8 @@ public class MaintenanceJobResourceTest {
                 .extract().body().jsonPath().getList(".", MaintenanceJob.class);
         assertFalse(jobList.isEmpty());
         MaintenanceJob firstJob = jobList.get(0);
-        assertEquals("Bolt tightening 1", firstJob.getJobName());
-        assertEquals("Track 1", firstJob.getMaintainableUnit().getUnitName());
-        assertEquals(0, firstJob.getReadyGrainIndex());
-        assertEquals(24, firstJob.getDeadlineGrainIndex());
-        assertEquals(1, firstJob.getDurationInGrains());
-        assertTrue(firstJob.isCritical());
+        assertNotNull(firstJob.getJobName());
+        assertNotNull(firstJob.getMaintainableUnit().getUnitName());
     }
 
     @Test
@@ -57,13 +52,13 @@ public class MaintenanceJobResourceTest {
                 .body(new MaintenanceJob("Test job", new MaintainableUnit("Test unit"), 0, 8, 1, true))
                 .post("/jobs")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(MaintenanceJob.class);
 
         given()
                 .when()
                 .delete("/jobs/{id}", job.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 }

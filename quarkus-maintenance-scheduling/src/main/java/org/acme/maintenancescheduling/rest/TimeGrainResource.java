@@ -16,46 +16,12 @@
 
 package org.acme.maintenancescheduling.rest;
 
-import io.quarkus.panache.common.Sort;
+import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
+import io.quarkus.rest.data.panache.ResourceProperties;
 import org.acme.maintenancescheduling.domain.TimeGrain;
+import org.acme.maintenancescheduling.persistence.TimeGrainRepository;
 
-import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
+@ResourceProperties(path = "timeGrains")
+public interface TimeGrainResource extends PanacheRepositoryResource<TimeGrainRepository, TimeGrain, Long> {
 
-@Path("/timeGrains")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Transactional
-public class TimeGrainResource {
-
-    @GET
-    public List<TimeGrain> getAllTimeGrains() {
-        return TimeGrain.listAll(Sort.by("grainIndex").and("id"));
-    }
-
-    @POST
-    public Response add(TimeGrain timeGrain) {
-        TimeGrain.persist(timeGrain);
-        return Response.accepted(timeGrain).build();
-    }
-
-    @DELETE
-    @Path("{timeGrainId}")
-    public Response delete(@PathParam("timeGrainId") Long timeGrainId) {
-        TimeGrain timeGrain = TimeGrain.findById(timeGrainId);
-        if (timeGrain == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        timeGrain.delete();
-        return Response.status(Response.Status.OK).build();
-    }
 }

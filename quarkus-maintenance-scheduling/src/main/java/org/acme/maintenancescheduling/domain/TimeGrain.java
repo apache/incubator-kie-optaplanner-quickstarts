@@ -16,16 +16,14 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class TimeGrain extends PanacheEntityBase {
+public class TimeGrain {
 
     @PlanningId
     @Id
@@ -41,6 +39,18 @@ public class TimeGrain extends PanacheEntityBase {
         this.grainIndex = grainIndex;
     }
 
+    @Override
+    public String toString() {
+        return "TimeGrain{" +
+                "id=" + id +
+                ", grainIndex=" + grainIndex +
+                '}';
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
+
     public Long getId() {
         return id;
     }
@@ -55,13 +65,5 @@ public class TimeGrain extends PanacheEntityBase {
 
     public void setGrainIndex(int grainIndex) {
         this.grainIndex = grainIndex;
-    }
-
-    @Override
-    public String toString() {
-        return "TimeGrain{" +
-                "id=" + id +
-                ", grainIndex=" + grainIndex +
-                '}';
     }
 }

@@ -16,47 +16,12 @@
 
 package org.acme.maintenancescheduling.rest;
 
-import io.quarkus.panache.common.Sort;
+import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
+import io.quarkus.rest.data.panache.ResourceProperties;
 import org.acme.maintenancescheduling.domain.MaintenanceJob;
+import org.acme.maintenancescheduling.persistence.MaintenanceJobRepository;
 
-import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.List;
+@ResourceProperties(path = "jobs")
+public interface MaintenanceJobResource extends PanacheRepositoryResource<MaintenanceJobRepository, MaintenanceJob, Long> {
 
-@Path("/jobs")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-@Transactional
-public class MaintenanceJobResource {
-
-    @GET
-    public List<MaintenanceJob> getAllJobs() {
-        return MaintenanceJob.listAll(Sort.by("maintainableUnit").and("startingTimeGrain").and("readyGrainIndex")
-                .and("deadlineGrainIndex").and("id"));
-    }
-
-    @POST
-    public Response add(MaintenanceJob job) {
-        MaintenanceJob.persist(job);
-        return Response.accepted(job).build();
-    }
-
-    @DELETE
-    @Path("{jobId}")
-    public Response delete(@PathParam("jobId") Long jobId) {
-        MaintenanceJob job = MaintenanceJob.findById(jobId);
-        if (job == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        job.delete();
-        return Response.status(Response.Status.OK).build();
-    }
 }

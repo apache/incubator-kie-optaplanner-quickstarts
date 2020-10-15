@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 public class TimeGrainResourceTest {
@@ -39,7 +39,7 @@ public class TimeGrainResourceTest {
                 .extract().body().jsonPath().getList(".", TimeGrain.class);
         assertFalse(timeGrainList.isEmpty());
         TimeGrain firstTimeGrain = timeGrainList.get(0);
-        assertEquals(0, firstTimeGrain.getGrainIndex());
+        assertNotNull(firstTimeGrain);
     }
 
     @Test
@@ -50,13 +50,13 @@ public class TimeGrainResourceTest {
                 .body(new TimeGrain(0))
                 .post("/timeGrains")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(TimeGrain.class);
 
         given()
                 .when()
                 .delete("/timeGrains/{id}", timeGrain.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 }

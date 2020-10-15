@@ -16,16 +16,14 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class MaintenanceCrew extends PanacheEntityBase {
+public class MaintenanceCrew {
 
     @PlanningId
     @Id
@@ -41,6 +39,18 @@ public class MaintenanceCrew extends PanacheEntityBase {
         this.crewName = crewName;
     }
 
+    @Override
+    public String toString() {
+        return "MaintenanceCrew{" +
+                "id=" + id +
+                ", crewName='" + crewName + '\'' +
+                '}';
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
+
     public Long getId() {
         return id;
     }
@@ -55,13 +65,5 @@ public class MaintenanceCrew extends PanacheEntityBase {
 
     public void setCrewName(String crewName) {
         this.crewName = crewName;
-    }
-
-    @Override
-    public String toString() {
-        return "MaintenanceCrew{" +
-                "id=" + id +
-                ", crewName='" + crewName + '\'' +
-                '}';
     }
 }
