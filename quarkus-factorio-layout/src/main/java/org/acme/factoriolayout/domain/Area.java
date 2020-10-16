@@ -16,32 +16,30 @@
 
 package org.acme.factoriolayout.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
+public class Area {
 
-public class RecipeInput {
-
-    @JsonIdentityReference(alwaysAsId = true)
-    private Recipe recipe;
-    private long amountMillis;
+    private int x;
+    private int y;
 
     // No-arg constructor required for Jackson
-    public RecipeInput() {}
+    public Area() {
+    }
 
-    public RecipeInput(Recipe recipe, long amountMillis) {
-        this.recipe = recipe;
-        this.amountMillis = amountMillis;
+    public Area(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
     // ************************************************************************
     // Getters and setters
     // ************************************************************************
 
-    public Recipe getRecipe() {
-        return recipe;
+    public int getX() {
+        return x;
     }
 
-    public long getAmountMillis() {
-        return amountMillis;
+    public int getY() {
+        return y;
     }
 
 }

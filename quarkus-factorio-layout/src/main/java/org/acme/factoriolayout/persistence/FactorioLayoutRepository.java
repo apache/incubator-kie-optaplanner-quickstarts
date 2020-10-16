@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package org.acme.factoriolayout.domain;
+package org.acme.factoriolayout.persistence;
 
-import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+import javax.enterprise.context.ApplicationScoped;
 
-public class FactorioLayoutSolution {
+import org.acme.factoriolayout.domain.FactorioLayout;
 
-    private List<Recipe> recipeList;
+@ApplicationScoped
+public class FactorioLayoutRepository {
 
-    // No-arg constructor required for OptaPlanner
-    public FactorioLayoutSolution() {
+    private AtomicReference<FactorioLayout> factorioLayoutRef = new AtomicReference<>();
+
+    public FactorioLayout get() {
+        return factorioLayoutRef.get();
     }
 
-    public FactorioLayoutSolution(List<Recipe> recipeList) {
-        this.recipeList = recipeList;
-    }
-
-    // ************************************************************************
-    // Getters and setters
-    // ************************************************************************
-
-    public List<Recipe> getRecipeList() {
-        return recipeList;
+    public void set(FactorioLayout factorioLayout) {
+        factorioLayoutRef.set(factorioLayout);
     }
 
 }
