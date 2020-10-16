@@ -19,6 +19,11 @@ package org.acme.factoriolayout.domain;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Recipe {
 
     private String id;
@@ -31,8 +36,11 @@ public class Recipe {
     private Set<RecipeInput> inputSet = new LinkedHashSet<>(8);
     private long outputAmountMillis = -1;
 
-//    // No-arg constructor required for Jackson
-//    public Recipe() {}
+    // raw materials have a low level, complex materials have a higher level
+    private int level = -1;
+
+    // No-arg constructor required for Jackson
+    public Recipe() {}
 
     public Recipe(String id, String name, String wikiUrl, String imageIrl) {
         this.id = id;
@@ -66,6 +74,8 @@ public class Recipe {
         return imageIrl;
     }
 
+
+
     public long getDurationMillis() {
         return durationMillis;
     }
@@ -84,5 +94,13 @@ public class Recipe {
 
     public void setOutputAmountMillis(long outputAmountMillis) {
         this.outputAmountMillis = outputAmountMillis;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 }
