@@ -30,7 +30,7 @@ public class Recipe {
 
     private String name;
     private String wikiUrl;
-    private String imageIrl;
+    private String imageUrl;
 
     private long durationMillis = -1;
     private Set<RecipeInput> inputSet = new LinkedHashSet<>(8);
@@ -42,11 +42,11 @@ public class Recipe {
     // No-arg constructor required for Jackson
     public Recipe() {}
 
-    public Recipe(String id, String name, String wikiUrl, String imageIrl) {
+    public Recipe(String id, String name, String wikiUrl, String imageUrl) {
         this.id = id;
         this.name = name;
         this.wikiUrl = wikiUrl;
-        this.imageIrl = imageIrl;
+        this.imageUrl = imageUrl;
     }
 
     @Override
@@ -70,8 +70,8 @@ public class Recipe {
         return wikiUrl;
     }
 
-    public String getImageIrl() {
-        return imageIrl;
+    public String getImageUrl() {
+        return imageUrl;
     }
 
 
