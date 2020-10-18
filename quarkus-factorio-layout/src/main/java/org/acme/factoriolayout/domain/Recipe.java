@@ -74,8 +74,6 @@ public class Recipe {
         return imageUrl;
     }
 
-
-
     public long getDurationMillis() {
         return durationMillis;
     }

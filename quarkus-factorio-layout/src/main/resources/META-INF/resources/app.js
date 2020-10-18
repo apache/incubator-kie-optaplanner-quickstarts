@@ -6,27 +6,49 @@ function refreshFactorioLayout() {
         refreshSolvingButtons(factorioLayout.solverStatus != null && factorioLayout.solverStatus !== "NOT_SOLVING");
         $("#score").text("Score: "+ (factorioLayout.score == null ? "?" : factorioLayout.score));
 
-        const factorioLayoutDiv = $("#factorioLayout");
-        factorioLayoutDiv.children().remove();
+        const areaAssemblies = $("#areaAssemblies");
+        areaAssemblies.children().remove();
         const unassignedAssembliesDiv = $("#unassignedAssemblies");
         unassignedAssembliesDiv.children().remove();
+
+        const canvas = $(`<svg style="width:${factorioLayout.areaWidth * 50}px; height:${factorioLayout.areaHeight * 50}px;"/>`);
+        for (let x = 0; x < factorioLayout.areaWidth; x++) {
+            for (let y = 0; y < factorioLayout.areaHeight; y++) {
+                canvas.append($(`<rect x="${x * 50}" y="${y * 50}" width="50" height="50" stroke="gray" fill-opacity="0"/>`));
+            }
+        }
+        // Workaround because JQuery cannot manipulate SVG DOM
+        areaAssemblies.append(canvas.prop('outerHTML'));
 
         const recipeMap = new Map(factorioLayout.recipeList.map(recipe => [recipe.id, recipe]));
         for (const assembly of factorioLayout.assemblyList) {
             assembly.recipe = recipeMap.get(assembly.recipe);
         }
-
+        let nextUnassignedX = 0;
+        let nextUnassignedY = 0;
         $.each(factorioLayout.assemblyList, (index, assembly) => {
             const color = pickColor(assembly.recipe.id);
-            const assemblyElement = $(`<div class="card assembly" style="background-color: ${color}"/>`)
-                    .append($(`<div class="card-body p-2"/>`)
-                            .append($(`<h5 class="card-title mb-1"/>`).text(assembly.recipe.name))
-                            .append($(`<img src="${assembly.recipe.imageUrl}" alt="${assembly.recipe.name}"/>`))
-                            .append($(`<small class="ml-2 mt-1 card-text text-muted align-bottom float-right"/>`).text(assembly.id)));
+            let x;
+            let y;
+            if (assembly.area == null) {
+                x = nextUnassignedX;
+                y = nextUnassignedY;
+                nextUnassignedX++;
+                if (nextUnassignedX >= factorioLayout.areaWidth) {
+                    nextUnassignedX = 0;
+                    nextUnassignedY++;
+                }
+            } else {
+                x = assembly.area.x;
+                y = assembly.area.y;
+            }
+            const assemblyElement = $(`<div class="img-thumbnail text-center" style="left:${x * 50}px; top:${y * 50}px; position:absolute; width:50px; height:50px; max-width:50px; max-height:50px; background-color: ${color};"
+                                            title="${assembly.recipe.name} ${assembly.id}"/>`)
+                            .append($(`<img style="margin-top: 4px" src="${assembly.recipe.imageUrl}" alt="${assembly.recipe.name}"/>`));
             if (assembly.area == null) {
                 unassignedAssembliesDiv.append(assemblyElement);
             } else {
-                // TODO add on layout
+                areaAssemblies.append(assemblyElement);
             }
         });
     });

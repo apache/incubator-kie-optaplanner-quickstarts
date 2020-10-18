@@ -23,7 +23,7 @@
     <link rel="stylesheet" href="/webjars/font-awesome/css/all.css" />
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="https://www.optaplanner.org">
             <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
@@ -47,12 +47,12 @@
         </button>
         <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span>
     </div>
-    <table class="table table-borderless table-striped factorioLayoutSolution" id="factorioLayoutByRoom">
-        <!-- Filled in by app.js -->
     </table>
-
+    <div id="areaAssemblies" style="position: relative">
+        <!-- Filled in by app.js -->
+    </div>
     <h2 style="margin-top: 2rem">Unassigned assemblies</h2>
-    <div id="unassignedAssemblies" class="card-columns"></div>
+    <div id="unassignedAssemblies" style="position: relative"></div>
 </div>
 
 <script src="/webjars/jquery/jquery.min.js"></script>

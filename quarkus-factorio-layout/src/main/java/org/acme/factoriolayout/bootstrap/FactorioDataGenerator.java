@@ -40,7 +40,6 @@ import org.acme.factoriolayout.domain.Recipe;
 import org.acme.factoriolayout.domain.RecipeInput;
 import org.acme.factoriolayout.domain.Requirement;
 import org.acme.factoriolayout.persistence.FactorioLayoutRepository;
-import org.apache.commons.lang3.tuple.Pair;
 
 @ApplicationScoped
 public class FactorioDataGenerator {
@@ -55,8 +54,10 @@ public class FactorioDataGenerator {
         Map<String, Recipe> recipeMap = recipeList.stream().collect(Collectors.toMap(Recipe::getId, recipe -> recipe));
         List<Requirement> requirementList = buildRequirementList(recipeMap);
         List<Assembly> assemblyList = buildAssemblyList(recipeList, requirementList);
-        List<Area > areaList = buildAreaList(assemblyList);
-        factorioLayoutRepository.set(new FactorioLayout(recipeList, requirementList, areaList, assemblyList));
+        int areaWidth = 18;
+        int areaHeight = (int) ((assemblyList.size()) * 2.0 / 9.0) + 2;
+        List<Area > areaList = buildAreaList(assemblyList, areaWidth, areaHeight);
+        factorioLayoutRepository.set(new FactorioLayout(recipeList, requirementList, areaWidth, areaHeight, areaList, assemblyList));
     }
 
     private List<Recipe> readRecipes() {
@@ -74,7 +75,18 @@ public class FactorioDataGenerator {
 
     private List<Requirement> buildRequirementList(Map<String, Recipe> recipeMap) {
         List<Requirement> requirementList = new ArrayList<>();
-        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Solar_panel", 1));
+        requirementList.add(buildRequirement(recipeMap, "Electronic_circuit", 1));
+
+//        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Logistic_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Military_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Chemical_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Production_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Utility_science_pack", 1));
+
+//        requirementList.add(buildRequirement(recipeMap, "Rocket_silo", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Satellite", 1));
         return requirementList;
     }
 
@@ -99,7 +111,7 @@ public class FactorioDataGenerator {
             // As long as downstreams don't link to upstreams, these dummies won't escape this method
             Recipe dummyDownstreamRecipe = new Recipe("dummy", null, null, null);
             dummyDownstreamRecipe.getInputSet().add(new RecipeInput(recipe, requiredMillis));
-            Assembly dummyDownstreamAssembly = new Assembly("dummy", dummyDownstreamRecipe);
+            Assembly dummyDownstreamAssembly = new Assembly(-1L, dummyDownstreamRecipe);
             unsuppliedAssemblyMap.put(recipe, Collections.singletonList(dummyDownstreamAssembly));
         }
         List<Recipe> sortedRecipeList = recipeList.stream()
@@ -116,13 +128,14 @@ public class FactorioDataGenerator {
                 for (Assembly downstreamAssembly : downstreamAssemblyList) {
                     RecipeInput downstreamInput = downstreamAssembly.getRecipe().getInputSet().stream()
                             .filter(recipeInput_ -> recipeInput_.getRecipe() == recipe).findFirst().get();
-                    long requiredMillis = downstreamInput.getAmountMillis();
+                    long requiredMillis = downstreamInput.getAmountMillis() * 1000L
+                            / downstreamInput.getRecipe().getDurationMillis();
                     if (leftOverMillis > 0) {
                         downstreamAssembly.getInputAssemblyList().add(lastAssembly);
                         requiredMillis -= leftOverMillis;
                     }
                     while (requiredMillis > 0L) {
-                        lastAssembly = new Assembly(recipe.getId() + "-" + (nextAssemblyId++), recipe);
+                        lastAssembly = new Assembly(nextAssemblyId++, recipe);
                         globalAssemblyList.add(lastAssembly);
                         // Connect downstream assemblies
                         downstreamAssembly.getInputAssemblyList().add(lastAssembly);
@@ -141,26 +154,23 @@ public class FactorioDataGenerator {
         return globalAssemblyList;
     }
 
-    private List<Area> buildAreaList(List<Assembly> assemblyList) {
+    private List<Area> buildAreaList(List<Assembly> assemblyList, int areaWidth, int areaHeight) {
+        List<Area> areaList = new ArrayList<>(areaWidth * areaHeight);
         List<Assembly> sourceAssemblyList = assemblyList.stream()
                 .filter(assembly -> assembly.getInputAssemblyList().isEmpty())
                 .collect(Collectors.toList());
-        int halfWidth = 9;
-        int height = (int) ((assemblyList.size() - sourceAssemblyList.size()) * 2.0 / 9.0) + 1;
-        List<Area> areaList = new ArrayList<>(halfWidth * 2 * height + sourceAssemblyList.size());
         int nextSourceX = 1;
         for (Assembly sourceAssembly : sourceAssemblyList) {
             // Pin mined resources to the beginning of the layout
-            Area area = new Area(nextSourceX, -1);
+            Area area = new Area((areaWidth / 2) + nextSourceX, 0);
             nextSourceX = (nextSourceX > 0) ? -nextSourceX : (-nextSourceX) + 1;
             areaList.add(area);
             sourceAssembly.setArea(area);
             sourceAssembly.setPinned(true);
         }
-        // x 0 is reserved for the main bus
-        for (int x = 1; x <= halfWidth; x++) {
-            for (int y = 0; y < height; y++) {
-                areaList.add(new Area(-x, y));
+        for (int x = 0; x < areaWidth; x++) {
+            // y 0 is reserved for the source assemblies, start from 1
+            for (int y = 1; y < areaHeight; y++) {
                 areaList.add(new Area(x, y));
             }
         }
