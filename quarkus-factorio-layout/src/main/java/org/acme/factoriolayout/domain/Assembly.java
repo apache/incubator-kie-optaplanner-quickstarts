@@ -24,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.entity.PlanningPin;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 @PlanningEntity
@@ -31,7 +32,8 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
         property = "id")
 public class Assembly {
 
-    private String id;
+    @PlanningId
+    private Long id;
 
     @JsonIdentityReference(alwaysAsId = true)
     private Recipe recipe;
@@ -48,7 +50,7 @@ public class Assembly {
     public Assembly() {
     }
 
-    public Assembly(String id, Recipe recipe) {
+    public Assembly(Long id, Recipe recipe) {
         this.id = id;
         this.recipe = recipe;
     }
@@ -62,7 +64,7 @@ public class Assembly {
     // Getters and setters
     // ************************************************************************
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 

@@ -33,6 +33,8 @@ public class FactorioLayout {
     private List<Recipe> recipeList;
     @ProblemFactCollectionProperty
     private List<Requirement> requirementList;
+    private int areaWidth;
+    private int areaHeight;
     @ProblemFactCollectionProperty
     @ValueRangeProvider(id = "areaRange")
     private List<Area> areaList;
@@ -49,12 +51,15 @@ public class FactorioLayout {
     public FactorioLayout() {
     }
 
-    public FactorioLayout(List<Recipe> recipeList, List<Requirement> requirementList, List<Area> areaList, List<Assembly> assemblyList) {
+    public FactorioLayout(List<Recipe> recipeList, List<Requirement> requirementList, int areaWidth, int areaHeight, List<Area> areaList, List<Assembly> assemblyList) {
         this.recipeList = recipeList;
         this.requirementList = requirementList;
+        this.areaWidth = areaWidth;
+        this.areaHeight = areaHeight;
         this.areaList = areaList;
         this.assemblyList = assemblyList;
     }
+
     // ************************************************************************
     // Getters and setters
     // ************************************************************************
@@ -65,6 +70,14 @@ public class FactorioLayout {
 
     public List<Requirement> getRequirementList() {
         return requirementList;
+    }
+
+    public int getAreaWidth() {
+        return areaWidth;
+    }
+
+    public int getAreaHeight() {
+        return areaHeight;
     }
 
     public List<Area> getAreaList() {
