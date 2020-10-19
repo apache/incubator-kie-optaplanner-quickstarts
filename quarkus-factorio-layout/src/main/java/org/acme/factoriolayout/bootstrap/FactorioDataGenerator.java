@@ -45,6 +45,7 @@ import org.acme.factoriolayout.persistence.FactorioLayoutRepository;
 public class FactorioDataGenerator {
 
     private static final String RECIPES_JSON_RESOURCE = "org/acme/factoriolayout/bootstrap/recipes.json";
+    public static final int DEFAULT_AREA_WIDTH = 18;
 
     @Inject
     FactorioLayoutRepository factorioLayoutRepository;
@@ -54,8 +55,8 @@ public class FactorioDataGenerator {
         Map<String, Recipe> recipeMap = recipeList.stream().collect(Collectors.toMap(Recipe::getId, recipe -> recipe));
         List<Requirement> requirementList = buildRequirementList(recipeMap);
         List<Assembly> assemblyList = buildAssemblyList(recipeList, requirementList);
-        int areaWidth = 18;
-        int areaHeight = (int) ((assemblyList.size()) * 2.0 / 9.0) + 2;
+        int areaWidth = DEFAULT_AREA_WIDTH;
+        int areaHeight = (int) ((assemblyList.size()) * 2.0 / 9.0) + 3;
         List<Area > areaList = buildAreaList(assemblyList, areaWidth, areaHeight);
         factorioLayoutRepository.set(new FactorioLayout(recipeList, requirementList, areaWidth, areaHeight, areaList, assemblyList));
     }
@@ -76,10 +77,10 @@ public class FactorioDataGenerator {
     private List<Requirement> buildRequirementList(Map<String, Recipe> recipeMap) {
         List<Requirement> requirementList = new ArrayList<>();
 //        requirementList.add(buildRequirement(recipeMap, "Solar_panel", 1));
-//        requirementList.add(buildRequirement(recipeMap, "Electronic_circuit", 1));
+        requirementList.add(buildRequirement(recipeMap, "Electronic_circuit", 1));
 
-        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
-        requirementList.add(buildRequirement(recipeMap, "Logistic_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Logistic_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Military_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Chemical_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Production_science_pack", 1));
