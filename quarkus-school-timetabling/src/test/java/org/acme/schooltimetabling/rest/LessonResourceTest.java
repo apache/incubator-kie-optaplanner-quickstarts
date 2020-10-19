@@ -47,7 +47,7 @@ public class LessonResourceTest {
         assertNotNull(firstLesson.getStudentGroup());
     }
 
-    @Test @Disabled("TODO Blocked by https://github.com/quarkusio/quarkus/issues/9510")
+    @Test
     void addAndRemove() {
         Lesson lesson = given()
                 .when()
@@ -55,14 +55,14 @@ public class LessonResourceTest {
                 .body(new Lesson("Test subject", "Test teacher", "test studentGroup"))
                 .post("/lessons")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(Lesson.class);
 
         given()
                 .when()
                 .delete("/lessons/{id}", lesson.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 
 }

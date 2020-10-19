@@ -48,7 +48,7 @@ public class TimeslotResourceTest {
         assertEquals(LocalTime.of(9, 30), firstTimeslot.getEndTime());
     }
 
-    @Test @Disabled("TODO Blocked by https://github.com/quarkusio/quarkus/issues/9510")
+    @Test
     void addAndRemove() {
         Timeslot timeslot = given()
                 .when()
@@ -56,14 +56,14 @@ public class TimeslotResourceTest {
                 .body(new Timeslot(DayOfWeek.SUNDAY, LocalTime.of(20, 0), LocalTime.of(21, 0)))
                 .post("/timeslots")
                 .then()
-                .statusCode(202)
+                .statusCode(201)
                 .extract().as(Timeslot.class);
 
         given()
                 .when()
                 .delete("/timeslots/{id}", timeslot.getId())
                 .then()
-                .statusCode(200);
+                .statusCode(204);
     }
 
 }
