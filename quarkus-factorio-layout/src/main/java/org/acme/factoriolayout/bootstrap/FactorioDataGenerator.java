@@ -76,10 +76,10 @@ public class FactorioDataGenerator {
     private List<Requirement> buildRequirementList(Map<String, Recipe> recipeMap) {
         List<Requirement> requirementList = new ArrayList<>();
 //        requirementList.add(buildRequirement(recipeMap, "Solar_panel", 1));
-        requirementList.add(buildRequirement(recipeMap, "Electronic_circuit", 1));
+//        requirementList.add(buildRequirement(recipeMap, "Electronic_circuit", 1));
 
-//        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
-//        requirementList.add(buildRequirement(recipeMap, "Logistic_science_pack", 1));
+        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
+        requirementList.add(buildRequirement(recipeMap, "Logistic_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Military_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Chemical_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Production_science_pack", 1));
@@ -90,12 +90,12 @@ public class FactorioDataGenerator {
         return requirementList;
     }
 
-    private Requirement buildRequirement(Map<String, Recipe> recipeMap, String recipeId, long amount) {
+    private Requirement buildRequirement(Map<String, Recipe> recipeMap, String recipeId, double amount) {
         Recipe recipe = recipeMap.get(recipeId);
         if (recipe == null) {
             throw new IllegalArgumentException("The recipe ID (" + recipeId + ") is invalid.");
         }
-        return new Requirement(recipe, amount * 1000L);
+        return new Requirement(recipe, (long) (amount * 1000.0));
     }
 
     private List<Assembly> buildAssemblyList(List<Recipe> recipeList, List<Requirement> requirementList) {
@@ -139,7 +139,8 @@ public class FactorioDataGenerator {
                         globalAssemblyList.add(lastAssembly);
                         // Connect downstream assemblies
                         downstreamAssembly.getInputAssemblyList().add(lastAssembly);
-                        requiredMillis -= recipe.getOutputAmountMillis();
+                        long producedAmountMillis = recipe.getOutputAmountMillis() * 1000L / recipe.getDurationMillis();
+                        requiredMillis -= producedAmountMillis;
                         // Request upstream assemblies
                         for (RecipeInput upstreamInput : recipe.getInputSet()) {
                             unsuppliedAssemblyMap.computeIfAbsent(upstreamInput.getRecipe(),

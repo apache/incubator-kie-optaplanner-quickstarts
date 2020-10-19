@@ -66,7 +66,8 @@ public class FactorioConstraintProvider implements ConstraintProvider {
                         lessThanOrEqual(assembly -> assembly.getArea().getY()),
                         filtering((down, up)-> down.getInputAssemblyList().contains(up)))
                 .penalizeLong("Downstream y", HardSoftLongScore.ONE_HARD,
-                        (down, up) -> up.getArea().getY() - down.getArea().getY());
+                        // At least 1 when upY == downY
+                        (down, up) -> up.getArea().getY() - down.getArea().getY() + 1);
     }
 
 }

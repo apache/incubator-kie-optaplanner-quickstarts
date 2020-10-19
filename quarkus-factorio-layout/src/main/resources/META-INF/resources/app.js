@@ -11,22 +11,28 @@ function refreshFactorioLayout() {
         const unassignedAssembliesDiv = $("#unassignedAssemblies");
         unassignedAssembliesDiv.children().remove();
 
+        const recipeMap = new Map(factorioLayout.recipeList.map(recipe => [recipe.id, recipe]));
+        const assemblyMap = new Map(factorioLayout.assemblyList.map(assembly => [assembly.id, assembly]));
+        for (const assembly of factorioLayout.assemblyList) {
+            assembly.recipe = recipeMap.get(assembly.recipe);
+            let newInputAssemblyList = [];
+            for (const inputAssembly of assembly.inputAssemblyList) {
+                newInputAssemblyList.push(assemblyMap.get(inputAssembly));
+            }
+            assembly.inputAssemblyList = newInputAssemblyList;
+        }
+
         const canvas = $(`<svg style="width:${factorioLayout.areaWidth * 50}px; height:${factorioLayout.areaHeight * 50}px;"/>`);
+        canvas.append($(`<defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" /></marker></defs>`));
         for (let x = 0; x < factorioLayout.areaWidth; x++) {
             for (let y = 0; y < factorioLayout.areaHeight; y++) {
                 canvas.append($(`<rect x="${x * 50}" y="${y * 50}" width="50" height="50" stroke="gray" fill-opacity="0"/>`));
             }
         }
-        // Workaround because JQuery cannot manipulate SVG DOM
-        areaAssemblies.append(canvas.prop('outerHTML'));
 
-        const recipeMap = new Map(factorioLayout.recipeList.map(recipe => [recipe.id, recipe]));
-        for (const assembly of factorioLayout.assemblyList) {
-            assembly.recipe = recipeMap.get(assembly.recipe);
-        }
         let nextUnassignedX = 0;
         let nextUnassignedY = 0;
-        $.each(factorioLayout.assemblyList, (index, assembly) => {
+        for (const assembly of factorioLayout.assemblyList) {
             const color = pickColor(assembly.recipe.id);
             let x;
             let y;
@@ -42,15 +48,24 @@ function refreshFactorioLayout() {
                 x = assembly.area.x;
                 y = assembly.area.y;
             }
-            const assemblyElement = $(`<div class="img-thumbnail text-center" style="left:${x * 50}px; top:${y * 50}px; position:absolute; width:50px; height:50px; max-width:50px; max-height:50px; background-color: ${color};"
+            const assemblyElement = $(`<div class="img-thumbnail text-center" style="left:${x * 50}px; top:${y * 50}px; position:absolute; width:50px; height:50px; max-width:50px; max-height:50px; z-index: -1; background-color: ${color};"
                                             title="${assembly.recipe.name} ${assembly.id}"/>`)
                             .append($(`<img style="margin-top: 4px" src="${assembly.recipe.imageUrl}" alt="${assembly.recipe.name}"/>`));
             if (assembly.area == null) {
                 unassignedAssembliesDiv.append(assemblyElement);
             } else {
                 areaAssemblies.append(assemblyElement);
+                for (const inputAssembly of assembly.inputAssemblyList) {
+                    if (inputAssembly.area != null) {
+                        let inputX = inputAssembly.area.x;
+                        let inputY = inputAssembly.area.y;
+                        canvas.append($(`<line x1="${inputX * 50 + (inputX < x ? 40 : 10)}" y1="${inputY * 50 + (inputY < y ? 40 : 10)}" x2="${x * 50 + (inputX < x ? 10 : 40)}" y2="${y * 50 + (inputY < y ? 10 : 40)}" stroke="black" marker-end="url(#arrowhead)"/>`));
+                    }
+                }
             }
-        });
+        }
+        // Workaround because JQuery cannot manipulate SVG DOM
+        areaAssemblies.append(canvas.prop('outerHTML'));
     });
 }
 
