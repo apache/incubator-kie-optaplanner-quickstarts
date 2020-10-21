@@ -1,4 +1,3 @@
-var autoRefreshCount = 0;
 var autoRefreshIntervalId = null;
 
 function refreshTimeTable() {
@@ -20,11 +19,11 @@ function refreshTimeTable() {
         headerRowByRoom.append($("<th>Timeslot</th>"));
         $.each(timeTable.roomList, (index, room) => {
             headerRowByRoom
-                    .append($("<th/>")
-                            .append($("<span/>").text(room.name))
-                            .append($(`<button type="button" class="ml-2 mb-1 btn btn-light btn-sm p-1"/>`)
-                                    .append($(`<small class="fas fa-trash"/>`)
-                                    ).click(() => deleteRoom(room))));
+            .append($("<th/>")
+                .append($("<span/>").text(room.name))
+                .append($(`<button type="button" class="ml-2 mb-1 btn btn-light btn-sm p-1"/>`)
+                        .append($(`<small class="fas fa-trash"/>`)
+                        ).click(() => deleteRoom(room))));
         });
         const theadByTeacher = $("<thead>").appendTo(timeTableByTeacher);
         const headerRowByTeacher = $("<tr>").appendTo(theadByTeacher);
@@ -32,8 +31,8 @@ function refreshTimeTable() {
         const teacherList = [...new Set(timeTable.lessonList.map(lesson => lesson.teacher))];
         $.each(teacherList, (index, teacher) => {
             headerRowByTeacher
-                    .append($("<th/>")
-                            .append($("<span/>").text(teacher)));
+            .append($("<th/>")
+                .append($("<span/>").text(teacher)));
         });
         const theadByStudentGroup = $("<thead>").appendTo(timeTableByStudentGroup);
         const headerRowByStudentGroup = $("<tr>").appendTo(theadByStudentGroup);
@@ -41,8 +40,8 @@ function refreshTimeTable() {
         const studentGroupList = [...new Set(timeTable.lessonList.map(lesson => lesson.studentGroup))];
         $.each(studentGroupList, (index, studentGroup) => {
             headerRowByStudentGroup
-                    .append($("<th/>")
-                            .append($("<span/>").text(studentGroup)));
+            .append($("<th/>")
+                .append($("<span/>").text(studentGroup)));
         });
 
         const tbodyByRoom = $("<tbody>").appendTo(timeTableByRoom);
@@ -51,21 +50,21 @@ function refreshTimeTable() {
         $.each(timeTable.timeslotList, (index, timeslot) => {
             const rowByRoom = $("<tr>").appendTo(tbodyByRoom);
             rowByRoom
-                    .append($(`<th class="align-middle"/>`)
-                            .append($("<span/>").text(`
+            .append($(`<th class="align-middle"/>`)
+                .append($("<span/>").text(`
                     ${timeslot.dayOfWeek.charAt(0) + timeslot.dayOfWeek.slice(1).toLowerCase()}
                     ${moment(timeslot.startTime, "HH:mm:ss").format("HH:mm")}
                     -
                     ${moment(timeslot.endTime, "HH:mm:ss").format("HH:mm")}
                 `)
-                                    .append($(`<button type="button" class="ml-2 mb-1 btn btn-light btn-sm p-1"/>`)
-                                            .append($(`<small class="fas fa-trash"/>`)
-                                            ).click(() => deleteTimeslot(timeslot)))));
+                .append($(`<button type="button" class="ml-2 mb-1 btn btn-light btn-sm p-1"/>`)
+                        .append($(`<small class="fas fa-trash"/>`)
+                        ).click(() => deleteTimeslot(timeslot)))));
 
             const rowByTeacher = $("<tr>").appendTo(tbodyByTeacher);
             rowByTeacher
-                    .append($(`<th class="align-middle"/>`)
-                            .append($("<span/>").text(`
+            .append($(`<th class="align-middle"/>`)
+                .append($("<span/>").text(`
                     ${timeslot.dayOfWeek.charAt(0) + timeslot.dayOfWeek.slice(1).toLowerCase()}
                     ${moment(timeslot.startTime, "HH:mm:ss").format("HH:mm")}
                     -
@@ -76,8 +75,8 @@ function refreshTimeTable() {
             });
             const rowByStudentGroup = $("<tr>").appendTo(tbodyByStudentGroup);
             rowByStudentGroup
-                    .append($(`<th class="align-middle"/>`)
-                            .append($("<span/>").text(`
+            .append($(`<th class="align-middle"/>`)
+                .append($("<span/>").text(`
                     ${timeslot.dayOfWeek.charAt(0) + timeslot.dayOfWeek.slice(1).toLowerCase()}
                     ${moment(timeslot.startTime, "HH:mm:ss").format("HH:mm")}
                     -
@@ -104,9 +103,9 @@ function refreshTimeTable() {
                             .append($(`<p class="card-text ml-2"/>`).text(lesson.studentGroup)));
             const lessonElement = lessonElementWithoutDelete.clone();
             lessonElement.find(".card-body").prepend(
-                    $(`<button type="button" class="ml-2 btn btn-light btn-sm p-1 float-right"/>`)
-                            .append($(`<small class="fas fa-trash"/>`)
-                            ).click(() => deleteLesson(lesson))
+                $(`<button type="button" class="ml-2 btn btn-light btn-sm p-1 float-right"/>`)
+                        .append($(`<small class="fas fa-trash"/>`)
+                        ).click(() => deleteLesson(lesson))
             );
             if (lesson.timeslot == null || lesson.room == null) {
                 unassignedLessons.append(lessonElement);
@@ -127,10 +126,6 @@ function convertToId(str) {
 function solve() {
     $.post("/timeTable/solve", function () {
         refreshSolvingButtons(true);
-        autoRefreshCount = 16;
-        if (autoRefreshIntervalId == null) {
-            autoRefreshIntervalId = setInterval(autoRefresh, 2000);
-        }
     }).fail(function(xhr, ajaxOptions, thrownError) {
         showError("Start solving failed.", xhr);
     });
@@ -140,18 +135,16 @@ function refreshSolvingButtons(solving) {
     if (solving) {
         $("#solveButton").hide();
         $("#stopSolvingButton").show();
+        if (autoRefreshIntervalId == null) {
+            autoRefreshIntervalId = setInterval(refreshTimeTable, 2000);
+        }
     } else {
         $("#solveButton").show();
         $("#stopSolvingButton").hide();
-    }
-}
-
-function autoRefresh() {
-    refreshTimeTable();
-    autoRefreshCount--;
-    if (autoRefreshCount <= 0) {
-        clearInterval(autoRefreshIntervalId);
-        autoRefreshIntervalId = null;
+        if (autoRefreshIntervalId != null) {
+            clearInterval(autoRefreshIntervalId);
+            autoRefreshIntervalId = null;
+        }
     }
 }
 

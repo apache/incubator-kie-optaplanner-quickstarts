@@ -16,37 +16,9 @@
 
 package org.acme.factoriolayout.domain;
 
-import org.optaplanner.core.api.domain.lookup.PlanningId;
-
-public class Area {
-
-    private int x;
-    private int y;
-
-    // No-arg constructor required for Jackson
-    public Area() {
-    }
-
-    public Area(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    // ************************************************************************
-    // Getters and setters
-    // ************************************************************************
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    @PlanningId
-    public String getId() {
-        return  x + "-" + y;
-    }
+public enum LayoutType {
+    OPEN,
+    MAIN_BUS_ONE_SIDE,
+    MAIN_BUS_TWO_SIDES;
 
 }

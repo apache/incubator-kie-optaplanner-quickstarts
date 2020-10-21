@@ -29,12 +29,14 @@ import org.optaplanner.core.api.solver.SolverStatus;
 @PlanningSolution
 public class FactorioLayout {
 
+    private LayoutType layoutType;
+    private int areaWidth;
+    private int areaHeight;
+
     @ProblemFactCollectionProperty
     private List<Recipe> recipeList;
     @ProblemFactCollectionProperty
     private List<Requirement> requirementList;
-    private int areaWidth;
-    private int areaHeight;
     @ProblemFactCollectionProperty
     @ValueRangeProvider(id = "areaRange")
     private List<Area> areaList;
@@ -51,11 +53,11 @@ public class FactorioLayout {
     public FactorioLayout() {
     }
 
-    public FactorioLayout(List<Recipe> recipeList, List<Requirement> requirementList, int areaWidth, int areaHeight, List<Area> areaList, List<Assembly> assemblyList) {
-        this.recipeList = recipeList;
-        this.requirementList = requirementList;
+    public FactorioLayout(LayoutType layoutType, int areaWidth, int areaHeight, List<Recipe> recipeList, List<Requirement> requirementList, List<Area> areaList, List<Assembly> assemblyList) {
         this.areaWidth = areaWidth;
         this.areaHeight = areaHeight;
+        this.recipeList = recipeList;
+        this.requirementList = requirementList;
         this.areaList = areaList;
         this.assemblyList = assemblyList;
     }
@@ -64,12 +66,8 @@ public class FactorioLayout {
     // Getters and setters
     // ************************************************************************
 
-    public List<Recipe> getRecipeList() {
-        return recipeList;
-    }
-
-    public List<Requirement> getRequirementList() {
-        return requirementList;
+    public LayoutType getLayoutType() {
+        return layoutType;
     }
 
     public int getAreaWidth() {
@@ -78,6 +76,14 @@ public class FactorioLayout {
 
     public int getAreaHeight() {
         return areaHeight;
+    }
+
+    public List<Recipe> getRecipeList() {
+        return recipeList;
+    }
+
+    public List<Requirement> getRequirementList() {
+        return requirementList;
     }
 
     public List<Area> getAreaList() {
