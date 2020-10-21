@@ -1,4 +1,3 @@
-var autoRefreshCount = 0;
 var autoRefreshIntervalId = null;
 
 function refreshFactorioLayout() {
@@ -72,10 +71,6 @@ function refreshFactorioLayout() {
 function solve() {
     $.post("/factorioLayout/solve", function () {
         refreshSolvingButtons(true);
-        autoRefreshCount = 16;
-        if (autoRefreshIntervalId == null) {
-            autoRefreshIntervalId = setInterval(autoRefresh, 2000);
-        }
     }).fail(function(xhr, ajaxOptions, thrownError) {
         showError("Start solving failed.", xhr);
     });
@@ -85,18 +80,16 @@ function refreshSolvingButtons(solving) {
     if (solving) {
         $("#solveButton").hide();
         $("#stopSolvingButton").show();
+        if (autoRefreshIntervalId == null) {
+            autoRefreshIntervalId = setInterval(refreshFactorioLayout, 2000);
+        }
     } else {
         $("#solveButton").show();
         $("#stopSolvingButton").hide();
-    }
-}
-
-function autoRefresh() {
-    refreshFactorioLayout();
-    autoRefreshCount--;
-    if (autoRefreshCount <= 0) {
-        clearInterval(autoRefreshIntervalId);
-        autoRefreshIntervalId = null;
+        if (autoRefreshIntervalId != null) {
+            clearInterval(autoRefreshIntervalId);
+            autoRefreshIntervalId = null;
+        }
     }
 }
 

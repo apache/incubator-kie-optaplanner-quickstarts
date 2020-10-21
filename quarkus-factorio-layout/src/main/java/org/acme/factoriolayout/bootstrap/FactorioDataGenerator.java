@@ -36,6 +36,7 @@ import io.quarkus.runtime.StartupEvent;
 import org.acme.factoriolayout.domain.Area;
 import org.acme.factoriolayout.domain.Assembly;
 import org.acme.factoriolayout.domain.FactorioLayout;
+import org.acme.factoriolayout.domain.LayoutType;
 import org.acme.factoriolayout.domain.Recipe;
 import org.acme.factoriolayout.domain.RecipeInput;
 import org.acme.factoriolayout.domain.Requirement;
@@ -54,11 +55,12 @@ public class FactorioDataGenerator {
         List<Recipe> recipeList = readRecipes();
         Map<String, Recipe> recipeMap = recipeList.stream().collect(Collectors.toMap(Recipe::getId, recipe -> recipe));
         List<Requirement> requirementList = buildRequirementList(recipeMap);
+        LayoutType layoutType = LayoutType.OPEN;
         List<Assembly> assemblyList = buildAssemblyList(recipeList, requirementList);
-        int areaWidth = DEFAULT_AREA_WIDTH;
+        int areaWidth =  DEFAULT_AREA_WIDTH;
         int areaHeight = (int) ((assemblyList.size()) * 2.0 / 9.0) + 3;
         List<Area > areaList = buildAreaList(assemblyList, areaWidth, areaHeight);
-        factorioLayoutRepository.set(new FactorioLayout(recipeList, requirementList, areaWidth, areaHeight, areaList, assemblyList));
+        factorioLayoutRepository.set(new FactorioLayout(layoutType, areaWidth, areaHeight, recipeList, requirementList, areaList, assemblyList));
     }
 
     private List<Recipe> readRecipes() {
@@ -76,11 +78,11 @@ public class FactorioDataGenerator {
 
     private List<Requirement> buildRequirementList(Map<String, Recipe> recipeMap) {
         List<Requirement> requirementList = new ArrayList<>();
+//        requirementList.add(buildRequirement(recipeMap, "Electronic_circuit", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Solar_panel", 1));
-        requirementList.add(buildRequirement(recipeMap, "Electronic_circuit", 1));
 
-//        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
-//        requirementList.add(buildRequirement(recipeMap, "Logistic_science_pack", 1));
+        requirementList.add(buildRequirement(recipeMap, "Automation_science_pack", 1));
+        requirementList.add(buildRequirement(recipeMap, "Logistic_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Military_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Chemical_science_pack", 1));
 //        requirementList.add(buildRequirement(recipeMap, "Production_science_pack", 1));

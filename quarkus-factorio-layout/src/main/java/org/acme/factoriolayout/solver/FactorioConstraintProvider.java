@@ -79,12 +79,13 @@ public class FactorioConstraintProvider implements ConstraintProvider {
     Constraint groupRecipesByY(ConstraintFactory constraintFactory) {
         return constraintFactory
                 .from(Assembly.class)
+                // TODO remove workaroundConstant. Workaround for lack of groupBy(mapping, collector, collector)
                 .groupBy(Assembly::getRecipe,
                         (Assembly assembly) -> 1,
                         min((Assembly assembly) -> assembly.getArea().getY()),
                         max((Assembly assembly) -> assembly.getArea().getY()))
                 .filter((recipe, workaroundConstant, minY, maxY) -> !minY.equals(maxY))
-                .penalizeLong("Group recipes by Y", HardSoftLongScore.ofSoft(10L),
+                .penalizeLong("Group recipes by Y", HardSoftLongScore.ofSoft(1_000L),
                         (recipe, workaroundConstant, minY, maxY) -> (long) (maxY - minY));
     }
 
