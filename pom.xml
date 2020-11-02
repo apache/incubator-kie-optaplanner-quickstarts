@@ -3,83 +3,25 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.optaplanner</groupId>
+    <artifactId>optaplanner-build-parent</artifactId>
+    <version>8.0.0-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+  <!-- IMPORTANT: the individual quickstarts have no parent pom. -->
 
-  <groupId>org.optaplanner</groupId>
-  <artifactId>optaplanner-quickstarts</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <artifactId>optaplanner-quickstarts-parent</artifactId>
   <packaging>pom</packaging>
-
   <name>OptaPlanner quick starts</name>
   <description>
     OptaPlanner solves planning problems.
     This lightweight, embeddable planning engine implements powerful and scalable algorithms
     to optimize business resource scheduling and planning.
 
-    This module contains the quick starts.
+    This module builds the quickstarts.
   </description>
   <url>https://www.optaplanner.org</url>
-
-  <inceptionYear>2020</inceptionYear>
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
-
-  <properties>
-    <!-- override the default GroupId:ArtifactId to map both master branch and 7.x branches to the same SonarCloud project -->
-    <sonar.projectKey>org.optaplanner:optaplanner-quickstarts</sonar.projectKey>
-    <sonar.moduleKey>${project.groupId}:${project.artifactId}</sonar.moduleKey>
-  </properties>
-
-  <repositories>
-    <repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
-      <releases>
-        <!-- Only get SNAPSHOTS from JBoss repository,
-             so it tries to get releases first (and only) from Maven Central. -->
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <scm>
-    <connection>scm:git:git@github.com:kiegroup/optaplanner-quickstarts.git</connection>
-    <developerConnection>scm:git:git@github.com:kiegroup/optaplanner-quickstarts.git</developerConnection>
-    <url>https://github.com/kiegroup/optaplanner-quickstarts</url>
-  </scm>
-  <issueManagement>
-    <system>jira</system>
-    <url>https://issues.redhat.com/browse/PLANNER</url>
-  </issueManagement>
-  <developers>
-    <developer>
-      <name>All developers are listed on the team website</name>
-      <url>https://www.optaplanner.org/community/team.html</url>
-    </developer>
-  </developers>
-  <contributors>
-    <contributor>
-      <name>All contributors are listed on the team website</name>
-      <url>https://www.optaplanner.org/community/team.html</url>
-    </contributor>
-  </contributors>
-  <mailingLists>
-    <mailingList>
-      <name>setup</name>
-      <subscribe>https://groups.google.com/forum/#!forum/optaplanner-dev</subscribe>
-      <unsubscribe>https://groups.google.com/forum/#!forum/optaplanner-dev</unsubscribe>
-    </mailingList>
-  </mailingLists>
 
   <modules>
     <module>quarkus-school-timetabling</module>
@@ -90,4 +32,19 @@
     <module>kotlin-quarkus-school-timetabling</module>
   </modules>
 
+
+  <repositories>
+    <!-- To get snapshots during development. Remove this in the "stable" branch (which doesn't use snapshots). -->
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <releases>
+        <!-- Get releases only from Maven Central which is faster. -->
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>
