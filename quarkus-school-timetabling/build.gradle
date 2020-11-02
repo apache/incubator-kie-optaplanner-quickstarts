@@ -12,7 +12,7 @@ version = "0.1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     mavenLocal()
-    // TODO Remove this maven repo when using only Final versions of OptaPlanner.
+    // To get snapshots during development. Remove this in the "stable" branch (which doesn't use snapshots).
     maven {
         url "https://repository.jboss.org/nexus/content/groups/public/"
         mavenContent {
