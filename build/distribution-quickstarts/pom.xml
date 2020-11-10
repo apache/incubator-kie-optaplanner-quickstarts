@@ -8,18 +8,8 @@
     <version>8.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>optaplanner-quickstarts-distribution</artifactId>
-
-  <name>OptaPlanner core</name>
-  <description>
-    OptaPlanner solves planning problems.
-    This lightweight, embeddable planning engine implements powerful and scalable algorithms
-    to optimize business resource scheduling and planning.
-
-    This module builds the quickstarts download zip.
-  </description>
-  <url>https://www.optaplanner.org</url>
-
+  <artifactId>optaplanner-distribution-quickstarts</artifactId>
+  <name>OptaPlanner Distribution Quickstarts</name>
 
   <build>
     <plugins>
