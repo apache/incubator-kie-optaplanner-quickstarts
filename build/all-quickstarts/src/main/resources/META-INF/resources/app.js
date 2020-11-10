@@ -6,7 +6,7 @@ function refreshQuickstartsPanel() {
             quickstartPorts.children().remove();
             $.each(quickstart.runningPorts, (index, runningPort) => {
                 quickstartPorts
-                        .append($(`<div class="card" style="max-width:8rem"/>`)
+                        .append($(`<div class="col mb-4"/>`).append($(`<div class="card"/>`)
                                 .append($(`<div class="card-header"/>`).text("Port " + runningPort))
                                 .append($(`<button type="button" class="btn btn-secondary"/>`)
                                         .append($(`<span class="fas fa-play"/>`))
@@ -15,7 +15,7 @@ function refreshQuickstartsPanel() {
                                 .append($(`<button type="button" class="btn btn-danger"/>`)
                                             .append($(`<span class="fas fa-stop"/>`))
                                             .text("Delete")
-                                            .click(() => stopQuickstart(quickstart.id, runningPort))));
+                                            .click(() => stopQuickstart(quickstart.id, runningPort)))));
             });
         });
     });
