@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/webjars/font-awesome/css/all.css" />
 </head>
 <body>
-<div class="container">
+<div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="https://www.optaplanner.org">
             <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
@@ -17,16 +17,50 @@
         <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
     </div>
     <h1>Which quickstart do you want to see?</h1>
-    <div>
-        <h2>School timetabling</h2>
-        <button id="quarkus-school-timetabling-launch" type="button" class="btn btn-success">
-            <span class="fas fa-play"></span> Launch
-        </button>
-        <div id="quarkus-school-timetabling-ports"/>
-    </div>
-    <div id="quickstartPanels">
-
-
+    <div class="card-deck">
+        <div class="card">
+            <div class="card-header">School timetabling</div>
+            <img src="screenshot/quarkus-school-timetabling-screenshot.png" class="card-img-top" alt="Screenshot"/>
+            <div class="card-body">
+                <p class="card-text">
+                    Assign lessons to timeslots and rooms
+                    to produce a better schedule for teachers and students.
+                </p>
+                <hr/>
+                <button id="quarkus-school-timetabling-launch" type="button" class="btn btn-success">
+                    <span class="fas fa-play"></span> Launch
+                </button>
+                <div id="quarkus-school-timetabling-ports" class="card-deck mt-3"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Facility location problem</div>
+            <img src="screenshot/quarkus-facility-location-screenshot.png" class="card-img-top" alt="Screenshot"/>
+            <div class="card-body">
+                <p class="card-text">
+                    Pick the best geographical locations for new stores, distribution centers, covid test centers or telco masts.
+                </p>
+                <hr/>
+                <button id="quarkus-facility-location-launch" type="button" class="btn btn-success">
+                    <span class="fas fa-play"></span> Launch
+                </button>
+                <div id="quarkus-facility-location-ports" class="card-deck mt-3"></div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header">Factorio layout</div>
+            <img src="screenshot/quarkus-factorio-layout-screenshot.png" class="card-img-top" alt="Screenshot"/>
+            <div class="card-body">
+                <p class="card-text">
+                    Assign machines to assembly line locations to design the best factory layout.
+                </p>
+                <hr/>
+                <button id="quarkus-factorio-layout-launch" type="button" class="btn btn-success">
+                    <span class="fas fa-play"></span> Launch
+                </button>
+                <div id="quarkus-factorio-layout-ports" class="card-deck mt-3"></div>
+            </div>
+        </div>
     </div>
 </div>
 

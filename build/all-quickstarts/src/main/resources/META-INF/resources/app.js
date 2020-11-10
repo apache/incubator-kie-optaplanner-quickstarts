@@ -6,8 +6,8 @@ function refreshQuickstartsPanel() {
             quickstartPorts.children().remove();
             $.each(quickstart.runningPorts, (index, runningPort) => {
                 quickstartPorts
-                        .append($("<div/>")
-                                .append($(`<span/>`).text("Port " + runningPort))
+                        .append($(`<div class="card" style="max-width:8rem"/>`)
+                                .append($(`<div class="card-header"/>`).text("Port " + runningPort))
                                 .append($(`<button type="button" class="btn btn-secondary"/>`)
                                         .append($(`<span class="fas fa-play"/>`))
                                         .text("Show")
@@ -84,6 +84,12 @@ $(document).ready( function() {
     });
     $("#quarkus-school-timetabling-launch").click(function() {
         launchQuickstart("quarkus-school-timetabling");
+    });
+    $("#quarkus-facility-location-launch").click(function() {
+        launchQuickstart("quarkus-facility-location");
+    });
+    $("#quarkus-factorio-layout-launch").click(function() {
+        launchQuickstart("quarkus-factorio-layout");
     });
 
     refreshQuickstartsPanel();
