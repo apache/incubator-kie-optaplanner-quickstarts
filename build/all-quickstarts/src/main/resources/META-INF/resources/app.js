@@ -1,24 +1,71 @@
+var loadingPorts = [];
+var startedPorts = [];
+var autoPingIntervalId = null;
+
 function refreshQuickstartsPanel() {
     $.getJSON("/quickstart", function (quickstarts) {
-
         $.each(quickstarts, (index, quickstart) => {
             const quickstartPorts = $("#" + quickstart.id + "-ports");
             quickstartPorts.children().remove();
-            $.each(quickstart.runningPorts, (index, runningPort) => {
+            $.each(quickstart.ports, (index, port) => {
+                var started = startedPorts.includes(port);
+                if (!started && !loadingPorts.includes(port)) {
+                    loadingPorts.push(port);
+                }
                 quickstartPorts
-                        .append($(`<div class="col mb-4"/>`).append($(`<div class="card"/>`)
-                                .append($(`<div class="card-header"/>`).text("Port " + runningPort))
-                                .append($(`<button type="button" class="btn btn-secondary"/>`)
+                        .append($(`<div class="col mb-4"/>`).append($(`<div class="card m-0"/>`)
+                                .append($(`<div class="card-header"/>`).text("Port " + port))
+                                .append($(`<button type="button" class="btn btn-secondary m-2" id="showPort${port}"/>`)
                                         .append($(`<span class="fas fa-play"/>`))
-                                        .text("Show")
-                                        .click(() => window.open("//localhost:" + runningPort, '_blank')))
-                                .append($(`<button type="button" class="btn btn-danger"/>`)
+                                        .text(started ? "Show" : "Loading...")
+                                        .click(() => window.open("//localhost:" + port, '_blank')))
+                                .append($(`<button type="button" class="btn btn-danger mb-2 ml-2 mr-2"/>`)
                                             .append($(`<span class="fas fa-stop"/>`))
                                             .text("Delete")
-                                            .click(() => stopQuickstart(quickstart.id, runningPort)))));
+                                            .click(() => stopQuickstart(quickstart.id, port)))));
             });
         });
+        if (autoPingIntervalId == null && loadingPorts.length > 0) {
+            autoPingIntervalId = setInterval(pingLoadingPorts, 1000);
+        }
     });
+}
+
+function pingLoadingPorts() {
+    var newLoadingPorts = [];
+    console.log("Pinging ports...");
+    for (const port of loadingPorts) {
+        $.ajax({url: "//localhost:" + port,
+            type: "HEAD",
+            timeout:1000,
+            statusCode: {
+                200: function (response) {
+                    console.log("  Port " + port  + " has started.");
+                    $(`#showPort${port}`).text("Show");
+                    startedPorts.push(port);
+                },
+                400: function (response) {
+                    console.log("  Port " + port  + " is still loading.");
+                    loadingPorts.push(port);
+                    if (autoPingIntervalId == null) {
+                        autoPingIntervalId = setInterval(pingLoadingPorts, 1000);
+                    }
+                },
+                0: function (response) {
+                    console.log("  Port " + port  + " is still loading.");
+                    loadingPorts.push(port);
+                    if (autoPingIntervalId == null) {
+                        autoPingIntervalId = setInterval(pingLoadingPorts, 1000);
+                    }
+                }
+            }
+        });
+    }
+    loadingPorts = [];
+    if (autoPingIntervalId != null) {
+        clearInterval(autoPingIntervalId);
+        autoPingIntervalId = null;
+    }
 }
 
 function launchQuickstart(quickstartId) {
@@ -29,11 +76,11 @@ function launchQuickstart(quickstartId) {
     });
 }
 
-function stopQuickstart(quickstartId, runningPort) {
-    $.delete("/quickstart/" + quickstartId + "/stop/" + runningPort, function () {
+function stopQuickstart(quickstartId, port) {
+    $.delete("/quickstart/" + quickstartId + "/stop/" + port, function () {
         refreshQuickstartsPanel();
     }).fail(function(xhr, ajaxOptions, thrownError) {
-        showError("Stopping quickstart (" + quickstartId + ") on port (" + runningPort + ") failed.", xhr);
+        showError("Stopping quickstart (" + quickstartId + ") on port (" + port + ") failed.", xhr);
     });
 }
 

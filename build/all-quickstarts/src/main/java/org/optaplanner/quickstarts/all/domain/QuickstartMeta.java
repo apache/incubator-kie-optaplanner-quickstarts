@@ -23,7 +23,7 @@ public class QuickstartMeta {
 
     private String id;
 
-    private List<Integer> runningPorts = new ArrayList<>();
+    private List<Integer> ports = new ArrayList<>();
 
     public QuickstartMeta() {
     }
@@ -40,11 +40,11 @@ public class QuickstartMeta {
         this.id = id;
     }
 
-    public List<Integer> getRunningPorts() {
-        return runningPorts;
+    public List<Integer> getPorts() {
+        return ports;
     }
 
-    public void setRunningPorts(List<Integer> runningPorts) {
-        this.runningPorts = runningPorts;
+    public void setPorts(List<Integer> ports) {
+        this.ports = ports;
     }
 }

@@ -53,7 +53,7 @@ public class QuickstartLauncherResource {
     private int nextPort = 8081;
     private File baseDirectory;
 
-    private Map<Integer, Process> runningPortToProcessMap;
+    private Map<Integer, Process> portToProcessMap;
 
     public void setup(@Observes StartupEvent startupEvent) {
         quickstartMetaList = new ArrayList<>();
@@ -73,7 +73,7 @@ public class QuickstartLauncherResource {
             baseDirectory = new File(workingDirectory, "..");
             development = false;
         }
-        runningPortToProcessMap = new HashMap<>(quickstartMetaList.size());
+        portToProcessMap = new HashMap<>(quickstartMetaList.size());
         try {
             baseDirectory = baseDirectory.getCanonicalFile();
         } catch (IOException e) {
@@ -84,10 +84,10 @@ public class QuickstartLauncherResource {
 
     public void shutdown(@Observes ShutdownEvent shutdownEvent) {
         for (QuickstartMeta quickstartMeta : quickstartMetaList) {
-            for (int runningPort : quickstartMeta.getRunningPorts()) {
-                runningPortToProcessMap.remove(runningPort).destroy();
+            for (int port : quickstartMeta.getPorts()) {
+                portToProcessMap.remove(port).destroy();
             }
-            quickstartMeta.getRunningPorts().clear();
+            quickstartMeta.getPorts().clear();
         }
     }
 
@@ -108,6 +108,8 @@ public class QuickstartLauncherResource {
         ProcessBuilder processBuilder;
         int port = this.nextPort;
         String portArg = "-Dquarkus.http.port=" + port;
+        // CORS allows the JS to detect when the server has started
+        String corsArg = "-Dquarkus.http.cors=true";
         this.nextPort++;
         if (development) {
             String mavenHome = System.getenv("M3_HOME");
@@ -129,11 +131,11 @@ public class QuickstartLauncherResource {
                 throw new IllegalStateException("Could not canonicalize mvnFile (" + mvnFile + ").\n"
                         + "Maybe check your environment variable M3_HOME/M2_HOME/MAVEN_HOME (" + mavenHome + ").", e);
             }
-            processBuilder = new ProcessBuilder(mvnFile.getAbsolutePath(), "quarkus:dev", portArg, "-Ddebug=false");
+            processBuilder = new ProcessBuilder(mvnFile.getAbsolutePath(), "quarkus:dev", portArg, corsArg, "-Ddebug=false");
         } else {
             processBuilder = new ProcessBuilder("java", "-jar",
                     "optaplanner-" + quickstartId + "-quickstart-1.0-SNAPSHOT-runner.jar",
-                    portArg);
+                    portArg, corsArg);
         }
         processBuilder.directory(new File(baseDirectory, quickstartId));
         processBuilder.inheritIO();
@@ -143,24 +145,24 @@ public class QuickstartLauncherResource {
         } catch (IOException e) {
             throw new IllegalStateException("Failed starting the subprocess for quickstart (" + quickstartId + ").", e);
         }
-        runningPortToProcessMap.put(port, process);
-        quickstartMeta.getRunningPorts().add(port);
+        portToProcessMap.put(port, process);
+        quickstartMeta.getPorts().add(port);
 //        openInBrowser(port);
     }
 
-    @Path("{quickstartId}/stop/{runningPort}")
+    @Path("{quickstartId}/stop/{port}")
     @DELETE
-    public void stopQuickstart(@PathParam("quickstartId") String quickstartId, @PathParam("runningPort") int runningPort) {
+    public void stopQuickstart(@PathParam("quickstartId") String quickstartId, @PathParam("port") int port) {
         QuickstartMeta quickstartMeta = quickstartMetaList.stream()
-                .filter(quickstartMeta_ -> quickstartMeta_.getRunningPorts().contains((Object) runningPort))
+                .filter(quickstartMeta_ -> quickstartMeta_.getPorts().contains((Object) port))
                 .findFirst()
                 .orElse(null);
         if (quickstartMeta == null) {
-            throw new IllegalArgumentException("The process on port (" + runningPort
+            throw new IllegalArgumentException("The process on port (" + port
                     + ") was already destroyed or never existed.");
         }
-        quickstartMeta.getRunningPorts().remove((Object) runningPort);
-        Process process = runningPortToProcessMap.remove(runningPort);
+        quickstartMeta.getPorts().remove((Object) port);
+        Process process = portToProcessMap.remove(port);
         process.destroy();
     }
 
