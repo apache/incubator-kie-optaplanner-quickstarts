@@ -36,6 +36,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.optaplanner.quickstarts.all.domain.QuickstartMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,11 @@ import io.quarkus.runtime.StartupEvent;
 public class QuickstartLauncherResource {
 
     protected static final Logger logger = LoggerFactory.getLogger(QuickstartLauncherResource.class);
+
+    @ConfigProperty(name = "startup-open-browser", defaultValue = "false")
+    boolean startupOpenBrowser;
+    @ConfigProperty(name = "quarkus.http.port")
+    int httpPort;
 
     private List<QuickstartMeta> quickstartMetaList;
     private boolean development;
@@ -81,7 +87,9 @@ public class QuickstartLauncherResource {
         } catch (IOException e) {
             throw new IllegalStateException("Could not canonicalize baseDirectory (" + baseDirectory + ").", e);
         }
-        //        openInBrowser(8080);
+        if (startupOpenBrowser) {
+            openInBrowser(httpPort);
+        }
     }
 
     public void shutdown(@Observes ShutdownEvent shutdownEvent) {
@@ -148,7 +156,6 @@ public class QuickstartLauncherResource {
         }
         portToProcessMap.put(port, process);
         quickstartMeta.getPorts().add(port);
-        //        openInBrowser(port);
     }
 
     @Path("{quickstartId}/stop/{port}")
