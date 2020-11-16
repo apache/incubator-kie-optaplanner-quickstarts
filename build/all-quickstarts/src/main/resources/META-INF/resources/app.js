@@ -15,7 +15,7 @@ function refreshQuickstartsPanel() {
                 quickstartPorts
                         .append($(`<div class="col mb-4"/>`).append($(`<div class="card m-0"/>`)
                                 .append($(`<div class="card-header"/>`).text("Port " + port))
-                                .append($(`<button type="button" class="btn btn-secondary m-2" id="showPort${port}"/>`)
+                                .append($(`<button type="button" class="btn ${started ? "btn-success" : "btn-secondary"} m-2" id="showPort${port}"/>`)
                                         .append($(`<span class="fas fa-play"/>`))
                                         .text(started ? "Show" : "Loading...")
                                         .click(() => window.open("//localhost:" + port, '_blank')))
@@ -41,7 +41,10 @@ function pingLoadingPorts() {
             statusCode: {
                 200: function (response) {
                     console.log("  Port " + port  + " has started.");
-                    $(`#showPort${port}`).text("Show");
+                    let button = $(`#showPort${port}`);
+                    button.addClass("btn-success");
+                    button.removeClass("btn-secondary");
+                    button.text("Show");
                     startedPorts.push(port);
                 },
                 400: function (response) {
