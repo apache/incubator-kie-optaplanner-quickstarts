@@ -3,7 +3,7 @@
 # Change directory to the directory of the script
 cd `dirname $0`
 
-jvmOptions="-Xms128m -Xmx512m"
+jvmOptions="-Xms128m -Xmx512m -Dstartup-open-browser=true"
 mainJar="binaries/optaplanner-all-quickstarts-*-runner.jar"
 
 echo "Usage: ./runQuickstarts.sh"
