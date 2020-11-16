@@ -12,18 +12,11 @@
 
   <fileSets>
     <fileSet>
-      <directory>..</directory>
+      <directory>../..</directory>
       <includes>
         <include>LICENSE-Apache-2.0.txt</include>
       </includes>
       <outputDirectory/>
-    </fileSet>
-    <fileSet>
-      <directory>target</directory>
-      <includes>
-        <include>optaplanner-quickstarts-distribution-${project.version}.jar</include>
-      </includes>
-      <outputDirectory>binaries</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>src/main/assembly/scripts</directory>
@@ -44,35 +37,33 @@
         <include>**/*.bat</include>
       </includes>
     </fileSet>
-    <!--    <fileSet>-->
-    <!--      <directory>src/main/assembly/filtered-resources</directory>-->
-    <!--      <filtered>true</filtered>-->
-    <!--      <outputDirectory/>-->
-    <!--    </fileSet>-->
-    <!--    &lt;!&ndash; Javadocs &ndash;&gt;-->
-    <!--    <fileSet>-->
-    <!--      <directory>${project.build.directory}/aggregated-javadocs/apidocs</directory>-->
-    <!--      <outputDirectory>javadocs</outputDirectory>-->
-    <!--    </fileSet>-->
     <fileSet>
-      <directory>../quarkus-facility-location/target</directory>
-      <outputDirectory>quarkus-facility-location</outputDirectory>
+      <directory>../all-quickstarts/target</directory>
+      <outputDirectory>binaries</outputDirectory>
       <includes>
         <include>lib/**</include>
         <include>*-runner.jar</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../quarkus-factorio-layout/target</directory>
-      <outputDirectory>quarkus-factorio-layout</outputDirectory>
+      <directory>../../quarkus-school-timetabling/target</directory>
+      <outputDirectory>binaries/quarkus-school-timetabling</outputDirectory>
       <includes>
         <include>lib/**</include>
         <include>*-runner.jar</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../quarkus-school-timetabling/target</directory>
-      <outputDirectory>quarkus-school-timetabling</outputDirectory>
+      <directory>../../quarkus-facility-location/target</directory>
+      <outputDirectory>binaries/quarkus-facility-location</outputDirectory>
+      <includes>
+        <include>lib/**</include>
+        <include>*-runner.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../quarkus-factorio-layout/target</directory>
+      <outputDirectory>binaries/quarkus-factorio-layout</outputDirectory>
       <includes>
         <include>lib/**</include>
         <include>*-runner.jar</include>
