@@ -9,6 +9,7 @@
   </parent>
 
   <artifactId>optaplanner-distribution-quickstarts</artifactId>
+  <packaging>pom</packaging>
   <name>OptaPlanner Distribution Quickstarts</name>
 
   <build>

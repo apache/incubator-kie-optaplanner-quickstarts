@@ -1,22 +1,20 @@
 @ECHO OFF
 setLocal enableExtensions enableDelayedExpansion
 
-set "jvmOptions=-Xms256m -Xmx2g"
-set "mainClass=org.optaplanner.quickstarts.distribution.QuickstartsApp"
-set "mainClasspath=binaries/*"
+jvmOptions="-Xms128m -Xmx512m"
+mainJar="binaries/optaplanner-all-quickstarts-*-runner.jar"
 
 echo Usage: runQuickstarts.bat
 echo Notes:
 echo - Java 11 or higher must be installed. Get OpenJDK 11 from ^(https://adoptopenjdk.net/^).
 echo - For JDK, the environment variable JAVA_HOME should be set to the JDK installation directory
 echo   For example: set "JAVA_HOME=C:\Program Files\Java\jdk-11"
-echo - The working dir should be the directory of this script.
 echo.
 
 if exist "%JAVA_HOME%\bin\java.exe" (
     echo Starting quickstarts app with JDK from environment variable JAVA_HOME ^(%JAVA_HOME%^)...
     rem JDK supports -server mode
-    "%JAVA_HOME%\bin\java" !jvmOptions! -server -cp !mainClasspath! !mainClass!
+    "%JAVA_HOME%\bin\java" !jvmOptions! -jar !mainJar!
     goto endProcess
 ) else (
     rem Find JRE home in Windows Registry
@@ -43,7 +41,7 @@ if exist "%JAVA_HOME%\bin\java.exe" (
         goto failure
     )
     echo Starting quickstarts app with JRE from JRE home ^(!jreHome!^)...
-    "!jreHome!\bin\java" !jvmOptions! -cp !mainClasspath! !mainClass!
+    "!jreHome!\bin\java" !jvmOptions! -jar !mainJar!
     goto endProcess
 )
 

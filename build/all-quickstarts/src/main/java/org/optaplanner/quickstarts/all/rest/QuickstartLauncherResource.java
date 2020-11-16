@@ -72,7 +72,7 @@ public class QuickstartLauncherResource {
             baseDirectory = new File(workingDirectory, "../../..");
             development = true;
         } else {
-            baseDirectory = new File(workingDirectory, "..");
+            baseDirectory = new File(workingDirectory, "binaries");
             development = false;
         }
         portToProcessMap = new HashMap<>(quickstartMetaList.size());
@@ -135,9 +135,8 @@ public class QuickstartLauncherResource {
             }
             processBuilder = new ProcessBuilder(mvnFile.getAbsolutePath(), "quarkus:dev", portArg, corsArg, "-Ddebug=false");
         } else {
-            processBuilder = new ProcessBuilder("java", "-jar",
-                    "optaplanner-" + quickstartId + "-quickstart-1.0-SNAPSHOT-runner.jar",
-                    portArg, corsArg);
+            processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
+                    "optaplanner-" + quickstartId + "-quickstart-1.0-SNAPSHOT-runner.jar");
         }
         processBuilder.directory(new File(baseDirectory, quickstartId));
         processBuilder.inheritIO();

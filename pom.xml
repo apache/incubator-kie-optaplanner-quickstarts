@@ -23,8 +23,21 @@
     <module>spring-boot-school-timetabling</module>
     <module>kotlin-quarkus-school-timetabling</module>
     <module>build/all-quickstarts</module>
-    <module>build/distribution-quickstarts</module>
   </modules>
+
+  <profiles>
+    <profile>
+      <id>fullProfile</id>
+      <activation>
+        <property>
+          <name>full</name>
+        </property>
+      </activation>
+      <modules>
+        <module>build/distribution-quickstarts</module>
+      </modules>
+    </profile>
+  </profiles>
 
   <repositories>
     <!-- To get snapshots during development. Remove this in the "stable" branch (which doesn't use snapshots). -->
