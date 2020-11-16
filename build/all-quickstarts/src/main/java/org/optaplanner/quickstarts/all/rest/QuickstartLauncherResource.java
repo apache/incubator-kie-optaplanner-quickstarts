@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.enterprise.event.Observes;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -35,11 +36,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.StartupEvent;
 import org.optaplanner.quickstarts.all.domain.QuickstartMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.quarkus.runtime.ShutdownEvent;
+import io.quarkus.runtime.StartupEvent;
 
 @Path("quickstart")
 @Produces(MediaType.APPLICATION_JSON)
@@ -79,7 +81,7 @@ public class QuickstartLauncherResource {
         } catch (IOException e) {
             throw new IllegalStateException("Could not canonicalize baseDirectory (" + baseDirectory + ").", e);
         }
-//        openInBrowser(8080);
+        //        openInBrowser(8080);
     }
 
     public void shutdown(@Observes ShutdownEvent shutdownEvent) {
@@ -147,7 +149,7 @@ public class QuickstartLauncherResource {
         }
         portToProcessMap.put(port, process);
         quickstartMeta.getPorts().add(port);
-//        openInBrowser(port);
+        //        openInBrowser(port);
     }
 
     @Path("{quickstartId}/stop/{port}")
