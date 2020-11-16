@@ -12,12 +12,19 @@
         <a class="navbar-brand" href="https://www.optaplanner.org">
             <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
         </a>
-        <span class="navbar-text">Choose a quickstart</span>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="https://github.com/kiegroup/optaplanner-quickstarts" target="_blank">Source code</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="https://www.optaplanner.org/learn/documentation.html" target="_blank">Documentation</a>
+            </li>
+        </ul>
     </nav>
     <div class="sticky-top d-flex justify-content-center align-items-center" aria-live="polite" aria-atomic="true">
         <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
     </div>
-    <p class="m-3">After launching a quickstart, it can take a few seconds to become available to show, especially if build from source.</p>
+    <p class="m-3">Launch a quickstart and give it a few seconds to start up (especially if build from source).</p>
     <div class="card-deck">
         <div class="card">
             <div class="card-header">School timetabling</div>
@@ -27,7 +34,7 @@
                     Assign lessons to timeslots and rooms
                     to produce a better schedule for teachers and students.
                 </p>
-                <button id="quarkus-school-timetabling-launch" type="button" class="btn btn-success w-100">
+                <button id="quarkus-school-timetabling-launch" type="button" class="btn btn-primary w-100">
                     <span class="fas fa-play"></span> Launch
                 </button>
                 <div id="quarkus-school-timetabling-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
@@ -40,7 +47,7 @@
                 <p class="card-text">
                     Pick the best geographical locations for new stores, distribution centers, covid test centers or telco masts.
                 </p>
-                <button id="quarkus-facility-location-launch" type="button" class="btn btn-success w-100">
+                <button id="quarkus-facility-location-launch" type="button" class="btn btn-primary w-100">
                     <span class="fas fa-play"></span> Launch
                 </button>
                 <div id="quarkus-facility-location-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
@@ -53,7 +60,7 @@
                 <p class="card-text">
                     Assign machines to assembly line locations to design the best factory layout.
                 </p>
-                <button id="quarkus-factorio-layout-launch" type="button" class="btn btn-success w-100">
+                <button id="quarkus-factorio-layout-launch" type="button" class="btn btn-primary w-100">
                     <span class="fas fa-play"></span> Launch
                 </button>
                 <div id="quarkus-factorio-layout-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
