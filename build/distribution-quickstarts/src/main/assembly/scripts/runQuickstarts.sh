@@ -25,7 +25,7 @@ fi
 if [ $? != 0 ] ; then
     echo
     echo "ERROR Failed running the java command."
-    echo "Maybe install OpenJDK 11 from (https://adoptopenjdk.net/) and check the environment variable JAVA_HOME ($JAVA_HOME)."
+    echo "Maybe install OpenJDK from (https://adoptopenjdk.net/) and check the environment variable JAVA_HOME ($JAVA_HOME)."
     # Prevent the terminal window to disappear before the user has seen the error message
     read -p "Press [Enter] key to close this window." dummyVar
 fi
