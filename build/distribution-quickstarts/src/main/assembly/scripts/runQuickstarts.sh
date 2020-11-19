@@ -1,14 +1,14 @@
 #!/bin/sh
 
 # Change directory to the directory of the script
-cd `dirname $0`
+cd "$(dirname $0)" || exit
 
 jvmOptions="-Xms128m -Xmx512m -Dstartup-open-browser=true"
 mainJar="binaries/optaplanner-all-quickstarts-*-runner.jar"
 
 echo "Usage: ./runQuickstarts.sh"
 echo "Notes:"
-echo "- Java 11 or higher must be installed. Get OpenJDK 11 from (https://adoptopenjdk.net/)."
+echo "- Java 11 or higher must be installed. Get the latest OpenJDK from (https://adoptopenjdk.net/)."
 echo "- For JDK, the environment variable JAVA_HOME should be set to the JDK installation directory"
 echo "  For example (Linux): export JAVA_HOME=/usr/lib/jvm/java-openjdk"
 echo "  For example (macOS): export JAVA_HOME=/Library/Java/Home"
@@ -16,10 +16,10 @@ echo
 
 if [ -f $JAVA_HOME/bin/java ]; then
     echo "Starting quickstarts app with JDK from environment variable JAVA_HOME ($JAVA_HOME)..."
-    $JAVA_HOME/bin/java ${jvmOptions} -jar ${mainJar} $*
+    $JAVA_HOME/bin/java ${jvmOptions} -jar ${mainJar} "$*"
 else
     echo "Starting quickstarts app with java from environment variable PATH..."
-    java ${jvmOptions} -jar ${mainJar} $*
+    java ${jvmOptions} -jar ${mainJar} "$*"
 fi
 
 if [ $? != 0 ] ; then

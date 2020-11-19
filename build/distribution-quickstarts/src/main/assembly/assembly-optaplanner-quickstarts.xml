@@ -71,18 +71,4 @@
     </fileSet>
   </fileSets>
 
-<!--  <dependencySets>-->
-<!--    &lt;!&ndash; Documentation &ndash;&gt;-->
-<!--    <dependencySet>-->
-<!--      <includes>-->
-<!--        <include>org.optaplanner:optaplanner-docs:zip</include>-->
-<!--      </includes>-->
-<!--      <outputDirectory>documentation</outputDirectory>-->
-<!--      <unpack>true</unpack>-->
-<!--      <useProjectArtifact>false</useProjectArtifact>-->
-<!--      <useStrictFiltering>true</useStrictFiltering>-->
-<!--      <useTransitiveFiltering>false</useTransitiveFiltering>&lt;!&ndash; Only include zip &ndash;&gt;-->
-<!--    </dependencySet>-->
-<!--  </dependencySets>-->
-
 </assembly>

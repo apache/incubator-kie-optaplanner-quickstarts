@@ -6,7 +6,7 @@ mainJar="binaries/optaplanner-all-quickstarts-*-runner.jar"
 
 echo Usage: runQuickstarts.bat
 echo Notes:
-echo - Java 11 or higher must be installed. Get OpenJDK 11 from ^(https://adoptopenjdk.net/^).
+echo - Java 11 or higher must be installed. Get the latest OpenJDK from ^(https://adoptopenjdk.net/^).
 echo - For JDK, the environment variable JAVA_HOME should be set to the JDK installation directory
 echo   For example: set "JAVA_HOME=C:\Program Files\Java\jdk-11"
 echo.

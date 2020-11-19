@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,10 +64,10 @@ public class QuickstartLauncherResource {
     private Map<Integer, Process> portToProcessMap;
 
     public void setup(@Observes StartupEvent startupEvent) {
-        quickstartMetaList = new ArrayList<>();
-        quickstartMetaList.add(new QuickstartMeta("quarkus-school-timetabling"));
-        quickstartMetaList.add(new QuickstartMeta("quarkus-facility-location"));
-        quickstartMetaList.add(new QuickstartMeta("quarkus-factorio-layout"));
+        quickstartMetaList = Arrays.asList(
+                new QuickstartMeta("quarkus-school-timetabling"),
+                new QuickstartMeta("quarkus-facility-location"),
+                new QuickstartMeta("quarkus-factorio-layout"));
         File workingDirectory;
         try {
             workingDirectory = new File(".").getCanonicalFile();
@@ -122,25 +122,7 @@ public class QuickstartLauncherResource {
         String corsArg = "-Dquarkus.http.cors=true";
         this.nextPort++;
         if (development) {
-            String mavenHome = System.getenv("M3_HOME");
-            if (mavenHome == null) {
-                mavenHome = System.getenv("M2_HOME");
-                if (mavenHome == null) {
-                    mavenHome = System.getenv("MAVEN_HOME");
-                    if (mavenHome == null) {
-                        throw new IllegalStateException("Cannot find Maven home.\n"
-                                + "Maybe define environment variable M3_HOME to run from source.");
-                    }
-                }
-            }
-            mavenHome = mavenHome.replaceFirst("^~", System.getProperty("user.home"));
-            File mvnFile = new File(mavenHome, "bin/mvn");
-            try {
-                mvnFile = mvnFile.getCanonicalFile();
-            } catch (IOException e) {
-                throw new IllegalStateException("Could not canonicalize mvnFile (" + mvnFile + ").\n"
-                        + "Maybe check your environment variable M3_HOME/M2_HOME/MAVEN_HOME (" + mavenHome + ").", e);
-            }
+            File mvnFile = detectMvnFile();
             processBuilder = new ProcessBuilder(mvnFile.getAbsolutePath(), "quarkus:dev", portArg, corsArg, "-Ddebug=false");
         } else {
             processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
@@ -156,6 +138,29 @@ public class QuickstartLauncherResource {
         }
         portToProcessMap.put(port, process);
         quickstartMeta.getPorts().add(port);
+    }
+
+    private File detectMvnFile() {
+        String mavenHome = System.getenv("M3_HOME");
+        if (mavenHome == null) {
+            mavenHome = System.getenv("M2_HOME");
+            if (mavenHome == null) {
+                mavenHome = System.getenv("MAVEN_HOME");
+                if (mavenHome == null) {
+                    throw new IllegalStateException("Cannot find Maven home.\n"
+                            + "Maybe define environment variable M3_HOME to run from source.");
+                }
+            }
+        }
+        mavenHome = mavenHome.replaceFirst("^~", System.getProperty("user.home"));
+        File mvnFile = new File(mavenHome, "bin/mvn");
+        try {
+            mvnFile = mvnFile.getCanonicalFile();
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not canonicalize mvnFile (" + mvnFile + ").\n"
+                    + "Maybe check your environment variable M3_HOME/M2_HOME/MAVEN_HOME (" + mavenHome + ").", e);
+        }
+        return mvnFile;
     }
 
     @Path("{quickstartId}/stop/{port}")
