@@ -48,7 +48,7 @@ if exist "%JAVA_HOME%\bin\java.exe" (
 :failure
     echo.
     echo ERROR Java not found.
-    echo Maybe install OpenJDK 11 from ^(https://adoptopenjdk.net/^) and check the environment variable JAVA_HOME ^(%JAVA_HOME%^).
+    echo Maybe install OpenJDK from ^(https://adoptopenjdk.net/^) and check the environment variable JAVA_HOME ^(%JAVA_HOME%^).
     rem Prevent the terminal window to disappear before the user has seen the error message
     echo Press any key to close this window.
     pause
@@ -56,4 +56,3 @@ if exist "%JAVA_HOME%\bin\java.exe" (
 
 :endProcess
     endLocal
-
