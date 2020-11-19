@@ -9,8 +9,8 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>optaplanner-all-quickstarts</artifactId>
-  <name>OptaPlanner All Quickstarts</name>
+  <artifactId>optaplanner-quickstarts-showcase</artifactId>
+  <name>OptaPlanner Quickstarts Showcase</name>
 
   <dependencyManagement>
     <dependencies>

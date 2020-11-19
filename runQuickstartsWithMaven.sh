@@ -4,5 +4,5 @@
 cd $(dirname $) || exit
 
 mvn verify -DskipTests
-cd build/all-quickstarts || exit
+cd build/quickstarts-showcase || exit
 mvn quarkus:dev -Dstartup-open-browser=true

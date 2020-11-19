@@ -38,7 +38,7 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../all-quickstarts/target</directory>
+      <directory>../quickstarts-showcase/target</directory>
       <outputDirectory>binaries</outputDirectory>
       <includes>
         <include>lib/**</include>

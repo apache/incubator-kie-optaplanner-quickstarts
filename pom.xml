@@ -22,7 +22,7 @@
     <module>quarkus-factorio-layout</module>
     <module>spring-boot-school-timetabling</module>
     <module>kotlin-quarkus-school-timetabling</module>
-    <module>build/all-quickstarts</module>
+    <module>build/quickstarts-showcase</module>
   </modules>
 
   <profiles>
@@ -34,7 +34,7 @@
         </property>
       </activation>
       <modules>
-        <module>build/distribution-quickstarts</module>
+        <module>build/quickstarts-distribution</module>
       </modules>
     </profile>
   </profiles>

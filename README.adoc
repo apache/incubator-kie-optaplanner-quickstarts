@@ -19,7 +19,7 @@ $ ./runQuickstartsWithMaven.sh
 
 Assign lessons to timeslots and rooms to produce a better schedule for teachers and students.
 
-image::build/all-quickstarts/src/main/resources/META-INF/resources/screenshot/quarkus-school-timetabling-screenshot.png[]
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-school-timetabling-screenshot.png[]
 
 * link:quarkus-school-timetabling/README.adoc[Run quarkus-school-timetabling] (Java, Maven or Gradle, Quarkus, H2)
 * link:spring-boot-school-timetabling/README.adoc[Run spring-boot-school-timetabling] (Java, Maven or Gradle, Spring Boot, H2)
@@ -29,7 +29,7 @@ image::build/all-quickstarts/src/main/resources/META-INF/resources/screenshot/qu
 
 Pick the best geographical locations for new stores, distribution centers, covid test centers or telco masts.
 
-image::build/all-quickstarts/src/main/resources/META-INF/resources/screenshot/quarkus-facility-location-screenshot.png[]
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-facility-location-screenshot.png[]
 
 * link:quarkus-facility-location/README.adoc[Run quarkus-facility-location] (Java, Maven, Quarkus)
 
@@ -37,7 +37,7 @@ image::build/all-quickstarts/src/main/resources/META-INF/resources/screenshot/qu
 
 Assign machines to assembly line locations to design the best factory layout.
 
-image::build/all-quickstarts/src/main/resources/META-INF/resources/screenshot/quarkus-factorio-layout-screenshot.png[]
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-factorio-layout-screenshot.png[]
 
 * link:quarkus-factorio-layout/README.adoc[Run quarkus-factorio-layout] (Java, Maven, Quarkus)
 
