@@ -11,7 +11,7 @@ echo "Notes:"
 echo "- Java 11 or higher must be installed. Get OpenJDK 11 from (https://adoptopenjdk.net/)."
 echo "- For JDK, the environment variable JAVA_HOME should be set to the JDK installation directory"
 echo "  For example (linux): export JAVA_HOME=/usr/lib/jvm/java-openjdk"
-echo "  For example (mac): export JAVA_HOME=/Library/Java/Home"
+echo "  For example (macOS): export JAVA_HOME=/Library/Java/Home"
 echo
 
 if [ -f $JAVA_HOME/bin/java ]; then
