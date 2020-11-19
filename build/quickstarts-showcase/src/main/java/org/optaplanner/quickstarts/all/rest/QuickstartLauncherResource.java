@@ -169,10 +169,11 @@ public class QuickstartLauncherResource {
         QuickstartMeta quickstartMeta = quickstartMetaList.stream()
                 .filter(quickstartMeta_ -> quickstartMeta_.getPorts().contains((Object) port))
                 .findFirst()
-                .orElse(null);
-        if (quickstartMeta == null) {
-            throw new IllegalArgumentException("The process on port (" + port
-                    + ") was already destroyed or never existed.");
+                .orElseThrow(() -> new IllegalArgumentException("The process on port (" + port
+                    + ") was already destroyed or never existed."));
+        if (!quickstartMeta.getId().equals(quickstartId)) {
+            throw new IllegalArgumentException("The quickstartId (" + quickstartId
+                    + ") does not match the quickstart (" + quickstartMeta.getId() + ") on port (" + port + ").");
         }
         quickstartMeta.getPorts().remove((Object) port);
         Process process = portToProcessMap.remove(port);

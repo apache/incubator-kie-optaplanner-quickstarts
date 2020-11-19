@@ -22,7 +22,7 @@ else
     java ${jvmOptions} -jar ${mainJar} "$*"
 fi
 
-if [ $? != 0 ] ; then
+if [ $? != 0 ]; then
     echo
     echo "ERROR Failed running the java command."
     echo "Maybe install OpenJDK from (https://adoptopenjdk.net/) and check the environment variable JAVA_HOME ($JAVA_HOME)."

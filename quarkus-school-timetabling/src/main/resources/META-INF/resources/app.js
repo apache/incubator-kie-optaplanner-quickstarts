@@ -249,7 +249,7 @@ $(document).ready( function() {
         }
     });
     // Extend jQuery to support $.put() and $.delete()
-    jQuery.each( [ "put", "delete" ], function( i, method ) {
+    jQuery.each(["put", "delete"], function(i, method) {
         jQuery[method] = function (url, data, callback, type) {
             if (jQuery.isFunction(data)) {
                 type = type || callback;
