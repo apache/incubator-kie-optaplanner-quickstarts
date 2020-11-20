@@ -223,7 +223,7 @@ function deleteRoom(room) {
 function showError(title, xhr) {
     const serverErrorMessage = !xhr.responseJSON ? `${xhr.status}: ${xhr.statusText}` : xhr.responseJSON.message;
     console.error(title + "\n" + serverErrorMessage);
-    const notification = $(`<div class="toast" role="alert" role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 30rem"/>`)
+    const notification = $(`<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 30rem"/>`)
             .append($(`<div class="toast-header bg-danger">
                             <strong class="mr-auto text-dark">Error</strong>
                             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
