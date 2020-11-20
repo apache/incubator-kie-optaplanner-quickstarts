@@ -122,8 +122,8 @@ public class QuickstartLauncherResource {
         String corsArg = "-Dquarkus.http.cors=true";
         this.nextPort++;
         if (development) {
-            File mvnFile = detectMvnFile();
-            processBuilder = new ProcessBuilder(mvnFile.getAbsolutePath(), "quarkus:dev", portArg, corsArg, "-Ddebug=false");
+            String mvnCommand = findMvnCommand();
+            processBuilder = new ProcessBuilder(mvnCommand, "quarkus:dev", portArg, corsArg, "-Ddebug=false");
         } else {
             processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
                     "optaplanner-" + quickstartId + "-quickstart-1.0-SNAPSHOT-runner.jar");
@@ -134,21 +134,25 @@ public class QuickstartLauncherResource {
         try {
             process = processBuilder.start();
         } catch (IOException e) {
-            throw new IllegalStateException("Failed starting the subprocess for quickstart (" + quickstartId + ").", e);
+            throw new IllegalStateException("Failed starting the subprocess for quickstart (" + quickstartId + ").\n"
+                    + (development ? "Maybe define environment variable M3_HOME and check if \"mvn --version\" works."
+                            : "Maybe install Java and check if \"java --version\" works."),
+                    e);
         }
         portToProcessMap.put(port, process);
         quickstartMeta.getPorts().add(port);
     }
 
-    private File detectMvnFile() {
+    private String findMvnCommand() {
         String mavenHome = System.getenv("M3_HOME");
         if (mavenHome == null) {
             mavenHome = System.getenv("M2_HOME");
             if (mavenHome == null) {
                 mavenHome = System.getenv("MAVEN_HOME");
                 if (mavenHome == null) {
-                    throw new IllegalStateException("Cannot find Maven home.\n"
-                            + "Maybe define environment variable M3_HOME to run from source.");
+                    logger.warn("Cannot find Maven home. Falling back on PATH."
+                            + " Maybe define environment variable M3_HOME instead.");
+                    return "mvn";
                 }
             }
         }
@@ -160,7 +164,7 @@ public class QuickstartLauncherResource {
             throw new IllegalStateException("Could not canonicalize mvnFile (" + mvnFile + ").\n"
                     + "Maybe check your environment variable M3_HOME/M2_HOME/MAVEN_HOME (" + mavenHome + ").", e);
         }
-        return mvnFile;
+        return mvnFile.getAbsolutePath();
     }
 
     @Path("{quickstartId}/stop/{port}")
