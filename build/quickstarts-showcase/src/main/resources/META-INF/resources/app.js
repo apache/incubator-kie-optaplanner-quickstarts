@@ -20,9 +20,9 @@ function refreshQuickstartsPanel() {
                                         .text(started ? "Show" : "Loading...")
                                         .click(() => window.open("//localhost:" + port, '_blank')))
                                 .append($(`<button type="button" class="btn btn-danger mb-2 ml-2 mr-2"/>`)
-                                            .append($(`<span class="fas fa-stop"/>`))
-                                            .text("Stop")
-                                            .click(() => stopQuickstart(quickstart.id, port)))));
+                                        .append($(`<span class="fas fa-stop"/>`))
+                                        .text("Stop")
+                                        .click(() => stopQuickstart(quickstart.id, port)))));
             });
         });
         if (autoPingIntervalId == null && loadingPorts.length > 0) {
@@ -35,12 +35,13 @@ function pingLoadingPorts() {
     var newLoadingPorts = [];
     console.log("Pinging ports...");
     for (const port of loadingPorts) {
-        $.ajax({url: "//localhost:" + port,
+        $.ajax({
+            url: "//localhost:" + port,
             type: "HEAD",
-            timeout:1000,
+            timeout: 1000,
             statusCode: {
                 200: function (response) {
-                    console.log("  Port " + port  + " has started.");
+                    console.log("  Port " + port + " has started.");
                     let button = $(`#showPort${port}`);
                     button.addClass("btn-success");
                     button.removeClass("btn-secondary");
@@ -48,14 +49,14 @@ function pingLoadingPorts() {
                     startedPorts.push(port);
                 },
                 400: function (response) {
-                    console.log("  Port " + port  + " is still loading.");
+                    console.log("  Port " + port + " is still loading.");
                     loadingPorts.push(port);
                     if (autoPingIntervalId == null) {
                         autoPingIntervalId = setInterval(pingLoadingPorts, 1000);
                     }
                 },
                 0: function (response) {
-                    console.log("  Port " + port  + " is still loading.");
+                    console.log("  Port " + port + " is still loading.");
                     loadingPorts.push(port);
                     if (autoPingIntervalId == null) {
                         autoPingIntervalId = setInterval(pingLoadingPorts, 1000);
@@ -74,7 +75,7 @@ function pingLoadingPorts() {
 function launchQuickstart(quickstartId) {
     $.post("/quickstart/" + quickstartId + "/launch", function () {
         refreshQuickstartsPanel();
-    }).fail(function(xhr, ajaxOptions, thrownError) {
+    }).fail(function (xhr, ajaxOptions, thrownError) {
         showError("Launching quickstart (" + quickstartId + ") failed.", xhr);
     });
 }
@@ -82,7 +83,7 @@ function launchQuickstart(quickstartId) {
 function stopQuickstart(quickstartId, port) {
     $.delete("/quickstart/" + quickstartId + "/stop/" + port, function () {
         refreshQuickstartsPanel();
-    }).fail(function(xhr, ajaxOptions, thrownError) {
+    }).fail(function (xhr, ajaxOptions, thrownError) {
         showError("Stopping quickstart (" + quickstartId + ") on port (" + port + ") failed.", xhr);
     });
 }
@@ -92,11 +93,10 @@ function exit() {
         const content = $("#content");
         content.children().remove();
         content.append($(`<p>This application has been shutdown.</p>`));
-    }).fail(function(xhr, ajaxOptions, thrownError) {
+    }).fail(function (xhr, ajaxOptions, thrownError) {
         showError("Exit failed.", xhr);
     });
 }
-
 
 function showError(title, xhr) {
     const serverErrorMessage = !xhr.responseJSON ? `${xhr.status}: ${xhr.statusText}` : xhr.responseJSON.message;
@@ -119,7 +119,7 @@ function showError(title, xhr) {
     notification.toast('show');
 }
 
-$(document).ready( function() {
+$(document).ready(function () {
     $.ajaxSetup({
         headers: {
             'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ $(document).ready( function() {
         }
     });
     // Extend jQuery to support $.put() and $.delete()
-    jQuery.each(["put", "delete"], function(i, method) {
+    jQuery.each(["put", "delete"], function (i, method) {
         jQuery[method] = function (url, data, callback, type) {
             if (jQuery.isFunction(data)) {
                 type = type || callback;
@@ -143,16 +143,16 @@ $(document).ready( function() {
             });
         };
     });
-    $("#quarkus-school-timetabling-launch").click(function() {
+    $("#quarkus-school-timetabling-launch").click(function () {
         launchQuickstart("quarkus-school-timetabling");
     });
-    $("#quarkus-facility-location-launch").click(function() {
+    $("#quarkus-facility-location-launch").click(function () {
         launchQuickstart("quarkus-facility-location");
     });
-    $("#quarkus-factorio-layout-launch").click(function() {
+    $("#quarkus-factorio-layout-launch").click(function () {
         launchQuickstart("quarkus-factorio-layout");
     });
-    $("#exit").click(function() {
+    $("#exit").click(function () {
         exit();
     });
 

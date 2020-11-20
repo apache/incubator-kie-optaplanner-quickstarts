@@ -3,7 +3,7 @@ var autoRefreshIntervalId = null;
 function refreshFactorioLayout() {
     $.getJSON("/factorioLayout", function (factorioLayout) {
         refreshSolvingButtons(factorioLayout.solverStatus != null && factorioLayout.solverStatus !== "NOT_SOLVING");
-        $("#score").text("Score: "+ (factorioLayout.score == null ? "?" : factorioLayout.score));
+        $("#score").text("Score: " + (factorioLayout.score == null ? "?" : factorioLayout.score));
 
         const areaAssemblies = $("#areaAssemblies");
         areaAssemblies.children().remove();
@@ -49,7 +49,7 @@ function refreshFactorioLayout() {
             }
             const assemblyElement = $(`<div class="img-thumbnail text-center" style="left:${x * 50}px; top:${y * 50}px; position:absolute; width:50px; height:50px; max-width:50px; max-height:50px; z-index: -1; background-color: ${color};"
                                             title="${assembly.recipe.name} ${assembly.id}"/>`)
-                            .append($(`<img style="margin-top: 4px" src="${assembly.recipe.imageUrl}" alt="${assembly.recipe.name}"/>`));
+                    .append($(`<img style="margin-top: 4px" src="${assembly.recipe.imageUrl}" alt="${assembly.recipe.name}"/>`));
             if (assembly.area == null) {
                 unassignedAssembliesDiv.append(assemblyElement);
             } else {
@@ -71,7 +71,7 @@ function refreshFactorioLayout() {
 function solve() {
     $.post("/factorioLayout/solve", function () {
         refreshSolvingButtons(true);
-    }).fail(function(xhr, ajaxOptions, thrownError) {
+    }).fail(function (xhr, ajaxOptions, thrownError) {
         showError("Start solving failed.", xhr);
     });
 }
@@ -97,7 +97,7 @@ function stopSolving() {
     $.post("/factorioLayout/stopSolving", function () {
         refreshSolvingButtons(false);
         refreshFactorioLayout();
-    }).fail(function(xhr, ajaxOptions, thrownError) {
+    }).fail(function (xhr, ajaxOptions, thrownError) {
         showError("Stop solving failed.", xhr);
     });
 }
@@ -123,7 +123,7 @@ function showError(title, xhr) {
     notification.toast('show');
 }
 
-$(document).ready( function() {
+$(document).ready(function () {
     $.ajaxSetup({
         headers: {
             'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ $(document).ready( function() {
         }
     });
     // Extend jQuery to support $.put() and $.delete()
-    jQuery.each(["put", "delete"], function(i, method) {
+    jQuery.each(["put", "delete"], function (i, method) {
         jQuery[method] = function (url, data, callback, type) {
             if (jQuery.isFunction(data)) {
                 type = type || callback;
@@ -148,14 +148,13 @@ $(document).ready( function() {
         };
     });
 
-
-    $("#refreshButton").click(function() {
+    $("#refreshButton").click(function () {
         refreshFactorioLayout();
     });
-    $("#solveButton").click(function() {
+    $("#solveButton").click(function () {
         solve();
     });
-    $("#stopSolvingButton").click(function() {
+    $("#stopSolvingButton").click(function () {
         stopSolving();
     });
 
