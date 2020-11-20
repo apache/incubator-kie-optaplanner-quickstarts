@@ -69,7 +69,7 @@ const getStatus = () => {
 };
 
 const solve = () => {
-  fetch('/flp/solve', { ...fetchHeaders, method: 'POST' })
+  fetch('/flp/solve', {...fetchHeaders, method: 'POST'})
     .then((response) => {
       if (!response.ok) {
         return handleErrorResponse('Start solving failed', response);
@@ -85,7 +85,7 @@ const solve = () => {
 };
 
 const stopSolving = () => {
-  fetch('/flp/stopSolving', { ...fetchHeaders, method: 'POST' })
+  fetch('/flp/stopSolving', {...fetchHeaders, method: 'POST'})
     .then((response) => {
       if (!response.ok) {
         return handleErrorResponse('Stop solving failed', response);
@@ -136,7 +136,7 @@ const showError = (message, stackTrace) => {
       ),
     );
   $('#notificationPanel').append(notification);
-  notification.toast({ autohide: false });
+  notification.toast({autohide: false});
   notification.toast('show');
 };
 
@@ -168,7 +168,7 @@ const facilityPopupContent = (facility, cost, color) => `<h5>Facility ${facility
 </span> ${color}</li>
 </ul>`;
 
-const getFacilityMarker = ({ id, location }) => {
+const getFacilityMarker = ({id, location}) => {
   let marker = facilityByIdMap.get(id);
   if (marker) {
     return marker;
@@ -179,7 +179,7 @@ const getFacilityMarker = ({ id, location }) => {
   return marker;
 };
 
-const showProblem = ({ solution, scoreExplanation, isSolving }) => {
+const showProblem = ({solution, scoreExplanation, isSolving}) => {
   if (!initialized) {
     initialized = true;
     map.fitBounds(solution.bounds);
@@ -187,7 +187,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
   // Facilities
   facilitiesTable.children().remove();
   solution.facilities.forEach((facility) => {
-    const { id, setupCost, capacity, usedCapacity, used } = facility;
+    const {id, setupCost, capacity, usedCapacity, used} = facility;
     const percentage = usedCapacity / capacity * 100;
     const color = colorByFacility(facility);
     const colorIfUsed = facility.used ? color : 'white';
@@ -212,9 +212,9 @@ style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; hei
   consumerGroup.clearLayers();
   solution.consumers.forEach((consumer) => {
     const color = colorByFacility(consumer.facility);
-    L.circleMarker(consumer.location, consumer.assigned ? { color } : {}).addTo(consumerGroup);
+    L.circleMarker(consumer.location, consumer.assigned ? {color} : {}).addTo(consumerGroup);
     if (consumer.assigned) {
-      L.polyline([consumer.location, consumer.facility.location], { color }).addTo(consumerGroup);
+      L.polyline([consumer.location, consumer.facility.location], {color}).addTo(consumerGroup);
     }
   });
   // Summary
@@ -226,7 +226,7 @@ style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; hei
   updateSolvingStatus(isSolving);
 };
 
-const map = L.map('map', { doubleClickZoom: false }).setView([51.505, -0.09], 13);
+const map = L.map('map', {doubleClickZoom: false}).setView([51.505, -0.09], 13);
 map.whenReady(getStatus);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
