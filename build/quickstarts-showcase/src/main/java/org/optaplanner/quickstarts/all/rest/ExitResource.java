@@ -14,38 +14,24 @@
  * limitations under the License.
  */
 
-package org.optaplanner.quickstarts.all.domain;
+package org.optaplanner.quickstarts.all.rest;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-public class QuickstartMeta {
+import io.quarkus.runtime.Quarkus;
 
-    private String id;
+@Path("exit")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public class ExitResource {
 
-    private List<Integer> ports = new ArrayList<>();
-
-    public QuickstartMeta() {
-    }
-
-    public QuickstartMeta(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public List<Integer> getPorts() {
-        return ports;
-    }
-
-    public void setPorts(List<Integer> ports) {
-        this.ports = ports;
+    @POST
+    public void exit() {
+        Quarkus.asyncExit();
     }
 
 }

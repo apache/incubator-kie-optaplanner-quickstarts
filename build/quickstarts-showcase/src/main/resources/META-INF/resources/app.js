@@ -21,7 +21,7 @@ function refreshQuickstartsPanel() {
                                         .click(() => window.open("//localhost:" + port, '_blank')))
                                 .append($(`<button type="button" class="btn btn-danger mb-2 ml-2 mr-2"/>`)
                                             .append($(`<span class="fas fa-stop"/>`))
-                                            .text("Delete")
+                                            .text("Stop")
                                             .click(() => stopQuickstart(quickstart.id, port)))));
             });
         });
@@ -87,6 +87,17 @@ function stopQuickstart(quickstartId, port) {
     });
 }
 
+function exit() {
+    $.post("/exit", function () {
+        const content = $("#content");
+        content.children().remove();
+        content.append($(`<p>The application has shutdown.</p>`));
+    }).fail(function(xhr, ajaxOptions, thrownError) {
+        showError("Exit failed.", xhr);
+    });
+}
+
+
 function showError(title, xhr) {
     const serverErrorMessage = !xhr.responseJSON ? `${xhr.status}: ${xhr.statusText}` : xhr.responseJSON.message;
     console.error(title + "\n" + serverErrorMessage);
@@ -140,6 +151,9 @@ $(document).ready( function() {
     });
     $("#quarkus-factorio-layout-launch").click(function() {
         launchQuickstart("quarkus-factorio-layout");
+    });
+    $("#exit").click(function() {
+        exit();
     });
 
     refreshQuickstartsPanel();
