@@ -91,7 +91,7 @@ function exit() {
     $.post("/exit", function () {
         const content = $("#content");
         content.children().remove();
-        content.append($(`<p>The application has shutdown.</p>`));
+        content.append($(`<p>This application has been shutdown.</p>`));
     }).fail(function(xhr, ajaxOptions, thrownError) {
         showError("Exit failed.", xhr);
     });
