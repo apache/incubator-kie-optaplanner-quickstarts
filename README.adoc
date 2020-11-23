@@ -1,5 +1,21 @@
 = OptaPlanner Quickstarts
 
+This repository contains a growing collection of OptaPlanner quickstarts. 
+
+* Quarkus
+** <<School timetabling>> for Quarkus
+** <<Facility location problem>>
+** <<Factorio layout>>
+* SpringBoot 
+** <<School timetabling>> for SpringBoot
+* Kotlin
+** <<School timetabling>> for Kotlin
+
+== Java + Optaplanner Version Used
+
+Development branch will use the latest version of Java and Optaplanner.
+For now the quickstarts are tested with Java 15 and Optaplanner 8.
+   
 == Get started
 
 To get started with https://www.optaplanner.org/[OptaPlanner],
