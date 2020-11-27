@@ -42,14 +42,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-quarkus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.optaplanner</groupId>
-      <artifactId>optaplanner-quarkus-jackson</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
     </dependency>
@@ -58,17 +50,18 @@
       <artifactId>quarkus-resteasy-jackson</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-webjars-locator</artifactId>
+      <groupId>org.optaplanner</groupId>
+      <artifactId>optaplanner-quarkus</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.optaplanner</groupId>
+      <artifactId>optaplanner-quarkus-jackson</artifactId>
+    </dependency>
+
+    <!-- Testing -->
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -76,32 +69,41 @@
       <artifactId>optaplanner-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
-    <!-- Webjars -->
+
+    <!-- UI -->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-webjars-locator</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
-      <artifactId>leaflet</artifactId>
-      <version>1.6.0</version>
+      <artifactId>bootstrap</artifactId>
+      <version>4.5.3</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
       <version>3.5.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>font-awesome</artifactId>
+      <version>5.15.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>leaflet</artifactId>
+      <version>1.6.0</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>popper.js</artifactId>
       <version>1.16.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>bootstrap</artifactId>
-      <version>4.5.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>font-awesome</artifactId>
-      <version>4.7.0</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
