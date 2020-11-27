@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.enterprise.event.Observes;
 import javax.ws.rs.Consumes;
@@ -122,7 +124,7 @@ public class QuickstartLauncherResource {
         String corsArg = "-Dquarkus.http.cors=true";
         this.nextPort++;
         if (development) {
-            String mvnCommand = findMvnCommand();
+            String mvnCommand = findMvnCommand(baseDirectory);
             processBuilder = new ProcessBuilder(mvnCommand, "quarkus:dev", portArg, corsArg, "-Ddebug=false");
         } else {
             processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
@@ -143,20 +145,18 @@ public class QuickstartLauncherResource {
         quickstartMeta.getPorts().add(port);
     }
 
-    private String findMvnCommand() {
-        String mavenHome = System.getenv("M3_HOME");
-        if (mavenHome == null) {
-            mavenHome = System.getenv("M2_HOME");
-            if (mavenHome == null) {
-                mavenHome = System.getenv("MAVEN_HOME");
-                if (mavenHome == null) {
-                    logger.warn("Cannot find Maven home. Falling back on PATH."
-                            + " Maybe define environment variable M3_HOME instead.");
-                    return "mvn";
-                }
-            }
+    private String findMvnCommand(File baseDirectory) {
+        Optional<String> maybeMavenHome = Stream.of("M3_HOME", "M2_HOME", "MAVEN_HOME")
+                .map(System::getenv)
+                .filter(s -> s != null)
+                .findFirst();
+        if (!maybeMavenHome.isPresent()) {
+            logger.warn("Cannot find Maven home. Falling back to Maven Wrapper."
+                    + " Maybe define environment variable M3_HOME instead.");
+            String scriptFileName = System.getProperty("os.name").startsWith("Windows") ? "mvnw.cmd" : "mvnw";
+            return new File(baseDirectory, scriptFileName).getAbsolutePath();
         }
-        mavenHome = mavenHome.replaceFirst("^~", System.getProperty("user.home"));
+        String mavenHome = maybeMavenHome.get().replaceFirst("^~", System.getProperty("user.home"));
         File mvnFile = new File(mavenHome, "bin/mvn");
         try {
             mvnFile = mvnFile.getCanonicalFile();
