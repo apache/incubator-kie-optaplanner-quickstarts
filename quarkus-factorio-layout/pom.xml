@@ -87,17 +87,20 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
-      <version>4.3.1</version>
+      <version>4.5.3</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
-      <version>3.4.1</version>
+      <version>3.5.1</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>font-awesome</artifactId>
-      <version>5.11.2</version>
+      <version>5.15.1</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
@@ -151,9 +154,9 @@
                   <goal>verify</goal>
                 </goals>
                 <configuration>
-                  <systemProperties>
+                  <systemPropertyVariables>
                     <native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
-                  </systemProperties>
+                  </systemPropertyVariables>
                 </configuration>
               </execution>
             </executions>

@@ -4,7 +4,7 @@
 cd "$(dirname $0)" || exit
 
 jvmOptions="-Xms128m -Xmx512m -Dstartup-open-browser=true"
-mainJar="binaries/optaplanner-quickstarts-showcase-*-runner.jar"
+mainJar="binaries/optaplanner-quickstarts-showcase-${project.version}-runner.jar"
 
 echo "Usage: ./runQuickstarts.sh"
 echo "Notes:"

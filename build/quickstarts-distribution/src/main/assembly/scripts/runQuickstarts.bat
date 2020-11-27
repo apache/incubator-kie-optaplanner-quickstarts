@@ -1,8 +1,8 @@
 @ECHO OFF
 setLocal enableExtensions enableDelayedExpansion
 
-jvmOptions="-Xms128m -Xmx512m -Dstartup-open-browser=true"
-mainJar="binaries/optaplanner-quickstarts-showcase-*-runner.jar"
+set "jvmOptions=-Xms128m -Xmx512m -Dstartup-open-browser=true"
+set "mainJar=binaries/optaplanner-quickstarts-showcase-${project.version}-runner.jar"
 
 echo Usage: runQuickstarts.bat
 echo Notes:
