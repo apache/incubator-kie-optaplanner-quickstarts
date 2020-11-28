@@ -13,7 +13,7 @@
 
   <artifactId>optaplanner-quickstarts-parent</artifactId>
   <packaging>pom</packaging>
-  <name>OptaPlanner quick starts</name>
+  <name>OptaPlanner Quickstarts</name>
 
   <modules>
     <module>quarkus-school-timetabling</module>
