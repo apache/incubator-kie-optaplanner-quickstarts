@@ -3,7 +3,7 @@
 == Get started
 
 To get started with https://www.optaplanner.org/[OptaPlanner],
-clone this repository to build and run these Quick Starts from source:
+clone this repository to build and run these Quickstarts from source:
 
 [source, shell]
 ----
