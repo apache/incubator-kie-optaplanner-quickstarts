@@ -4,7 +4,7 @@ plugins {
 }
 
 def quarkusVersion = "1.10.0.Final"
-def optaplannerVersion = "8.0.0.Final"
+def optaplannerVersion = "8.0.1-SNAPSHOT"
 
 group = "org.acme"
 version = "0.1.0-SNAPSHOT"
@@ -12,6 +12,13 @@ version = "0.1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     mavenLocal()
+    // To get snapshots during development. Remove this in the "stable" branch (which doesn't use snapshots).
+    maven {
+        url "https://repository.jboss.org/nexus/content/groups/public/"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
 }
 
 dependencies {
