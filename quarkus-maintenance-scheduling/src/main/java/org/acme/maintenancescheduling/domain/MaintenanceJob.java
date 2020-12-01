@@ -20,7 +20,6 @@ import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -36,8 +35,10 @@ public class MaintenanceJob {
     private Long id;
 
     private String jobName;
-    @ManyToOne(cascade = CascadeType.ALL)
+
+    @ManyToOne
     private MaintainableUnit maintainableUnit;
+    
     private int readyGrainIndex;
     private int deadlineGrainIndex;
     private int durationInGrains;

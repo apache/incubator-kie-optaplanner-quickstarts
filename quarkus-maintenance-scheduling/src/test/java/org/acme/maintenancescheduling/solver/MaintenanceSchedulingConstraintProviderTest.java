@@ -25,8 +25,6 @@ import org.acme.maintenancescheduling.domain.TimeGrain;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
-import java.util.Arrays;
-
 public class MaintenanceSchedulingConstraintProviderTest {
 
     private final ConstraintVerifier<MaintenanceScheduleConstraintProvider, MaintenanceSchedule> constraintVerifier =

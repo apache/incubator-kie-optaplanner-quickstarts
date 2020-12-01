@@ -66,25 +66,25 @@ public class DemoDataGenerator {
         }
 
         List<MaintainableUnit> maintainableUnitList = new ArrayList<>();
-        maintainableUnitList.add(new MaintainableUnit("Track 1"));
-        maintainableUnitList.add(new MaintainableUnit("Track 2"));
-        maintainableUnitList.add(new MaintainableUnit("Track 3"));
-        maintainableUnitList.add(new MaintainableUnit("Switch 1"));
-        maintainableUnitList.add(new MaintainableUnit("Switch 2"));
-        maintainableUnitList.add(new MaintainableUnit("Switch 3"));
-        maintainableUnitList.add(new MaintainableUnit("Yard 1"));
-        maintainableUnitList.add(new MaintainableUnit("Yard 2"));
-        maintainableUnitList.add(new MaintainableUnit("Yard 3"));
+        maintainableUnitList.add(new MaintainableUnit("Toyota Corolla 1"));
+        maintainableUnitList.add(new MaintainableUnit("Toyota Corolla 2"));
+        maintainableUnitList.add(new MaintainableUnit("Toyota Corolla 3"));
+        maintainableUnitList.add(new MaintainableUnit("Ford Focus 1"));
+        maintainableUnitList.add(new MaintainableUnit("Ford Focus 2"));
+        maintainableUnitList.add(new MaintainableUnit("Ford Focus 3"));
+        maintainableUnitList.add(new MaintainableUnit("Honda Civic 1"));
+        maintainableUnitList.add(new MaintainableUnit("Honda Civic 2"));
+        maintainableUnitList.add(new MaintainableUnit("Honda Civic 3"));
         if (demoData == DemoData.SMALL) {
-            maintainableUnitList.add(new MaintainableUnit("Track 4"));
-            maintainableUnitList.add(new MaintainableUnit("Track 5"));
-            maintainableUnitList.add(new MaintainableUnit("Track 6"));
-            maintainableUnitList.add(new MaintainableUnit("Switch 4"));
-            maintainableUnitList.add(new MaintainableUnit("Switch 5"));
-            maintainableUnitList.add(new MaintainableUnit("Switch 6"));
-            maintainableUnitList.add(new MaintainableUnit("Yard 4"));
-            maintainableUnitList.add(new MaintainableUnit("Yard 5"));
-            maintainableUnitList.add(new MaintainableUnit("Yard 6"));
+            maintainableUnitList.add(new MaintainableUnit("Toyota Corolla 4"));
+            maintainableUnitList.add(new MaintainableUnit("Toyota Corolla 5"));
+            maintainableUnitList.add(new MaintainableUnit("Toyota Corolla 6"));
+            maintainableUnitList.add(new MaintainableUnit("Ford Focus 4"));
+            maintainableUnitList.add(new MaintainableUnit("Ford Focus 5"));
+            maintainableUnitList.add(new MaintainableUnit("Ford Focus 6"));
+            maintainableUnitList.add(new MaintainableUnit("Honda Civic 4"));
+            maintainableUnitList.add(new MaintainableUnit("Honda Civic 5"));
+            maintainableUnitList.add(new MaintainableUnit("Honda Civic 6"));
         }
         maintainableUnitRepository.persist(maintainableUnitList);
 
@@ -111,38 +111,38 @@ public class DemoDataGenerator {
         timeGrainRepository.persist(timeGrainList);
 
         List<MaintenanceJob> maintenanceJobList = new ArrayList<>();
-        maintenanceJobList.add(new MaintenanceJob("Bolt tightening 1", maintainableUnitList.get(0), 0, 24, 1, true));
-        maintenanceJobList.add(new MaintenanceJob("Bolt tightening 2", maintainableUnitList.get(1), 0, 24, 1, true));
-        maintenanceJobList.add(new MaintenanceJob("Bolt tightening 3", maintainableUnitList.get(2), 0, 24, 1, true));
-        maintenanceJobList.add(new MaintenanceJob("Switch replacement 1", maintainableUnitList.get(3), 8, 24, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Switch replacement 2", maintainableUnitList.get(4), 8, 24, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Switch replacement 3", maintainableUnitList.get(5), 8, 24, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Yard repair 1", maintainableUnitList.get(6), 0, 24, 4, true));
-        maintenanceJobList.add(new MaintenanceJob("Yard repair 2", maintainableUnitList.get(7), 0, 24, 4, true));
-        maintenanceJobList.add(new MaintenanceJob("Yard repair 3", maintainableUnitList.get(8), 0, 24, 4, true));
-        maintenanceJobList.add(new MaintenanceJob("Track replacement 1", maintainableUnitList.get(0), 0, 24, 8, true));
+        maintenanceJobList.add(new MaintenanceJob("Tire change 1", maintainableUnitList.get(0), 0, 24, 1, true));
+        maintenanceJobList.add(new MaintenanceJob("Tire change 2", maintainableUnitList.get(1), 0, 24, 1, true));
+        maintenanceJobList.add(new MaintenanceJob("Tire change 3", maintainableUnitList.get(2), 0, 24, 1, true));
+        maintenanceJobList.add(new MaintenanceJob("Oil change 1", maintainableUnitList.get(3), 8, 24, 2, true));
+        maintenanceJobList.add(new MaintenanceJob("Oil change 2", maintainableUnitList.get(4), 8, 24, 2, true));
+        maintenanceJobList.add(new MaintenanceJob("Oil change 3", maintainableUnitList.get(5), 8, 24, 2, true));
+        maintenanceJobList.add(new MaintenanceJob("Lights inspection 1", maintainableUnitList.get(6), 0, 24, 4, true));
+        maintenanceJobList.add(new MaintenanceJob("Lights inspection 2", maintainableUnitList.get(7), 0, 24, 4, true));
+        maintenanceJobList.add(new MaintenanceJob("Lights inspection 3", maintainableUnitList.get(8), 0, 24, 4, true));
+        maintenanceJobList.add(new MaintenanceJob("Transmission replacement 1", maintainableUnitList.get(0), 0, 24, 8, true));
         if (demoData == DemoData.SMALL) {
-            maintenanceJobList.add(new MaintenanceJob("Bolt tightening 4", maintainableUnitList.get(9), 24, 48, 1, true));
-            maintenanceJobList.add(new MaintenanceJob("Bolt tightening 5", maintainableUnitList.get(10), 24, 48, 1, true));
-            maintenanceJobList.add(new MaintenanceJob("Bolt tightening 6", maintainableUnitList.get(11), 24, 48, 1, true));
-            maintenanceJobList.add(new MaintenanceJob("Switch replacement 4", maintainableUnitList.get(12), 32, 48, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Switch replacement 5", maintainableUnitList.get(13), 32, 48, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Switch replacement 6", maintainableUnitList.get(14), 32, 48, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Yard repair 4", maintainableUnitList.get(15), 24, 48, 4, true));
-            maintenanceJobList.add(new MaintenanceJob("Yard repair 5", maintainableUnitList.get(16), 24, 48, 4, true));
-            maintenanceJobList.add(new MaintenanceJob("Yard repair 6", maintainableUnitList.get(17), 24, 48, 4, true));
-            maintenanceJobList.add(new MaintenanceJob("Track replacement 2", maintainableUnitList.get(9), 24, 48, 8, true));
+            maintenanceJobList.add(new MaintenanceJob("Tire change 4", maintainableUnitList.get(9), 24, 48, 1, true));
+            maintenanceJobList.add(new MaintenanceJob("Tire change 5", maintainableUnitList.get(10), 24, 48, 1, true));
+            maintenanceJobList.add(new MaintenanceJob("Tire change 6", maintainableUnitList.get(11), 24, 48, 1, true));
+            maintenanceJobList.add(new MaintenanceJob("Oil change 4", maintainableUnitList.get(12), 32, 48, 2, true));
+            maintenanceJobList.add(new MaintenanceJob("Oil change 5", maintainableUnitList.get(13), 32, 48, 2, true));
+            maintenanceJobList.add(new MaintenanceJob("Oil change 6", maintainableUnitList.get(14), 32, 48, 2, true));
+            maintenanceJobList.add(new MaintenanceJob("Lights inspection 4", maintainableUnitList.get(15), 24, 48, 4, true));
+            maintenanceJobList.add(new MaintenanceJob("Lights inspection 5", maintainableUnitList.get(16), 24, 48, 4, true));
+            maintenanceJobList.add(new MaintenanceJob("Lights inspection 6", maintainableUnitList.get(17), 24, 48, 4, true));
+            maintenanceJobList.add(new MaintenanceJob("Transmission replacement 2", maintainableUnitList.get(9), 24, 48, 8, true));
 
-            maintenanceJobList.add(new MaintenanceJob("Track cleaning 1", maintainableUnitList.get(0), 0, 48, 1, false));
-            maintenanceJobList.add(new MaintenanceJob("Track cleaning 2", maintainableUnitList.get(1), 0, 48, 1, false));
-            maintenanceJobList.add(new MaintenanceJob("Track cleaning 3", maintainableUnitList.get(2), 0, 48, 1, false));
-            maintenanceJobList.add(new MaintenanceJob("Switch tightening 1", maintainableUnitList.get(3), 8, 48, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Switch tightening 2", maintainableUnitList.get(4), 8, 48, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Switch tightening 3", maintainableUnitList.get(5), 8, 48, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Yard sanding 1", maintainableUnitList.get(6), 0, 48, 4, false));
-            maintenanceJobList.add(new MaintenanceJob("Yard sanding 2", maintainableUnitList.get(7), 0, 48, 4, false));
-            maintenanceJobList.add(new MaintenanceJob("Yard sanding 3", maintainableUnitList.get(8), 0, 48, 4, false));
-            maintenanceJobList.add(new MaintenanceJob("Track sanding 1", maintainableUnitList.get(0), 0, 48, 8, false));
+            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 1", maintainableUnitList.get(0), 0, 48, 1, false));
+            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 2", maintainableUnitList.get(1), 0, 48, 1, false));
+            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 3", maintainableUnitList.get(2), 0, 48, 1, false));
+            maintenanceJobList.add(new MaintenanceJob("Air filter inspection 1", maintainableUnitList.get(3), 8, 48, 2, false));
+            maintenanceJobList.add(new MaintenanceJob("Air filter inspection 2", maintainableUnitList.get(4), 8, 48, 2, false));
+            maintenanceJobList.add(new MaintenanceJob("Air filter inspection 3", maintainableUnitList.get(5), 8, 48, 2, false));
+            maintenanceJobList.add(new MaintenanceJob("Tire pressure check 1", maintainableUnitList.get(6), 0, 48, 4, false));
+            maintenanceJobList.add(new MaintenanceJob("Tire pressure check 2", maintainableUnitList.get(7), 0, 48, 4, false));
+            maintenanceJobList.add(new MaintenanceJob("Tire pressure check 3", maintainableUnitList.get(8), 0, 48, 4, false));
+            maintenanceJobList.add(new MaintenanceJob("Battery inspection 1", maintainableUnitList.get(0), 0, 48, 8, false));
         }
         maintenanceJobRepository.persist(maintenanceJobList);
 

@@ -18,7 +18,6 @@ package org.acme.maintenancescheduling.rest;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import org.acme.maintenancescheduling.domain.MaintainableUnit;
 import org.acme.maintenancescheduling.domain.MaintenanceJob;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +48,7 @@ public class MaintenanceJobResourceTest {
         MaintenanceJob job = given()
                 .when()
                 .contentType(ContentType.JSON)
-                .body(new MaintenanceJob("Test job", new MaintainableUnit("Test unit"), 0, 8, 1, true))
+                .body(new MaintenanceJob("Test job", null, 0, 8, 1, true))
                 .post("/jobs")
                 .then()
                 .statusCode(201)
