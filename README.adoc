@@ -5,7 +5,7 @@
 To get started with https://www.optaplanner.org/[OptaPlanner],
 clone this repository to build and run these Quickstarts from source:
 
-[source, shell]
+[source,shell]
 ----
 $ git clone git@github.com:kiegroup/optaplanner-quickstarts.git
 ...
@@ -40,6 +40,28 @@ Assign machines to assembly line locations to design the best factory layout.
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-factorio-layout-screenshot.png[]
 
 * link:quarkus-factorio-layout/README.adoc[Run quarkus-factorio-layout] (Java, Maven, Quarkus)
+
+== OptaWeb projects
+
+OptaWebs are advanced projects that show how to integrate OptaPlanner with other technologies to build a moder web application.
+
+Each OptaWeb project lives in its own GitHub repository.
+
+=== OptaWeb Vehicle Routing
+
+Find the most efficient routes for a fleet of vehicles.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/optaweb-vehicle-routing-screenshot.png[]
+
+Go to https://github.com/kiegroup/optaweb-vehicle-routing.
+
+=== OptaWeb Employee Rostering
+
+Assign employees to shifts to improve shifts schedule.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/optaweb-employee-rostering-screenshot.png[]
+
+Go to https://github.com/kiegroup/optaweb-employee-rostering.
 
 == More information
 
