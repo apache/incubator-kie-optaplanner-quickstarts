@@ -1,0 +1,25 @@
+= School Timetabling (Java, Spring Boot, Maven or Gradle)
+
+== Run the application with live coding
+
+. Start the application with Maven:
++
+[source, shell]
+----
+$ mvn spring-boot:run
+----
++
+or with Gradle:
++
+[source, shell]
+----
+$ gradle bootRun
+----
+
+. Visit http://localhost:8080 in your browser.
+
+. Click on the *Solve* button.
+
+== More information
+
+Visit https://www.optaplanner.org/[www.optaplanner.org].

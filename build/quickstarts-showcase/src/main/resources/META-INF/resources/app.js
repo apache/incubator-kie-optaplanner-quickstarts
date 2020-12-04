@@ -149,6 +149,9 @@ $(document).ready(function () {
   $("#quarkus-facility-location-launch").click(function () {
     launchQuickstart("quarkus-facility-location");
   });
+  $("#quarkus-maintenance-scheduling-launch").click(function () {
+    launchQuickstart("quarkus-maintenance-scheduling");
+  });
   $("#quarkus-factorio-layout-launch").click(function () {
     launchQuickstart("quarkus-factorio-layout");
   });

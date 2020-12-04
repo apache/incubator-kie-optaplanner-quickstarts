@@ -10,11 +10,25 @@ clone this repository to build and run these Quickstarts from source:
 $ git clone git@github.com:kiegroup/optaplanner-quickstarts.git
 ...
 $ cd optaplanner-quickstarts
-$ ./runQuickstartsWithMaven.sh
+$ ./runQuickstartsFromSource.sh
 ----
+
+Requirements:
+
+* JDK 11+ installed with `JAVA_HOME` configured appropriately.
+https://adoptopenjdk.net[Download OpenJDK.]
 
 == Overview
 
+* <<school-timetabling, School timetabling>>
+* <<facility-location, Facility location problem>>
+* <<maintenance-scheduling, Maintenance scheduling>>
+* <<factorio-layout, Factorio layout>>
+* <<optaweb-vehicle-routing, OptaWeb Vehicle Routing>>
+* <<optaweb-employee-rostering, OptaWeb Employee Rostering>>
+* <<optaplanner-examples, OptaPlanner examples (desktop)>>
+
+[[school-timetabling]]
 === School timetabling
 
 Assign lessons to timeslots and rooms to produce a better schedule for teachers and students.
@@ -25,6 +39,7 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 * link:spring-boot-school-timetabling/README.adoc[Run spring-boot-school-timetabling] (Java, Maven or Gradle, Spring Boot, H2)
 * link:kotlin-quarkus-school-timetabling/README.adoc[Run kotlin-quarkus-school-timetabling] (Kotlin, Maven, Quarkus, H2)
 
+[[facility-location]]
 === Facility location problem
 
 Pick the best geographical locations for new stores, distribution centers, covid test centers or telco masts.
@@ -33,6 +48,17 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 
 * link:quarkus-facility-location/README.adoc[Run quarkus-facility-location] (Java, Maven, Quarkus)
 
+[[maintenance-scheduling]]
+=== Maintenance scheduling
+
+Schedule maintenance jobs to crews over time
+to reduce both premature and overdue maintenance.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-maintenance-scheduling-screenshot.png[]
+
+* link:quarkus-maintenance-scheduling/README.adoc[Run quarkus-maintenance-scheduling] (Java, Maven, Quarkus)
+
+[[factorio-layout]]
 === Factorio layout
 
 Assign machines to assembly line locations to design the best factory layout.
@@ -40,6 +66,33 @@ Assign machines to assembly line locations to design the best factory layout.
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-factorio-layout-screenshot.png[]
 
 * link:quarkus-factorio-layout/README.adoc[Run quarkus-factorio-layout] (Java, Maven, Quarkus)
+
+[[optaweb-vehicle-routing]]
+=== OptaWeb Vehicle Routing
+
+Find the most efficient routes for a fleet of vehicles.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/optaweb-vehicle-routing-screenshot.png[]
+
+* https://github.com/kiegroup/optaweb-vehicle-routing[Try me on GitHub!]
+
+[[optaweb-employee-rostering]]
+=== OptaWeb Employee Rostering
+
+Assign employees to shifts to improve shifts schedule.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/optaweb-employee-rostering-screenshot.png[]
+
+* https://github.com/kiegroup/optaweb-employee-rostering[Try me on GitHub!]
+
+[[optaplanner-examples]]
+=== OptaPlanner examples (desktop)
+
+Many examples in desktop technology.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/optaplanner-examples-screenshot.png[]
+
+* https://www.optaplanner.org/download/download.html[Download]
 
 == More information
 
