@@ -29,76 +29,114 @@
     </div>
     <div id="content">
         <p class="m-3">Launch a quickstart and give it a few seconds to start up (especially if built from source).</p>
-        <div class="card-deck">
-            <div class="card">
-                <div class="card-header">School timetabling</div>
-                <img src="screenshot/quarkus-school-timetabling-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
-                <div class="card-body">
-                    <p class="card-text">
-                        Assign lessons to timeslots and rooms
-                        to produce a better schedule for teachers and students.
-                    </p>
-                    <button id="quarkus-school-timetabling-launch" type="button" class="btn btn-primary w-100">
-                        <span class="fas fa-play"></span> Launch
-                    </button>
-                    <div id="quarkus-school-timetabling-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">Facility location problem</div>
-                <img src="screenshot/quarkus-facility-location-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
-                <div class="card-body">
-                    <p class="card-text">
-                        Pick the best geographical locations for new stores, distribution centers, covid test centers or telco masts.
-                    </p>
-                    <button id="quarkus-facility-location-launch" type="button" class="btn btn-primary w-100">
-                        <span class="fas fa-play"></span> Launch
-                    </button>
-                    <div id="quarkus-facility-location-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header">Factorio layout</div>
-                <img src="screenshot/quarkus-factorio-layout-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
-                <div class="card-body">
-                    <p class="card-text">
-                        Assign machines to assembly line locations to design the best factory layout.
-                    </p>
-                    <button id="quarkus-factorio-layout-launch" type="button" class="btn btn-primary w-100">
-                        <span class="fas fa-play"></span> Launch
-                    </button>
-                    <div id="quarkus-factorio-layout-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
-                </div>
-            </div>
-        </div>
-        <p class="m-3">Try more advanced showcase projects on GitHub:</p>
-        <div class="card-deck">
-            <div class="card">
-                <div class="card-header">OptaWeb Vehicle Routing</div>
-                <img src="screenshot/optaweb-vehicle-routing-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
-                <div class="card-body">
-                    <p class="card-text">
-                        Find the most efficient routes for a fleet of vehicles.
-                    </p>
-                    <a href="https://github.com/kiegroup/optaweb-vehicle-routing" target="_blank">
-                        <button type="button" class="btn btn-secondary w-100">
-                            <span class="fab fa-github"></span> Try me on GitHub!
+        <div class="row row-cols-1 row-cols-md-3">
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header">School timetabling</div>
+                    <img src="screenshot/quarkus-school-timetabling-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Assign lessons to timeslots and rooms
+                            to produce a better schedule for teachers and students.
+                        </p>
+                        <button id="quarkus-school-timetabling-launch" type="button" class="btn btn-primary w-100">
+                            <span class="fas fa-play"></span> Launch
                         </button>
-                    </a>
+                        <div id="quarkus-school-timetabling-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
+                    </div>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-header">OptaWeb Employee Rostering</div>
-                <img src="screenshot/optaweb-employee-rostering-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
-                <div class="card-body">
-                    <p class="card-text">
-                        Assign employees to shifts to improve shifts schedule.
-                    </p>
-                    <a href="https://github.com/kiegroup/optaweb-employee-rostering" target="_blank">
-                        <button type="button" class="btn btn-secondary w-100">
-                            <span class="fab fa-github"></span> Try me on GitHub!
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header">Facility location problem</div>
+                    <img src="screenshot/quarkus-facility-location-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Pick the best geographical locations for new stores, distribution centers, covid test centers or telco masts.
+                        </p>
+                        <button id="quarkus-facility-location-launch" type="button" class="btn btn-primary w-100">
+                            <span class="fas fa-play"></span> Launch
                         </button>
-                    </a>
+                        <div id="quarkus-facility-location-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header">Maintenance scheduling</div>
+                    <img src="screenshot/quarkus-maintenance-scheduling-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Schedule maintenance jobs to crews over time to reduce both premature and overdue maintenance.
+                        </p>
+                        <button id="quarkus-maintenance-scheduling-launch" type="button" class="btn btn-primary w-100">
+                            <span class="fas fa-play"></span> Launch
+                        </button>
+                        <div id="quarkus-maintenance-scheduling-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header">Factorio layout</div>
+                    <img src="screenshot/quarkus-factorio-layout-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Assign machines to assembly line locations to design the best factory layout.
+                        </p>
+                        <button id="quarkus-factorio-layout-launch" type="button" class="btn btn-primary w-100">
+                            <span class="fas fa-play"></span> Launch
+                        </button>
+                        <div id="quarkus-factorio-layout-ports" class="row row-cols-1 row-cols-md-3 mt-3"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header">OptaWeb Vehicle Routing</div>
+                    <img src="screenshot/optaweb-vehicle-routing-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Find the most efficient routes for a fleet of vehicles.
+                        </p>
+                        <a href="https://github.com/kiegroup/optaweb-vehicle-routing" target="_blank">
+                            <button type="button" class="btn btn-secondary w-100">
+                                <span class="fab fa-github"></span> Try me on GitHub!
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header">OptaWeb Employee Rostering</div>
+                    <img src="screenshot/optaweb-employee-rostering-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Assign employees to shifts to improve shifts schedule.
+                        </p>
+                        <a href="https://github.com/kiegroup/optaweb-employee-rostering" target="_blank">
+                            <button type="button" class="btn btn-secondary w-100">
+                                <span class="fab fa-github"></span> Try me on GitHub!
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col mb-4">
+                <div class="card">
+                    <div class="card-header">OptaPlanner examples</div>
+                    <img src="screenshot/optaplanner-examples-screenshot.png" class="card-img-top mt-3" alt="Screenshot"/>
+                    <div class="card-body">
+                        <p class="card-text">
+                            Many examples in desktop technology.
+                        </p>
+                        <a href="https://www.optaplanner.org/download/download.html" target="_blank">
+                            <button type="button" class="btn btn-secondary w-100">
+                                Download
+                            </button>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
