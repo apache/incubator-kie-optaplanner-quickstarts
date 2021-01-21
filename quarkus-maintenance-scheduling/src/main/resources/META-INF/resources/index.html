@@ -83,7 +83,7 @@
                     <span>&times;</span>
                 </button>
             </div>
-            <!-- Job requires name, unit, readyGrainIndex, deadlineGrainIndex, durationInGrains, critical -->
+            <!-- Job requires name, unit, readyTimeGrainIndex, dueTimeGrainIndex, durationInGrains, critical -->
             <div class="modal-body">
                 <div class="form-group">
                     <label for="job_name">Job name</label>
@@ -96,12 +96,12 @@
                     <select id="maintenance_unit_dropdown"></select>
                 </div>
                 <div class="form-group">
-                    <label for="ready_index">Ready index</label>
-                    <input type="number" class="form-control" id="ready_index" required value=0>
+                    <label for="ready_time_index">Ready time index</label>
+                    <input type="number" class="form-control" id="ready_time_index" required value=0>
                 </div>
                 <div class="form-group">
-                    <label for="deadline_index">Deadline index</label>
-                    <input type="number" class="form-control" id="deadline_index" required value=8>
+                    <label for="due_time_index">Due time index</label>
+                    <input type="number" class="form-control" id="due_time_index" required value=8>
                 </div>
                 <div class="form-group">
                     <label for="duration">Duration</label>

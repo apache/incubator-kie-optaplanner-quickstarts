@@ -56,25 +56,25 @@ public class MaintenanceSchedulingConstraintProviderTest {
     }
 
     @Test
-    public void jobsMustFinishBeforeDeadlineUnpenalized() {
+    public void jobsMustFinishBeforeDueTimeUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, true);
         TimeGrain startingTimeGrain = new TimeGrain(0);
         maintenanceJob.setStartingTimeGrain(startingTimeGrain);
 
-        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustFinishBeforeDeadline)
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustFinishBeforeDueTime)
                 .given(maintenanceJob)
                 .penalizesBy(0);
     }
 
     @Test
-    public void jobsMustFinishBeforeDeadlinePenalized() {
+    public void jobsMustFinishBeforeDueTimePenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, true);
         TimeGrain startingTimeGrain = new TimeGrain(8);
         maintenanceJob.setStartingTimeGrain(startingTimeGrain);
 
-        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustFinishBeforeDeadline)
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustFinishBeforeDueTime)
                 .given(maintenanceJob)
                 .penalizesBy(2);
     }
