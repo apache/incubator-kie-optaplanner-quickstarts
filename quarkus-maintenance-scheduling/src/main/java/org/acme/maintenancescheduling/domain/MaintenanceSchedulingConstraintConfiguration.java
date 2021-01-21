@@ -25,8 +25,8 @@ public class MaintenanceSchedulingConstraintConfiguration {
 
     @ConstraintWeight("Jobs must start after ready time grain")
     public HardSoftScore jobsMustStartAfterReadyTimeGrain = HardSoftScore.ofHard(1);
-    @ConstraintWeight("Jobs must finish before deadline")
-    public HardSoftScore jobsMustFinishBeforeDeadline = HardSoftScore.ofHard(1);
+    @ConstraintWeight("Jobs must finish before due time")
+    public HardSoftScore jobsMustFinishBeforeDueTime = HardSoftScore.ofHard(1);
     @ConstraintWeight("Assign all critical jobs")
     public HardSoftScore assignAllCriticalJobs = HardSoftScore.ofHard(10);
     @ConstraintWeight("One job per crew per period")

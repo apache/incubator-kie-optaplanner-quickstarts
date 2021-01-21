@@ -39,8 +39,8 @@ public class MaintenanceJob {
     @ManyToOne
     private MaintainableUnit maintainableUnit;
     
-    private int readyGrainIndex;
-    private int deadlineGrainIndex;
+    private int readyTimeGrainIndex;
+    private int dueTimeGrainIndex;
     private int durationInGrains;
 
     // TODO: Add configuration option for how long each TimeGrain is
@@ -60,12 +60,12 @@ public class MaintenanceJob {
     public MaintenanceJob() {
     }
 
-    public MaintenanceJob(String jobName, MaintainableUnit maintainableUnit, int readyGrainIndex,
-                          int deadlineGrainIndex, int durationInGrains, boolean critical) {
+    public MaintenanceJob(String jobName, MaintainableUnit maintainableUnit, int readyTimeGrainIndex,
+                          int dueTimeGrainIndex, int durationInGrains, boolean critical) {
         this.jobName = jobName;
         this.maintainableUnit = maintainableUnit;
-        this.readyGrainIndex = readyGrainIndex;
-        this.deadlineGrainIndex = deadlineGrainIndex;
+        this.readyTimeGrainIndex = readyTimeGrainIndex;
+        this.dueTimeGrainIndex = dueTimeGrainIndex;
         this.durationInGrains = durationInGrains;
         this.critical = critical;
     }
@@ -97,8 +97,8 @@ public class MaintenanceJob {
                 "id=" + id +
                 ", jobName='" + jobName + '\'' +
                 ", maintainableUnit=" + maintainableUnit +
-                ", readyGrainIndex=" + readyGrainIndex +
-                ", deadlineGrainIndex=" + deadlineGrainIndex +
+                ", readyTimeGrainIndex=" + readyTimeGrainIndex +
+                ", dueTimeGrainIndex=" + dueTimeGrainIndex +
                 ", durationInGrains=" + durationInGrains +
                 ", isCritical=" + critical +
                 '}';
@@ -132,20 +132,20 @@ public class MaintenanceJob {
         this.maintainableUnit = maintainableUnit;
     }
 
-    public int getReadyGrainIndex() {
-        return readyGrainIndex;
+    public int getReadyTimeGrainIndex() {
+        return readyTimeGrainIndex;
     }
 
-    public void setReadyGrainIndex(int readyGrainIndex) {
-        this.readyGrainIndex = readyGrainIndex;
+    public void setReadyTimeGrainIndex(int readyTimeGrainIndex) {
+        this.readyTimeGrainIndex = readyTimeGrainIndex;
     }
 
-    public int getDeadlineGrainIndex() {
-        return deadlineGrainIndex;
+    public int getDueTimeGrainIndex() {
+        return dueTimeGrainIndex;
     }
 
-    public void setDeadlineGrainIndex(int deadlineGrainIndex) {
-        this.deadlineGrainIndex = deadlineGrainIndex;
+    public void setDueTimeGrainIndex(int dueTimeGrainIndex) {
+        this.dueTimeGrainIndex = dueTimeGrainIndex;
     }
 
     public int getDurationInGrains() {

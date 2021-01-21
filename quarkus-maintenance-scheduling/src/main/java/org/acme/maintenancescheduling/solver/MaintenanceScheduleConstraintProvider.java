@@ -33,7 +33,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
         return new Constraint[] {
                 // Hard constraints
                 jobsMustStartAfterReadyTimeGrain(constraintFactory),
-                jobsMustFinishBeforeDeadline(constraintFactory),
+                jobsMustFinishBeforeDueTime(constraintFactory),
                 assignAllCriticalJobs(constraintFactory),
                 oneJobPerCrewPerPeriod(constraintFactory),
                 mutuallyExclusiveJobs(constraintFactory),
@@ -50,20 +50,20 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     public Constraint jobsMustStartAfterReadyTimeGrain(ConstraintFactory constraintFactory) {
         return constraintFactory.fromUnfiltered(MaintenanceJob.class)
                 .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null
-                        && maintenanceJob.getStartingTimeGrain().getGrainIndex() < maintenanceJob.getReadyGrainIndex())
+                        && maintenanceJob.getStartingTimeGrain().getGrainIndex() < maintenanceJob.getReadyTimeGrainIndex())
                 .penalizeConfigurable("Jobs must start after ready time grain",
-                        maintenanceJob -> maintenanceJob.getReadyGrainIndex()
+                        maintenanceJob -> maintenanceJob.getReadyTimeGrainIndex()
                                 - maintenanceJob.getStartingTimeGrain().getGrainIndex());
     }
 
-    public Constraint jobsMustFinishBeforeDeadline(ConstraintFactory constraintFactory) {
+    public Constraint jobsMustFinishBeforeDueTime(ConstraintFactory constraintFactory) {
         return constraintFactory.fromUnfiltered(MaintenanceJob.class)
                 .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null
                         && maintenanceJob.getStartingTimeGrain().getGrainIndex()
-                                + maintenanceJob.getDurationInGrains() > maintenanceJob.getDeadlineGrainIndex())
-                .penalizeConfigurable("Jobs must finish before deadline",
+                                + maintenanceJob.getDurationInGrains() > maintenanceJob.getDueTimeGrainIndex())
+                .penalizeConfigurable("Jobs must finish before due time",
                         maintenanceJob -> maintenanceJob.getStartingTimeGrain().getGrainIndex()
-                                + maintenanceJob.getDurationInGrains() - maintenanceJob.getDeadlineGrainIndex());
+                                + maintenanceJob.getDurationInGrains() - maintenanceJob.getDueTimeGrainIndex());
     }
 
     public Constraint assignAllCriticalJobs(ConstraintFactory constraintFactory) {

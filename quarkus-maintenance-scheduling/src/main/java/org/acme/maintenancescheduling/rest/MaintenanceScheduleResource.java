@@ -103,7 +103,7 @@ public class MaintenanceScheduleResource {
                 maintenanceCrewRepository.listAll(Sort.by("crewName").and("id")),
                 timeGrainRepository.listAll(Sort.by("grainIndex").and("id")),
                 maintenanceJobRepository.listAll(Sort.by("maintainableUnit")
-                        .and("startingTimeGrain").and("readyGrainIndex").and("deadlineGrainIndex").and("id")));
+                        .and("startingTimeGrain").and("readyTimeGrainIndex").and("dueTimeGrainIndex").and("id")));
     }
 
     @Transactional
