@@ -12,7 +12,6 @@ version = "0.1.0-SNAPSHOT"
 repositories {
     mavenCentral()
     mavenLocal()
-    // To get snapshots during development. Remove this in the "stable" branch (which doesn't use snapshots).
     maven {
         url "https://repository.jboss.org/nexus/content/groups/public/"
         mavenContent {
