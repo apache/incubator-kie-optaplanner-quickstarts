@@ -16,43 +16,95 @@
 
 package org.acme.schooltimetabling.rest;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import javax.inject.Inject;
-
 import org.acme.schooltimetabling.domain.TimeTable;
-import org.acme.schooltimetabling.domain.Lesson;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Timeout;
 import org.optaplanner.core.api.solver.SolverStatus;
+import org.optaplanner.persistence.jackson.api.OptaPlannerJacksonModule;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.RestAssured;
 
 @QuarkusTest
 public class TimeTableResourceTest {
 
-    @Inject
-    TimeTableResource timeTableResource;
+    private static final Long PROBLEM_ID = 1L;
+    private static final String RESOURCE_URI = "/time-table";
 
-    @Test
-    @Timeout(600_000)
-    public void solveDemoDataUntilFeasible() throws InterruptedException {
-        timeTableResource.solve();
-        TimeTable timeTable = timeTableResource.getTimeTable();
-        while (timeTable.getSolverStatus() != SolverStatus.NOT_SOLVING) {
-            // Quick polling (not a Test Thread Sleep anti-pattern)
-            // Test is still fast on fast machines and doesn't randomly fail on slow machines.
-            Thread.sleep(20L);
-            timeTable = timeTableResource.getTimeTable();
-        }
-        assertFalse(timeTable.getLessonList().isEmpty());
-        for (Lesson lesson : timeTable.getLessonList()) {
-            assertNotNull(lesson.getTimeslot());
-            assertNotNull(lesson.getRoom());
-        }
-        assertTrue(timeTable.getScore().isFeasible());
+    private static String uri(String operation) {
+        return RESOURCE_URI + "/" + PROBLEM_ID + "/" + operation;
     }
 
+    private static String solve() {
+        return uri("solve");
+    }
+
+    private static String status() {
+        return uri("status");
+    }
+
+    @BeforeEach
+    void terminateSolving() {
+        given().delete(RESOURCE_URI + "/" + PROBLEM_ID);
+    }
+
+    @Test
+    void duplicateProblemId_immediateErrorMessage() {
+        given().post(solve()).then().assertThat().statusCode(200);
+        given()
+                .post(solve())
+                .then()
+                .assertThat()
+                .statusCode(409)
+                .extract()
+                .response()
+                .asString().equals("The problemId (" + PROBLEM_ID + ") is already solving.");
+    }
+
+    @Test
+    void solveTillTermination() throws InterruptedException, JsonProcessingException {
+        given().post(solve())
+                .then()
+                .statusCode(200);
+
+        Assertions.assertEquals(SolverStatus.SOLVING_ACTIVE, getSolverStatus());
+        while (getSolverStatus() != SolverStatus.NOT_SOLVING) {
+            Thread.sleep(100L);
+        }
+
+        TimeTable solution = getSolution();
+        assertNotNull(solution);
+        assertTrue(solution.getScore().isFeasible());
+    }
+
+    private TimeTable getSolution() throws JsonProcessingException {
+        String solutionJson = RestAssured
+                .get(RESOURCE_URI + "/" + PROBLEM_ID)
+                .then()
+                .statusCode(200)
+                .extract().asString();
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.registerModule(OptaPlannerJacksonModule.createModule());
+        return mapper.readValue(solutionJson, TimeTable.class);
+    }
+
+    private SolverStatus getSolverStatus() {
+        return given()
+                .get(status())
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(SolverStatus.class);
+    }
 }

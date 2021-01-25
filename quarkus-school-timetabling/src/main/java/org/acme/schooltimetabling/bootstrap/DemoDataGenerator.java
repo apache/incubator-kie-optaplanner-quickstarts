@@ -39,6 +39,8 @@ import io.quarkus.runtime.StartupEvent;
 @ApplicationScoped
 public class DemoDataGenerator {
 
+    public static final Long PROBLEM_ID = 1L;
+
     @ConfigProperty(name = "timeTable.demoData", defaultValue = "SMALL")
     DemoData demoData;
 

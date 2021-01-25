@@ -1,10 +1,12 @@
+const problemId = 1;
+
 var autoRefreshIntervalId = null;
 
 function refreshTimeTable() {
-  $.getJSON("/timeTable", function (timeTable) {
-    refreshSolvingButtons(timeTable.solverStatus != null && timeTable.solverStatus !== "NOT_SOLVING");
-    $("#score").text("Score: " + (timeTable.score == null ? "?" : timeTable.score));
+  refreshSolvingButtonsFromServer();
 
+  $.getJSON("/time-table/" + problemId, function (timeTable) {
+    $("#score").text("Score: " + (timeTable.score == null ? "?" : timeTable.score));
     const timeTableByRoom = $("#timeTableByRoom");
     timeTableByRoom.children().remove();
     const timeTableByTeacher = $("#timeTableByTeacher");
@@ -124,7 +126,7 @@ function convertToId(str) {
 }
 
 function solve() {
-  $.post("/timeTable/solve", function () {
+  $.post("/time-table/" + problemId + "/solve-and-listen", function () {
     refreshSolvingButtons(true);
   }).fail(function (xhr, ajaxOptions, thrownError) {
     showError("Start solving failed.", xhr);
@@ -148,8 +150,18 @@ function refreshSolvingButtons(solving) {
   }
 }
 
+function refreshSolvingButtonsFromServer() {
+    $.getJSON("/time-table/" + problemId + "/status", function (solverStatus) {
+        var isSolving = (solverStatus !== null && solverStatus !== "NOT_SOLVING");
+        refreshSolvingButtons(isSolving)
+    })
+    .fail(function (xhr, ajaxOptions, thrownError) {
+        showError("Get solver status failed.", xhr);
+    });
+}
+
 function stopSolving() {
-  $.post("/timeTable/stopSolving", function () {
+  $.delete("/time-table/" + problemId, function () {
     refreshSolvingButtons(false);
     refreshTimeTable();
   }).fail(function (xhr, ajaxOptions, thrownError) {

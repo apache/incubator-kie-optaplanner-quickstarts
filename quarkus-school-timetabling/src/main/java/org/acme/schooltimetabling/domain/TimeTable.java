@@ -24,7 +24,6 @@ import org.optaplanner.core.api.domain.solution.PlanningSolution;
 import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
-import org.optaplanner.core.api.solver.SolverStatus;
 
 @PlanningSolution
 public class TimeTable {
@@ -40,9 +39,6 @@ public class TimeTable {
 
     @PlanningScore
     private HardSoftScore score;
-
-    // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
-    private SolverStatus solverStatus;
 
     // No-arg constructor required for OptaPlanner
     public TimeTable() {
@@ -72,14 +68,6 @@ public class TimeTable {
 
     public HardSoftScore getScore() {
         return score;
-    }
-
-    public SolverStatus getSolverStatus() {
-        return solverStatus;
-    }
-
-    public void setSolverStatus(SolverStatus solverStatus) {
-        this.solverStatus = solverStatus;
     }
 
 }
