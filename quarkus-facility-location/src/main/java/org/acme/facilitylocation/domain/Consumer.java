@@ -35,10 +35,6 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
 @PlanningEntity
 public class Consumer {
 
-    // Approximate Metric Equivalents for Degrees. At the equator for longitude and for latitude anywhere,
-    // the following approximations are valid: 1° = 111 km (or 60 nautical miles) 0.1° = 11.1 km.
-    public static final double METERS_PER_DEGREE = 111_000;
-
     private long id;
     private Location location;
     private long demand;
@@ -68,9 +64,7 @@ public class Consumer {
         if (facility == null) {
             throw new IllegalStateException("No facility is assigned.");
         }
-        double latDiff = facility.getLocation().latitude - this.location.latitude;
-        double lngDiff = facility.getLocation().longitude - this.location.longitude;
-        return (long) ceil(sqrt(latDiff * latDiff + lngDiff * lngDiff) * METERS_PER_DEGREE);
+        return facility.getLocation().getDistanceTo(location);
     }
 
     public long getId() {

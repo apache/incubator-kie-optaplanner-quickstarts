@@ -1,0 +1,91 @@
+<!--
+  ~ Copyright 2020 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Vaccination scheduler - OptaPlanner Quarkus</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/webjars/font-awesome/css/all.css" />
+    <link rel="stylesheet" href="/webjars/leaflet/leaflet.css">
+</head>
+<body>
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="https://www.optaplanner.org">
+            <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
+        </a>
+    </nav>
+    <div class="sticky-top d-flex justify-content-center align-items-center" aria-live="polite" aria-atomic="true">
+        <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
+    </div>
+    <h1>Vaccination scheduler</h1>
+    <p>Generate the optimal schedule to inject a country with COVID-19 vaccines.</p>
+
+    <div style="margin-bottom: .5rem">
+        <button id="refreshButton" type="button" class="btn btn-secondary">
+            <span class="fas fa-refresh"></span> Refresh
+        </button>
+        <button id="solveButton" type="button" class="btn btn-success">
+            <span class="fas fa-play"></span> Solve
+        </button>
+        <button id="stopSolvingButton" type="button" class="btn btn-danger">
+            <span class="fas fa-stop"></span> Stop solving
+        </button>
+        <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span>
+
+        <div class="float-right">
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="scheduleTab" data-toggle="tab" href="#scheduleTabDiv" role="tab" aria-controls="schedulePanel" aria-selected="true">Schedule</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="mapTab" data-toggle="tab" href="#mapTabDiv" role="tab" aria-controls="mapPanel" aria-selected="false">Map</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="unassignedTab" data-toggle="tab" href="#unassignedTabDiv" role="tab" aria-controls="unassignedPanel" aria-selected="false">Unassigned</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="ml-5 mr-5">
+        <span>Vaccine types:</span>
+        <div id="vaccineTypes" class="card-columns"></div>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="scheduleTabDiv" role="tabpanel" aria-labelledby="scheduleTab">
+            <table class="table table-borderless table-striped" id="scheduleTable">
+                <!-- Filled in by app.js -->
+            </table>
+        </div>
+        <div class="tab-pane fade" id="mapTabDiv" role="tabpanel" aria-labelledby="mapTab">
+            <div id="leafletMap" style="width: 100%; height: 850px;"></div>
+        </div>
+        <div class="tab-pane fade" id="unassignedTabDiv" role="tabpanel" aria-labelledby="unassignedTab">
+            <h2 style="margin-top: 2rem">Unassigned persons</h2>
+            <div id="unassignedPersons" class="card-columns"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script src="/webjars/momentjs/min/moment.min.js"></script>
+<script src="/webjars/leaflet/leaflet.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
