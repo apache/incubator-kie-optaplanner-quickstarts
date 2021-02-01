@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.acme.facilitylocation.domain;
+package org.acme.vaccinationscheduler.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -36,15 +36,15 @@ public class Location {
         this.longitude = longitude;
     }
 
-    @Override
-    public String toString() {
-        return String.format("[%.4fN, %.4fE]", latitude, longitude);
-    }
-
     public long getDistanceTo(Location other) {
         double latitudeDiff = other.latitude - this.latitude;
         double longitudeDiff = other.longitude - this.longitude;
         return (long) ceil(sqrt(latitudeDiff * latitudeDiff + longitudeDiff * longitudeDiff) * METERS_PER_DEGREE);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[%.4fN, %.4fE]", latitude, longitude);
     }
 
 }
