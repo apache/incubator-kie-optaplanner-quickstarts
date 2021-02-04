@@ -57,7 +57,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // Don't inject older people with AstraZeneca
         return constraintFactory
                 .from(Injection.class)
-                .filter(injection -> injection.getPerson().getAge() >= 65
+                .filter(injection -> injection.getPerson().getAge() >= 55
                         && injection.getVaccineType() == VaccineType.ASTRAZENECA)
                 .penalize("Age limit AstraZeneca", HardMediumSoftLongScore.ONE_HARD);
     }
