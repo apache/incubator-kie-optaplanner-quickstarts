@@ -20,6 +20,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 import org.acme.vaccinationscheduler.domain.Injection;
 import org.acme.vaccinationscheduler.domain.Person;
+import org.acme.vaccinationscheduler.domain.VaccineType;
 import org.optaplanner.core.api.score.buildin.hardmediumsoftlong.HardMediumSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -32,6 +33,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
                 personConflict(constraintFactory),
+                ageLimitAstrazeneca(constraintFactory),
                 secondShotInvalidVaccineType(constraintFactory),
                 secondShotMustBeAssigned(constraintFactory),
                 assignAllOlderPeople(constraintFactory),
@@ -49,6 +51,15 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
                 .fromUniquePair(Injection.class,
                         Joiners.equal(Injection::getPerson))
                 .penalize("Person conflict", HardMediumSoftLongScore.ofHard(100));
+    }
+
+    Constraint ageLimitAstrazeneca(ConstraintFactory constraintFactory) {
+        // Don't inject older people with AstraZeneca
+        return constraintFactory
+                .from(Injection.class)
+                .filter(injection -> injection.getPerson().getAge() >= 65
+                        && injection.getVaccineType() == VaccineType.ASTRAZENECA)
+                .penalize("Age limit AstraZeneca", HardMediumSoftLongScore.ONE_HARD);
     }
 
     Constraint secondShotInvalidVaccineType(ConstraintFactory constraintFactory) {

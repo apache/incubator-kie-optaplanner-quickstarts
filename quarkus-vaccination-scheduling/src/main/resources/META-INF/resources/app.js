@@ -13,7 +13,7 @@ function refreshSolution() {
       const color = pickColor(vaccineType);
       vaccineTypesDiv.append($(`<div class="card" style="background-color: ${color}"/>`)
           .append($(`<div class="card-body p-2"/>`)
-            .append($(`<h5 class="card-title mb-1"/>`).text(vaccineTypeToString(vaccineType)))));
+            .append($(`<h5 class="card-title mb-0"/>`).text(vaccineTypeToString(vaccineType)))));
     });
 
     const scheduleTable = $("#scheduleTable");
@@ -64,16 +64,19 @@ function refreshSolution() {
             } else {
               cardBody.append($(`<h5 class="card-title mb-1"/>`)
                 .text(injection.person.name + " (" + injection.person.age + ")"));
+              if (injection.person.age >= 65 && injection.vaccineType === "ASTRAZENECA") {
+                cardBody.append($(`<p class="badge badge-danger mb-0"/>`).text("65+ has " + vaccineTypeToString(injection.vaccineType)));
+              }
               if (!injection.person.firstShotInjected) {
-                cardBody.append($(`<p class="card-text ml-2"/>`).text("1th shot"));
+                cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("1th shot"));
               } else {
                 var idealDateDiff = moment(injection.dateTime, "YYYY,M,D,H,m").diff(moment(injection.person.secondShotIdealDate, "YYYY,M,D"), 'days');
-                cardBody.append($(`<p class="card-text ml-2"/>`).text("2nd shot ("
+                cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("2nd shot ("
                   + (idealDateDiff === 0 ? "ideal day"
                     : (idealDateDiff < 0 ? (-idealDateDiff) + " days too early"
                       : idealDateDiff + " days too late")) + ")"));
                 if (injection.vaccineType !== injection.person.firstShotVaccineType) {
-                  cardBody.append($(`<p class="card-text ml-2"/>`).text("Invalid! Needs " + vaccineTypeToString(injection.person.firstShotVaccineType)));
+                  cardBody.append($(`<p class="badge badge-danger ml-2 mb-0"/>`).text("First shot was " + vaccineTypeToString(injection.person.firstShotVaccineType)));
                 }
               }
             }
