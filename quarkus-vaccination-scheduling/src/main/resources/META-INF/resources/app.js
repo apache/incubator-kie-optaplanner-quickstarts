@@ -64,8 +64,8 @@ function refreshSolution() {
             } else {
               cardBody.append($(`<h5 class="card-title mb-1"/>`)
                 .text(injection.person.name + " (" + injection.person.age + ")"));
-              if (injection.person.age >= 65 && injection.vaccineType === "ASTRAZENECA") {
-                cardBody.append($(`<p class="badge badge-danger mb-0"/>`).text("65+ has " + vaccineTypeToString(injection.vaccineType)));
+              if (injection.person.age >= 55 && injection.vaccineType === "ASTRAZENECA") {
+                cardBody.append($(`<p class="badge badge-danger mb-0"/>`).text("55+ has " + vaccineTypeToString(injection.vaccineType)));
               }
               if (!injection.person.firstShotInjected) {
                 cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("1th shot"));

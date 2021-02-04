@@ -46,6 +46,7 @@ import io.quarkus.runtime.StartupEvent;
 @ApplicationScoped
 public class DemoDataGenerator {
 
+    // Latitude and longitude window of the city of Atlanta, US.
     public static final double MINIMUM_LATITUDE = 33.40;
     public static final double MAXIMUM_LATITUDE = 34.10;
     public static final double MINIMUM_LONGITUDE = -84.90;
@@ -98,7 +99,7 @@ public class DemoDataGenerator {
             int age = (int) YEARS.between(birthdate, windowStartDate);
             boolean firstShotInjected = random.nextDouble() < 0.25;
             VaccineType firstShotVaccineType = firstShotInjected ? pickVaccineType(random) : null;
-            if (firstShotInjected && age >= 65 && firstShotVaccineType == VaccineType.ASTRAZENECA) {
+            if (firstShotInjected && age >= 55 && firstShotVaccineType == VaccineType.ASTRAZENECA) {
                 firstShotVaccineType = random.nextDouble() < 0.5 ? VaccineType.PFIZER : VaccineType.MODERNA;
             }
             LocalDate secondShotIdealDate = firstShotInjected ?
