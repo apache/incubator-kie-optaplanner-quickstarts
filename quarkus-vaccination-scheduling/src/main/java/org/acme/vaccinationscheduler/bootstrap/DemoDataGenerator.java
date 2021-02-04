@@ -98,6 +98,9 @@ public class DemoDataGenerator {
             int age = (int) YEARS.between(birthdate, windowStartDate);
             boolean firstShotInjected = random.nextDouble() < 0.25;
             VaccineType firstShotVaccineType = firstShotInjected ? pickVaccineType(random) : null;
+            if (firstShotInjected && age >= 65 && firstShotVaccineType == VaccineType.ASTRAZENECA) {
+                firstShotVaccineType = random.nextDouble() < 0.5 ? VaccineType.PFIZER : VaccineType.MODERNA;
+            }
             LocalDate secondShotIdealDate = firstShotInjected ?
                     windowStartDate.plusDays(random.nextInt(windowDaysLength))
                     : null;
