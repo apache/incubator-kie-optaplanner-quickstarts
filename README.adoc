@@ -23,6 +23,7 @@ https://adoptopenjdk.net[Download OpenJDK.]
 * <<school-timetabling, School timetabling>>
 * <<facility-location, Facility location problem>>
 * <<maintenance-scheduling, Maintenance scheduling>>
+* <<vaccination-scheduling, Vaccination Scheduling>>
 * <<factorio-layout, Factorio layout>>
 * <<optaweb-vehicle-routing, OptaWeb Vehicle Routing>>
 * <<optaweb-employee-rostering, OptaWeb Employee Rostering>>
@@ -57,6 +58,16 @@ to reduce both premature and overdue maintenance.
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-maintenance-scheduling-screenshot.png[]
 
 * link:quarkus-maintenance-scheduling/README.adoc[Run quarkus-maintenance-scheduling] (Java, Maven, Quarkus)
+
+[[vaccination-scheduling]]
+=== Vaccination scheduling
+
+Assign people to vaccination injection appointments over time at vaccination centers
+to end a pandemic sooner.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-vaccination-scheduling-screenshot.png[]
+
+* link:quarkus-vaccination-scheduling/README.adoc[Run quarkus-vaccination-scheduling] (Java, Maven, Quarkus)
 
 [[factorio-layout]]
 === Factorio layout

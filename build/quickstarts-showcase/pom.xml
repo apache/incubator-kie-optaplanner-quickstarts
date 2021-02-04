@@ -13,9 +13,9 @@
   <name>OptaPlanner Quickstarts Showcase</name>
 
   <properties>
-    <!-- Required by the maven-jar-plugin in the optaplanner-build-parent. -->
-    <java.module.name>org.optaplanner.quickstarts.all</java.module.name>
+    <java.module.name>org.optaplanner.quickstarts.showcase</java.module.name>
   </properties>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
