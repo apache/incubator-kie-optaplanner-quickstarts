@@ -34,7 +34,11 @@ public class Person {
     private VaccineType firstShotVaccineType;
     private LocalDate secondShotIdealDate;
 
-    public Person(Long id, String name, Location homeLocation, LocalDate birthdate, int age,
+    public Person(long id, String name, Location homeLocation, LocalDate birthdate, int age) {
+        this(id, name, homeLocation, birthdate, age, false, null, null);
+    }
+
+    public Person(long id, String name, Location homeLocation, LocalDate birthdate, int age,
             boolean firstShotInjected, VaccineType firstShotVaccineType, LocalDate secondShotIdealDate) {
         this.id = id;
         this.name = name;

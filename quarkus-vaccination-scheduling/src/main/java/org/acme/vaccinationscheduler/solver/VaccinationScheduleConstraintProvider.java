@@ -111,6 +111,8 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
                                 injection.getVaccinationCenter().getLocation()));
     }
 
+    // TODO This works, but it hurts performance and there are better ways to write this
+    // Do not confuse with assignAllOlderPeople
 //    Constraint elderlyFirstPerVaccinationCenter(ConstraintFactory constraintFactory) {
 //        Predicate<Injection> firstShotPredicate = (injection) -> !injection.getPerson().isFirstShotInjected();
 //        return constraintFactory

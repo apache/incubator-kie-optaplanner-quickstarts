@@ -53,6 +53,15 @@ public class Injection {
         this.vaccineType = vaccineType;
     }
 
+    public Injection(long id, VaccinationCenter vaccinationCenter, int lineIndex, LocalDateTime dateTime, VaccineType vaccineType, Person person) {
+        this.id = id;
+        this.vaccinationCenter = vaccinationCenter;
+        this.lineIndex = lineIndex;
+        this.dateTime = dateTime;
+        this.vaccineType = vaccineType;
+        this.person = person;
+    }
+
     @Override
     public String toString() {
         return dateTime + "@" + vaccinationCenter.getName() + "(" + id + ")";
