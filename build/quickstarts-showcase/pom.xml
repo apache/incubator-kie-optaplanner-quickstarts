@@ -156,4 +156,11 @@
     </profile>
   </profiles>
 
+  <pluginRepositories>
+    <!-- To get the maven-compiler-plugin:3.8.0-jboss-2. -->
+    <pluginRepository>
+      <id>jboss-public-repository-group</id>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
