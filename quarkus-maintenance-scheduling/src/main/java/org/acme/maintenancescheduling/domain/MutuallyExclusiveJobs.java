@@ -31,13 +31,16 @@ public class MutuallyExclusiveJobs {
     @GeneratedValue
     private Long id;
 
+    private String exclusiveTag;
+
     @OneToMany(fetch = FetchType.EAGER)
     private List<MaintenanceJob> mutexJobs;
 
     public MutuallyExclusiveJobs() {
     }
 
-    public MutuallyExclusiveJobs(MaintenanceJob... mutexJobs) {
+    public MutuallyExclusiveJobs(String exclusiveTag, MaintenanceJob... mutexJobs) {
+        this.exclusiveTag = exclusiveTag;
         this.mutexJobs = Arrays.asList(mutexJobs);
     }
 
@@ -56,6 +59,7 @@ public class MutuallyExclusiveJobs {
     public String toString() {
         return "MutuallyExclusiveJobs{" +
                 "id=" + id +
+                ", exclusiveTag='" + exclusiveTag + '\'' +
                 ", mutexJobs=" + mutexJobs +
                 '}';
     }
@@ -70,6 +74,14 @@ public class MutuallyExclusiveJobs {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getExclusiveTag() {
+        return exclusiveTag;
+    }
+
+    public void setExclusiveTag(String exclusiveTag) {
+        this.exclusiveTag = exclusiveTag;
     }
 
     public List<MaintenanceJob> getMutexJobs() {
