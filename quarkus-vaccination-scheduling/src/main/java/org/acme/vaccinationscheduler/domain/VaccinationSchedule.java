@@ -30,6 +30,7 @@ import org.optaplanner.core.api.solver.SolverStatus;
 @PlanningSolution
 public class VaccinationSchedule {
 
+    @ProblemFactCollectionProperty
     private List<VaccineType> vaccineTypeList;
 
     @ProblemFactCollectionProperty
