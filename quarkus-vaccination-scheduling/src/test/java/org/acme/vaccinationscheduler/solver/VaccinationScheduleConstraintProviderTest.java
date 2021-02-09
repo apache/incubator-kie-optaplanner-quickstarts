@@ -30,19 +30,27 @@ import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
 class VaccinationScheduleConstraintProviderTest {
 
+    private static final VaccineType PFIZER = new VaccineType("Pfizer", 19, 21);
+    private static final VaccineType MODERNA = new VaccineType("Moderna", 26, 28);
+    private static final VaccineType ASTRAZENECA = new VaccineType("AstraZeneca", 4 * 7, 6 * 7, 55);
+
     private static final VaccinationCenter VACCINATION_CENTER_1 = new VaccinationCenter("Alpha", new Location(0, 0), 3);
     private static final LocalDate MONDAY = LocalDate.of(2021, 2, 1);
     private static final LocalDate TUESDAY = LocalDate.of(2021, 2, 2);
     private static final LocalDate WEDNESDAY = LocalDate.of(2021, 2, 3);
+    private static final LocalDate THURSDAY = LocalDate.of(2021, 2, 4);
+    private static final LocalDate FRIDAY = LocalDate.of(2021, 2, 4);
     private static final LocalDateTime MONDAY_0900 = LocalDateTime.of(2021, 2, 1, 9, 0);
     private static final LocalDateTime MONDAY_1000 = LocalDateTime.of(2021, 2, 1, 10, 0);
     private static final LocalDateTime MONDAY_1100 = LocalDateTime.of(2021, 2, 1, 11, 0);
     private static final LocalDateTime TUESDAY_0900 = LocalDateTime.of(2021, 2, 2, 9, 0);
     private static final LocalDateTime WEDNESDAY_0900 = LocalDateTime.of(2021, 2, 3, 9, 0);
+    private static final LocalDateTime THURSDAY_0900 = LocalDateTime.of(2021, 2, 4, 9, 0);
+    private static final LocalDateTime FRIDAY_0900 = LocalDateTime.of(2021, 2, 5, 9, 0);
     private static final Person ANN = new Person(1, "Ann", new Location(1, 0), LocalDate.of(1950, 1, 1), 71);
     private static final Person BETH = new Person(2, "Beth", new Location(2, 0), LocalDate.of(1980, 1, 1), 41);
     private static final Person CARL = new Person(3, "Carl", new Location(3, 0), LocalDate.of(1970, 1, 1), 51,
-            true, VaccineType.MODERNA, MONDAY);
+            true, MODERNA, THURSDAY.minusDays(28));
 
     private final ConstraintVerifier<VaccinationScheduleConstraintProvider, VaccinationSchedule> constraintVerifier =
             ConstraintVerifier.build(new VaccinationScheduleConstraintProvider(), VaccinationSchedule.class, Injection.class);
@@ -51,58 +59,98 @@ class VaccinationScheduleConstraintProviderTest {
     void personConflict() {
         constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::personConflict)
                 .given(
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN),
-                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, VaccineType.PFIZER, BETH),
-                        new Injection(3, VACCINATION_CENTER_1, 0, MONDAY_1100, VaccineType.PFIZER, ANN)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN),
+                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, PFIZER, BETH),
+                        new Injection(3, VACCINATION_CENTER_1, 0, MONDAY_1100, PFIZER, ANN)
                         )
                 .penalizesBy(1);
     }
 
     @Test
-    void ageLimitAstrazeneca() {
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::ageLimitAstrazeneca)
+    void vaccinationTypeMaximumAge() {
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::vaccinationTypeMaximumAge)
                 .given(
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN)
                 )
                 .penalizesBy(0);
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::ageLimitAstrazeneca)
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::vaccinationTypeMaximumAge)
                 .given(
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.ASTRAZENECA, ANN)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, ASTRAZENECA, ANN)
                 )
-                .penalizesBy(1);
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::ageLimitAstrazeneca)
+                .penalizesBy(71 - 55);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::vaccinationTypeMaximumAge)
                 .given(
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.ASTRAZENECA, BETH)
-                )
-                .penalizesBy(0);
-    }
-
-    @Test
-    void secondShotInvalidVaccineType() {
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondShotInvalidVaccineType)
-                .given(
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN),
-                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, VaccineType.PFIZER, CARL)
-                )
-                .penalizesBy(1);
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondShotInvalidVaccineType)
-                .given(
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN),
-                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, VaccineType.MODERNA, CARL)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, ASTRAZENECA, BETH)
                 )
                 .penalizesBy(0);
     }
 
     @Test
-    void secondShotMustBeAssigned() {
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondShotMustBeAssigned)
+    void secondDoseInvalidVaccineType() {
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseInvalidVaccineType)
+                .given(
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN),
+                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, PFIZER, CARL)
+                )
+                .penalizesBy(1);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseInvalidVaccineType)
+                .given(
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN),
+                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, MODERNA, CARL)
+                )
+                .penalizesBy(0);
+    }
+
+    @Test
+    void secondDoseReadyDate() {
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseReadyDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, MODERNA, ANN))
+                .penalizesBy(0);
+
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseReadyDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, MODERNA, CARL))
+                .penalizesBy(1);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseReadyDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, TUESDAY_0900, MODERNA, CARL))
+                .penalizesBy(0);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseReadyDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, WEDNESDAY_0900, MODERNA, CARL))
+                .penalizesBy(0);
+    }
+
+    @Test
+    void secondDoseIdealDate() {
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseIdealDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, MODERNA, ANN))
+                .penalizesBy(0);
+
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseIdealDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, MODERNA, CARL))
+                .penalizesBy(3);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseIdealDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, TUESDAY_0900, MODERNA, CARL))
+                .penalizesBy(2);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseIdealDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, WEDNESDAY_0900, MODERNA, CARL))
+                .penalizesBy(1);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseIdealDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, THURSDAY_0900, MODERNA, CARL))
+                .penalizesBy(0);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseIdealDate)
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, FRIDAY_0900, MODERNA, CARL))
+                .penalizesBy(1);
+    }
+
+    @Test
+    void secondDoseMustBeAssigned() {
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseMustBeAssigned)
                 .given(ANN, BETH, CARL,
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, CARL)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, CARL)
                         )
                 .penalizesBy(0);
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondShotMustBeAssigned)
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondDoseMustBeAssigned)
                 .given(ANN, BETH, CARL,
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN)
                         )
                 .penalizesBy(1);
     }
@@ -111,38 +159,25 @@ class VaccinationScheduleConstraintProviderTest {
     void assignAllOlderPeople() {
         constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::assignAllOlderPeople)
                 .given(ANN, BETH, CARL,
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN)
                         )
                 .penalizesBy(51 + 41);
         constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::assignAllOlderPeople)
                 .given(ANN, BETH, CARL,
-                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN),
-                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, VaccineType.PFIZER, CARL)
+                        new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN),
+                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, PFIZER, CARL)
                         )
                 .penalizesBy(41);
     }
 
     @Test
-    void secondShotIdealDay() {
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondShotIdealDay)
-                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.MODERNA, CARL))
-                .penalizesBy(0);
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondShotIdealDay)
-                .given(new Injection(1, VACCINATION_CENTER_1, 0, TUESDAY_0900, VaccineType.MODERNA, CARL))
-                .penalizesBy(1);
-        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::secondShotIdealDay)
-                .given(new Injection(1, VACCINATION_CENTER_1, 0, WEDNESDAY_0900, VaccineType.MODERNA, CARL))
-                .penalizesBy(2);
-    }
-
-    @Test
     void distanceCost() {
         constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::distanceCost)
-                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN))
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN))
                 .penalizesBy((long) Location.METERS_PER_DEGREE);
         constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::distanceCost)
-                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, VaccineType.PFIZER, ANN),
-                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, VaccineType.PFIZER, BETH))
+                .given(new Injection(1, VACCINATION_CENTER_1, 0, MONDAY_0900, PFIZER, ANN),
+                        new Injection(2, VACCINATION_CENTER_1, 0, MONDAY_1000, PFIZER, BETH))
                 .penalizesBy(3L * (long) Location.METERS_PER_DEGREE);
     }
 

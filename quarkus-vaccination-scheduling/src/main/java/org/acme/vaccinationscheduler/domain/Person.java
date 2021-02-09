@@ -20,6 +20,8 @@ import java.time.LocalDate;
 
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+
 public class Person {
 
     @PlanningId
@@ -30,24 +32,25 @@ public class Person {
     private LocalDate birthdate;
     private int age;
 
-    private boolean firstShotInjected;
-    private VaccineType firstShotVaccineType;
-    private LocalDate secondShotIdealDate;
+    private boolean firstDoseInjected;
+    @JsonIdentityReference(alwaysAsId = true)
+    private VaccineType firstDoseVaccineType;
+    private LocalDate firstDoseDate;
 
     public Person(long id, String name, Location homeLocation, LocalDate birthdate, int age) {
         this(id, name, homeLocation, birthdate, age, false, null, null);
     }
 
     public Person(long id, String name, Location homeLocation, LocalDate birthdate, int age,
-            boolean firstShotInjected, VaccineType firstShotVaccineType, LocalDate secondShotIdealDate) {
+            boolean firstDoseInjected, VaccineType firstDoseVaccineType, LocalDate firstDoseDate) {
         this.id = id;
         this.name = name;
         this.homeLocation = homeLocation;
         this.birthdate = birthdate;
         this.age = age;
-        this.firstShotInjected = firstShotInjected;
-        this.firstShotVaccineType = firstShotVaccineType;
-        this.secondShotIdealDate = secondShotIdealDate;
+        this.firstDoseInjected = firstDoseInjected;
+        this.firstDoseVaccineType = firstDoseVaccineType;
+        this.firstDoseDate = firstDoseDate;
     }
 
     @Override
@@ -79,15 +82,16 @@ public class Person {
         return age;
     }
 
-    public boolean isFirstShotInjected() {
-        return firstShotInjected;
+    public boolean isFirstDoseInjected() {
+        return firstDoseInjected;
     }
 
-    public VaccineType getFirstShotVaccineType() {
-        return firstShotVaccineType;
+    public VaccineType getFirstDoseVaccineType() {
+        return firstDoseVaccineType;
     }
 
-    public LocalDate getSecondShotIdealDate() {
-        return secondShotIdealDate;
+    public LocalDate getFirstDoseDate() {
+        return firstDoseDate;
     }
+
 }

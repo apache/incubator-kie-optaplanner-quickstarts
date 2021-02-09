@@ -16,8 +16,61 @@
 
 package org.acme.vaccinationscheduler.domain;
 
-public enum VaccineType {
-    PFIZER,
-    MODERNA,
-    ASTRAZENECA;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "name")
+public class VaccineType {
+
+    private String name;
+
+    // For example 19 days for Pfizer
+    private int secondDoseReadyDays;
+    // For example 21 days for Pfizer
+    private int secondDoseIdealDays;
+
+    // For example 55 for AstraZeneca
+    private Integer maximumAge;
+
+    public VaccineType(String name, int secondDoseReadyDays, int secondDoseIdealDays) {
+        this(name, secondDoseReadyDays, secondDoseIdealDays, null);
+    }
+
+    public VaccineType(String name, int secondDoseReadyDays, int secondDoseIdealDays, Integer maximumAge) {
+        this.name = name;
+        this.secondDoseReadyDays = secondDoseReadyDays;
+        this.secondDoseIdealDays = secondDoseIdealDays;
+        this.maximumAge = maximumAge;
+    }
+
+    public boolean isOkForMaximumAge(int age) {
+        return maximumAge == null || age <= maximumAge;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
+
+    public String getName() {
+        return name;
+    }
+
+    public int getSecondDoseReadyDays() {
+        return secondDoseReadyDays;
+    }
+
+    public int getSecondDoseIdealDays() {
+        return secondDoseIdealDays;
+    }
+
+    public Integer getMaximumAge() {
+        return maximumAge;
+    }
+
 }

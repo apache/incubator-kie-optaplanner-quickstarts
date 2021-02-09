@@ -23,6 +23,8 @@ import org.optaplanner.core.api.domain.entity.PlanningPin;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+
 @PlanningEntity
 public class Injection {
 
@@ -32,6 +34,7 @@ public class Injection {
     private VaccinationCenter vaccinationCenter;
     private int lineIndex;
     private LocalDateTime dateTime;
+    @JsonIdentityReference(alwaysAsId = true)
     private VaccineType vaccineType;
 
     @PlanningPin

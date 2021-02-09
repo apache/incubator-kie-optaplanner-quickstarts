@@ -10,11 +10,12 @@ function refreshSolution() {
     const vaccineTypesDiv = $("#vaccineTypes");
     vaccineTypesDiv.children().remove();
     solution.vaccineTypeList.forEach((vaccineType) => {
-      const color = pickColor(vaccineType);
+      const color = pickColor(vaccineType.name);
       vaccineTypesDiv.append($(`<div class="card" style="background-color: ${color}"/>`)
           .append($(`<div class="card-body p-2"/>`)
-            .append($(`<h5 class="card-title mb-0"/>`).text(vaccineTypeToString(vaccineType)))));
+            .append($(`<h5 class="card-title mb-0"/>`).text(vaccineType.name))));
     });
+    const vaccineTypeMap = new Map(solution.vaccineTypeList.map(vaccineType => [vaccineType.name, vaccineType]));
 
     const scheduleTable = $("#scheduleTable");
     scheduleTable.children().remove();
@@ -28,7 +29,7 @@ function refreshSolution() {
       for (lineIndex = 0; lineIndex < vaccinationCenter.lineCount; lineIndex++) {
         headerRow
           .append($("<th/>")
-            .append($("<span/>").text(vaccinationCenter.name + " " + lineIndex)));
+            .append($("<span/>").text(vaccinationCenter.name + (vaccinationCenter.lineCount <= 1 ? "" : " line " + lineIndex))));
       }
     });
 
@@ -64,20 +65,29 @@ function refreshSolution() {
             } else {
               cardBody.append($(`<h5 class="card-title mb-1"/>`)
                 .text(injection.person.name + " (" + injection.person.age + ")"));
-              if (injection.person.age >= 55 && injection.vaccineType === "ASTRAZENECA") {
-                cardBody.append($(`<p class="badge badge-danger mb-0"/>`).text("55+ has " + vaccineTypeToString(injection.vaccineType)));
+              const vaccineType = vaccineTypeMap.get(injection.vaccineType);
+              if (vaccineType.maximumAge != null && injection.person.age > vaccineType.maximumAge) {
+                cardBody.append($(`<p class="badge badge-danger mb-0"/>`).text(vaccineType.name + " maximum age is " + vaccineType.maximumAge));
               }
-              if (!injection.person.firstShotInjected) {
-                cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("1th shot"));
+              if (!injection.person.firstDoseInjected) {
+                cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("1st dose"));
               } else {
-                var idealDateDiff = moment(injection.dateTime, "YYYY,M,D,H,m").diff(moment(injection.person.secondShotIdealDate, "YYYY,M,D"), 'days');
-                cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("2nd shot ("
+                var firstDoseDate = moment(injection.person.firstDoseDate, "YYYY,M,D");
+                if (injection.vaccineType !== injection.person.firstDoseVaccineType) {
+                  cardBody.append($(`<p class="badge badge-danger ml-2 mb-0"/>`).text("1st dose was " + injection.person.firstDoseVaccineType));
+                }
+                var injectionDateTime = moment(injection.dateTime, "YYYY,M,D,H,m");
+                var secondDoseReadyDate = firstDoseDate.clone().add(vaccineType.secondDoseReadyDays, 'days');
+                var readyDateDiff = injectionDateTime.diff(secondDoseReadyDate, 'days');
+                if (readyDateDiff < 0) {
+                  cardBody.append($(`<p class="badge badge-danger ml-2 mb-0"/>`).text("2nd dose is " + (-readyDateDiff) + " days too early"));
+                }
+                var secondDoseIdealDate = firstDoseDate.clone().add(vaccineType.secondDoseIdealDays, 'days');
+                var idealDateDiff = injectionDateTime.diff(secondDoseIdealDate, 'days');
+                cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("2nd dose ("
                   + (idealDateDiff === 0 ? "ideal day"
                     : (idealDateDiff < 0 ? (-idealDateDiff) + " days too early"
                       : idealDateDiff + " days too late")) + ")"));
-                if (injection.vaccineType !== injection.person.firstShotVaccineType) {
-                  cardBody.append($(`<p class="badge badge-danger ml-2 mb-0"/>`).text("First shot was " + vaccineTypeToString(injection.person.firstShotVaccineType)));
-                }
               }
             }
             row.append($(`<td class="p-1"/>`)
@@ -106,25 +116,12 @@ function refreshSolution() {
             .append($(`<div class="card-body pt-1 pb-1 pl-2 pr-2"/>`)
               .append($(`<h5 class="card-title mb-1"/>`).text(person.name + " (" + person.age + ")"))
               .append($(`<p class="card-text ml-2"/>`).text(
-                person.firstShotInjected
-                ? "2nd shot (ideally " + moment(person.secondShotIdealDate, "YYYY,M,D").format("ddd MMM D") + ")"
-                : "1th shot"))));
+                person.firstDoseInjected
+                ? "2nd dose (ideally " + moment(person.secondDoseIdealDate, "YYYY,M,D").format("ddd MMM D") + ")"
+                : "1st dose"))));
       }
     });
   });
-}
-
-function vaccineTypeToString(vaccineType) {
-  switch (vaccineType) {
-    case "PFIZER":
-      return "Pfizer";
-    case "MODERNA":
-      return "Moderna";
-    case "ASTRAZENECA":
-      return "AstraZeneca";
-    default:
-      return vaccineType;
-  }
 }
 
 function solve() {
