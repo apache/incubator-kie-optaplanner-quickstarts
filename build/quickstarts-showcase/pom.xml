@@ -137,7 +137,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${surefire-plugin.version}</version>
+            <version>${version.surefire.plugin}</version>
             <executions>
               <execution>
                 <goals>
