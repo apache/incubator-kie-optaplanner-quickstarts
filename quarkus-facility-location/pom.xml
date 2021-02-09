@@ -8,7 +8,7 @@
   <version>1.0-SNAPSHOT</version>
 
   <properties>
-    <version.org.optaplanner>8.2.0-SNAPSHOT</version.org.optaplanner>
+    <version.org.optaplanner>8.2.1-SNAPSHOT</version.org.optaplanner>
     <version.io.quarkus>1.11.0.Final</version.io.quarkus>
 
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
