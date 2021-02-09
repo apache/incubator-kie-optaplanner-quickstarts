@@ -8,14 +8,15 @@
   <version>1.0-SNAPSHOT</version>
 
   <properties>
+    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>11</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     <version.org.optaplanner>8.3.0-SNAPSHOT</version.org.optaplanner>
     <version.org.springframework.boot>2.2.6.RELEASE</version.org.springframework.boot>
 
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <maven.compiler.target>11</maven.compiler.target>
-    <maven.compiler.source>11</maven.compiler.source>
-    <surefire-plugin.version>2.22.2</surefire-plugin.version>
+    <version.compiler.plugin>3.8.1</version.compiler.plugin>
+    <version.surefire.plugin>2.22.2</version.surefire.plugin>
   </properties>
 
   <dependencyManagement>
@@ -109,7 +110,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
+        <version>${version.compiler.plugin}</version>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -118,7 +119,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
+        <version>${version.surefire.plugin}</version>
       </plugin>
     </plugins>
   </build>

@@ -8,14 +8,15 @@
   <version>1.0-SNAPSHOT</version>
 
   <properties>
-    <version.org.optaplanner>8.3.0-SNAPSHOT</version.org.optaplanner>
+    <maven.compiler.release>11</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     <!-- Always update the version also in the build.gradle. -->
     <version.io.quarkus>1.11.0.Final</version.io.quarkus>
+    <version.org.optaplanner>8.3.0-SNAPSHOT</version.org.optaplanner>
 
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
-    <maven.compiler.release>11</maven.compiler.release>
-    <surefire-plugin.version>2.22.2</surefire-plugin.version>
+    <version.compiler.plugin>3.8.1</version.compiler.plugin>
+    <version.surefire.plugin>2.22.2</version.surefire.plugin>
   </properties>
 
   <dependencyManagement>
@@ -108,7 +109,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
+        <version>${version.compiler.plugin}</version>
       </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
@@ -124,7 +125,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
+        <version>${version.surefire.plugin}</version>
         <configuration>
           <systemPropertyVariables>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
@@ -146,7 +147,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${surefire-plugin.version}</version>
+            <version>${version.surefire.plugin}</version>
             <executions>
               <execution>
                 <goals>
