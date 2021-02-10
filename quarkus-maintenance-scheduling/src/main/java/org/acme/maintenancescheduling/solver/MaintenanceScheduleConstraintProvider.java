@@ -92,10 +92,10 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                         lessThan(MaintenanceJob::getId),
                         filtering((maintenanceJob, otherJob) -> maintenanceJob.calculateOverlap(otherJob) > 0))
                 .join(MutuallyExclusiveJobs.class,
-                        filtering((maintenanceJob, otherJob, mutexJobs) -> mutexJobs.isMutuallyExclusive(maintenanceJob,
-                                otherJob)))
+                        filtering((maintenanceJob, otherJob, mutuallyExclusiveJobs) -> 
+                        mutuallyExclusiveJobs.isMutuallyExclusive(maintenanceJob,otherJob)))
                 .penalizeConfigurable("Mutually exclusive jobs cannot overlap",
-                        (maintenanceJob, otherJob, mutexJobs) -> maintenanceJob.calculateOverlap(otherJob));
+                        (maintenanceJob, otherJob, mutuallyExclusiveJobs) -> maintenanceJob.calculateOverlap(otherJob));
     }
 
     public Constraint oneJobPerUnitPerPeriod(ConstraintFactory constraintFactory) {

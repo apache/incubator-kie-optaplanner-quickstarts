@@ -34,14 +34,14 @@ public class MutuallyExclusiveJobs {
     private String exclusiveTag;
 
     @OneToMany(fetch = FetchType.EAGER)
-    private List<MaintenanceJob> mutexJobs;
+    private List<MaintenanceJob> mutuallyExclusiveJobList;
 
     public MutuallyExclusiveJobs() {
     }
 
-    public MutuallyExclusiveJobs(String exclusiveTag, MaintenanceJob... mutexJobs) {
+    public MutuallyExclusiveJobs(String exclusiveTag, MaintenanceJob... mutuallyExclusiveJobs) {
         this.exclusiveTag = exclusiveTag;
-        this.mutexJobs = Arrays.asList(mutexJobs);
+        this.mutuallyExclusiveJobList = Arrays.asList(mutuallyExclusiveJobs);
     }
 
     // ************************************************************************
@@ -49,7 +49,7 @@ public class MutuallyExclusiveJobs {
     // ************************************************************************
 
     public boolean isMutuallyExclusive(MaintenanceJob maintenanceJob, MaintenanceJob otherJob) {
-        if (mutexJobs.contains(maintenanceJob) && mutexJobs.contains(otherJob)) {
+        if (mutuallyExclusiveJobList.contains(maintenanceJob) && mutuallyExclusiveJobList.contains(otherJob)) {
             return true;
         }
         return false;
@@ -60,7 +60,7 @@ public class MutuallyExclusiveJobs {
         return "MutuallyExclusiveJobs{" +
                 "id=" + id +
                 ", exclusiveTag='" + exclusiveTag + '\'' +
-                ", mutexJobs=" + mutexJobs +
+                ", mutuallyExclusiveJobList=" + mutuallyExclusiveJobList +
                 '}';
     }
 
@@ -84,11 +84,11 @@ public class MutuallyExclusiveJobs {
         this.exclusiveTag = exclusiveTag;
     }
 
-    public List<MaintenanceJob> getMutexJobs() {
-        return mutexJobs;
+    public List<MaintenanceJob> getMutuallyExclusiveJobList() {
+        return mutuallyExclusiveJobList;
     }
 
-    public void setMutexJobs(List<MaintenanceJob> mutexJobs) {
-        this.mutexJobs = mutexJobs;
+    public void setMutuallyExclusiveJobList(List<MaintenanceJob> mutuallyExclusiveJobs) {
+        this.mutuallyExclusiveJobList = mutuallyExclusiveJobs;
     }
 }

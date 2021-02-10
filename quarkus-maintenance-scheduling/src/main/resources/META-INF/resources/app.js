@@ -142,15 +142,15 @@ function refreshSchedule(fitSchedule) {
             });
         });
 
-        // Label each mutex job with tag
-        const jobToMutexTagMap = {};
+        // Label each mutually exclusive job with tag
+        const jobToMutuallyExclusiveTagMap = {};
         $.each(schedule.mutuallyExclusiveJobsList, (index, mutuallyExclusiveJobs) => {
-            $.each(mutuallyExclusiveJobs.mutexJobs, (index, job) => {
-                if (jobToMutexTagMap[job.jobName] == null) {
-                    jobToMutexTagMap[job.jobName] = [mutuallyExclusiveJobs.exclusiveTag];
+            $.each(mutuallyExclusiveJobs.mutuallyExclusiveJobList, (index, job) => {
+                if (jobToMutuallyExclusiveTagMap[job.jobName] == null) {
+                    jobToMutuallyExclusiveTagMap[job.jobName] = [mutuallyExclusiveJobs.exclusiveTag];
                 }
                 else {
-                    jobToMutexTagMap[job.jobName].push(mutuallyExclusiveJobs.exclusiveTag);
+                    jobToMutuallyExclusiveTagMap[job.jobName].push(mutuallyExclusiveJobs.exclusiveTag);
                 }
             });
         });
@@ -173,11 +173,11 @@ function refreshSchedule(fitSchedule) {
                     .append($(`<b h6 class="card-title"/>`).text(job.jobName))
                     .append($(`<br><span class="badge" style="background-color: white"/>`)
                         .text(job.maintainableUnit.unitName)));
-                // Append mutex tags on jobs
-                $.each(jobToMutexTagMap[job.jobName], (index, mutexTag) => {
-                    const color = pickColor(mutexTag);
+                // Append mutually exclusive tags on jobs
+                $.each(jobToMutuallyExclusiveTagMap[job.jobName], (index, mutuallyExclusiveTag) => {
+                    const color = pickColor(mutuallyExclusiveTag);
                     unassignedJobElement.append($(`<span class="badge badge-info m-2" style="background-color: ${color}"/>`)
-                        .text(mutexTag));
+                        .text(mutuallyExclusiveTag));
                 });
                 unassignedJobs.append(unassignedJobElement);
             }
