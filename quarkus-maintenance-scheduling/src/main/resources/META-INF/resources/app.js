@@ -12,7 +12,7 @@ var crewGroups = new vis.DataSet();
 // Configuration for the Timeline
 var options = {
     // Make jobs editable through UI
-    editable: true,
+    // editable: true,
     // Set time zone to UTC
     moment: function (date) {
         return vis.moment(date).utc();
