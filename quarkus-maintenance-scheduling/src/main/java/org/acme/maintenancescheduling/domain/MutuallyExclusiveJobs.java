@@ -31,14 +31,17 @@ public class MutuallyExclusiveJobs {
     @GeneratedValue
     private Long id;
 
+    private String exclusiveTag;
+
     @OneToMany(fetch = FetchType.EAGER)
-    private List<MaintenanceJob> mutexJobs;
+    private List<MaintenanceJob> mutuallyExclusiveJobList;
 
     public MutuallyExclusiveJobs() {
     }
 
-    public MutuallyExclusiveJobs(MaintenanceJob... mutexJobs) {
-        this.mutexJobs = Arrays.asList(mutexJobs);
+    public MutuallyExclusiveJobs(String exclusiveTag, MaintenanceJob... mutuallyExclusiveJobs) {
+        this.exclusiveTag = exclusiveTag;
+        this.mutuallyExclusiveJobList = Arrays.asList(mutuallyExclusiveJobs);
     }
 
     // ************************************************************************
@@ -46,7 +49,7 @@ public class MutuallyExclusiveJobs {
     // ************************************************************************
 
     public boolean isMutuallyExclusive(MaintenanceJob maintenanceJob, MaintenanceJob otherJob) {
-        if (mutexJobs.contains(maintenanceJob) && mutexJobs.contains(otherJob)) {
+        if (mutuallyExclusiveJobList.contains(maintenanceJob) && mutuallyExclusiveJobList.contains(otherJob)) {
             return true;
         }
         return false;
@@ -56,7 +59,8 @@ public class MutuallyExclusiveJobs {
     public String toString() {
         return "MutuallyExclusiveJobs{" +
                 "id=" + id +
-                ", mutexJobs=" + mutexJobs +
+                ", exclusiveTag='" + exclusiveTag + '\'' +
+                ", mutuallyExclusiveJobList=" + mutuallyExclusiveJobList +
                 '}';
     }
 
@@ -72,11 +76,19 @@ public class MutuallyExclusiveJobs {
         this.id = id;
     }
 
-    public List<MaintenanceJob> getMutexJobs() {
-        return mutexJobs;
+    public String getExclusiveTag() {
+        return exclusiveTag;
     }
 
-    public void setMutexJobs(List<MaintenanceJob> mutexJobs) {
-        this.mutexJobs = mutexJobs;
+    public void setExclusiveTag(String exclusiveTag) {
+        this.exclusiveTag = exclusiveTag;
+    }
+
+    public List<MaintenanceJob> getMutuallyExclusiveJobList() {
+        return mutuallyExclusiveJobList;
+    }
+
+    public void setMutuallyExclusiveJobList(List<MaintenanceJob> mutuallyExclusiveJobs) {
+        this.mutuallyExclusiveJobList = mutuallyExclusiveJobs;
     }
 }

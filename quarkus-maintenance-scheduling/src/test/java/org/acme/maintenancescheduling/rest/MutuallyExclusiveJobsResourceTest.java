@@ -39,7 +39,7 @@ public class MutuallyExclusiveJobsResourceTest {
                 .extract().body().jsonPath().getList(".", MutuallyExclusiveJobs.class);
         assertFalse(mutuallyExclusiveJobsList.isEmpty());
         MutuallyExclusiveJobs firstMutuallyExclusiveJobs = mutuallyExclusiveJobsList.get(0);
-        assertNotNull(firstMutuallyExclusiveJobs.getMutexJobs());
+        assertNotNull(firstMutuallyExclusiveJobs.getMutuallyExclusiveJobList());
     }
 
     @Test
