@@ -3,19 +3,19 @@ var vaccineCenterLeafletGroup = null;
 var personLeafletGroup = null;
 
 function refreshSolution() {
-  $.getJSON("/vaccinationSchedule", function (solution) {
-    refreshSolvingButtons(solution.solverStatus != null && solution.solverStatus !== "NOT_SOLVING");
-    $("#score").text("Score: " + (solution.score == null ? "?" : solution.score));
+  $.getJSON("/vaccinationSchedule", function (scheduleVisualization) {
+    refreshSolvingButtons(scheduleVisualization.solverStatus != null && scheduleVisualization.solverStatus !== "NOT_SOLVING");
+    $("#score").text("Score: " + (scheduleVisualization.score == null ? "?" : scheduleVisualization.score));
 
     const vaccineTypesDiv = $("#vaccineTypes");
     vaccineTypesDiv.children().remove();
-    solution.vaccineTypeList.forEach((vaccineType) => {
+    scheduleVisualization.vaccineTypeList.forEach((vaccineType) => {
       const color = pickColor(vaccineType.name);
       vaccineTypesDiv.append($(`<div class="card" style="background-color: ${color}"/>`)
           .append($(`<div class="card-body p-2"/>`)
             .append($(`<h5 class="card-title mb-0"/>`).text(vaccineType.name))));
     });
-    const vaccineTypeMap = new Map(solution.vaccineTypeList.map(vaccineType => [vaccineType.name, vaccineType]));
+    const vaccineTypeMap = new Map(scheduleVisualization.vaccineTypeList.map(vaccineType => [vaccineType.name, vaccineType]));
 
     const scheduleTable = $("#scheduleTable");
     scheduleTable.children().remove();
@@ -25,7 +25,7 @@ function refreshSolution() {
     const thead = $("<thead>").appendTo(scheduleTable);
     const headerRow = $("<tr>").appendTo(thead);
     headerRow.append($("<th>Timeslot</th>"));
-    solution.vaccinationCenterList.forEach((vaccinationCenter) => {
+    scheduleVisualization.vaccinationCenterList.forEach((vaccinationCenter) => {
       for (lineIndex = 0; lineIndex < vaccinationCenter.lineCount; lineIndex++) {
         headerRow
           .append($("<th/>")
@@ -33,18 +33,12 @@ function refreshSolution() {
       }
     });
 
-    const injectionMap = new Map(solution.injectionList
-      .map(injection => [injection.dateTime + "/" + injection.vaccinationCenter.name + "/" + injection.lineIndex, injection]));
-    var personIdToInjectionMap = new Map();
-    solution.injectionList.forEach((injection) => {
-      if (injection.person != null) {
-        personIdToInjectionMap.set(injection.person.id, injection);
-      }
-    });
+    const appointmentMap = new Map(scheduleVisualization.appointmentList
+      .map(appointment => [appointment.dateTime + "/" + appointment.vaccinationCenter.id + "/" + appointment.lineIndex, appointment]));
 
     const tbody = $(`<tbody>`).appendTo(scheduleTable);
     var previousParsedDateTime = null;
-    solution.timeslotDateTimeList.forEach((dateTime) => {
+    scheduleVisualization.dateTimeList.forEach((dateTime) => {
       const row = $(`<tr>`).appendTo(tbody);
       var parsedDateTime = moment(dateTime, "YYYY,M,D,H,m");
       var showDate = (previousParsedDateTime == null || !parsedDateTime.isSame(previousParsedDateTime, "day"));
@@ -52,38 +46,38 @@ function refreshSolution() {
         .append($(`<th class="align-middle"/>`)
           .append($(`<span style="float: right"/>`).text(showDate ? parsedDateTime.format("ddd MMM D HH:mm") : parsedDateTime.format("HH:mm"))));
       previousParsedDateTime = parsedDateTime;
-      solution.vaccinationCenterList.forEach((vaccinationCenter) => {
+      scheduleVisualization.vaccinationCenterList.forEach((vaccinationCenter) => {
         for (lineIndex = 0; lineIndex < vaccinationCenter.lineCount; lineIndex++) {
-          var injection = injectionMap.get(dateTime + "/" + vaccinationCenter.name + "/" + lineIndex);
-          if (injection == null) {
+          var appointment = appointmentMap.get(dateTime + "/" + vaccinationCenter.id + "/" + lineIndex);
+          if (appointment == null) {
             row.append($(`<td class="p-1"/>`));
           } else {
-            const color = pickColor(injection.vaccineType);
+            const color = pickColor(appointment.vaccineType);
             var cardBody = $(`<div class="card-body pt-1 pb-1 pl-2 pr-2"/>`);
-            if (injection.person == null) {
+            if (appointment.person == null) {
               cardBody.append($(`<h5 class="card-title mb-0"/>`).text("Unassigned"));
             } else {
               cardBody.append($(`<h5 class="card-title mb-1"/>`)
-                .text(injection.person.name + " (" + injection.person.age + ")"));
-              const vaccineType = vaccineTypeMap.get(injection.vaccineType);
-              if (vaccineType.maximumAge != null && injection.person.age > vaccineType.maximumAge) {
+                .text(appointment.person.name + " (" + appointment.person.age + ")"));
+              const vaccineType = vaccineTypeMap.get(appointment.vaccineType);
+              if (vaccineType.maximumAge != null && appointment.person.age > vaccineType.maximumAge) {
                 cardBody.append($(`<p class="badge badge-danger mb-0"/>`).text(vaccineType.name + " maximum age is " + vaccineType.maximumAge));
               }
-              if (!injection.person.firstDoseInjected) {
+              if (!appointment.person.firstDoseInjected) {
                 cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("1st dose"));
               } else {
-                var firstDoseDate = moment(injection.person.firstDoseDate, "YYYY,M,D");
-                if (injection.vaccineType !== injection.person.firstDoseVaccineType) {
-                  cardBody.append($(`<p class="badge badge-danger ml-2 mb-0"/>`).text("1st dose was " + injection.person.firstDoseVaccineType));
+                var firstDoseDate = moment(appointment.person.firstDoseDate, "YYYY,M,D");
+                if (appointment.vaccineType !== appointment.person.firstDoseVaccineType) {
+                  cardBody.append($(`<p class="badge badge-danger ml-2 mb-0"/>`).text("1st dose was " + appointment.person.firstDoseVaccineType));
                 }
-                var injectionDateTime = moment(injection.dateTime, "YYYY,M,D,H,m");
+                var appointmentDateTime = moment(appointment.dateTime, "YYYY,M,D,H,m");
                 var secondDoseReadyDate = firstDoseDate.clone().add(vaccineType.secondDoseReadyDays, 'days');
-                var readyDateDiff = injectionDateTime.diff(secondDoseReadyDate, 'days');
+                var readyDateDiff = appointmentDateTime.diff(secondDoseReadyDate, 'days');
                 if (readyDateDiff < 0) {
                   cardBody.append($(`<p class="badge badge-danger ml-2 mb-0"/>`).text("2nd dose is " + (-readyDateDiff) + " days too early"));
                 }
                 var secondDoseIdealDate = firstDoseDate.clone().add(vaccineType.secondDoseIdealDays, 'days');
-                var idealDateDiff = injectionDateTime.diff(secondDoseIdealDate, 'days');
+                var idealDateDiff = appointmentDateTime.diff(secondDoseIdealDate, 'days');
                 cardBody.append($(`<p class="card-text ml-2 mb-0"/>`).text("2nd dose ("
                   + (idealDateDiff === 0 ? "ideal day"
                     : (idealDateDiff < 0 ? (-idealDateDiff) + " days too early"
@@ -100,17 +94,17 @@ function refreshSolution() {
 
 
     vaccineCenterLeafletGroup.clearLayers();
-    solution.vaccinationCenterList.forEach((vaccinationCenter) => {
+    scheduleVisualization.vaccinationCenterList.forEach((vaccinationCenter) => {
       L.marker(vaccinationCenter.location).addTo(vaccineCenterLeafletGroup);
     });
 
     personLeafletGroup.clearLayers();
-    solution.personList.forEach((person) => {
-      const injection = personIdToInjectionMap.get(person.id);
-      const personColor = (injection == null ? "gray" : pickColor(injection.vaccineType));
+    scheduleVisualization.personList.forEach((person) => {
+      const vaccinationSlot = person.vaccinationSlot;
+      const personColor = (vaccinationSlot == null ? "gray" : pickColor(vaccinationSlot.vaccineType));
       L.circleMarker(person.homeLocation, {radius: 4, color: personColor, weight: 2}).addTo(personLeafletGroup);
-      if (injection != null) {
-        L.polyline([person.homeLocation, injection.vaccinationCenter.location], {color: personColor, weight: 1}).addTo(personLeafletGroup);
+      if (vaccinationSlot != null) {
+        L.polyline([person.homeLocation, vaccinationSlot.vaccinationCenter.location], {color: personColor, weight: 1}).addTo(personLeafletGroup);
       } else {
         unassignedPeronsDiv.append($(`<div class="card"/>`)
             .append($(`<div class="card-body pt-1 pb-1 pl-2 pr-2"/>`)

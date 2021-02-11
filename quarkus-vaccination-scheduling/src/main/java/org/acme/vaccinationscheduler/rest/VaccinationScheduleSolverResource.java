@@ -17,7 +17,6 @@
 package org.acme.vaccinationscheduler.rest;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -26,10 +25,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.acme.vaccinationscheduler.domain.VaccinationSchedule;
+import org.acme.vaccinationscheduler.domain.ui.VaccinationScheduleVisualization;
 import org.acme.vaccinationscheduler.persistence.VaccinationScheduleRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardmediumsoft.HardMediumSoftScore;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 
@@ -48,14 +47,13 @@ public class VaccinationScheduleSolverResource {
 
     // To try, open http://localhost:8080/vaccinationSchedule
     @GET
-    public VaccinationSchedule get() {
+    public VaccinationScheduleVisualization get() {
         // Get the solver status before loading the solution
         // to avoid the race condition that the solver terminates between them
         SolverStatus solverStatus = getSolverStatus();
         VaccinationSchedule solution = vaccinationScheduleRepository.find();
         scoreManager.updateScore(solution); // Sets the score
-        solution.setSolverStatus(solverStatus);
-        return solution;
+        return new VaccinationScheduleVisualization(solution, solverStatus);
     }
 
     @POST

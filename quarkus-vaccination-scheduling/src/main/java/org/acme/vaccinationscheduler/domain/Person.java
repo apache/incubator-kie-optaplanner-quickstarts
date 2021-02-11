@@ -18,10 +18,15 @@ package org.acme.vaccinationscheduler.domain;
 
 import java.time.LocalDate;
 
+import org.acme.vaccinationscheduler.solver.PersonDifficultyComparator;
+import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.entity.PlanningPin;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
+@PlanningEntity(difficultyComparatorClass = PersonDifficultyComparator.class)
 public class Person {
 
     @PlanningId
@@ -37,11 +42,24 @@ public class Person {
     private VaccineType firstDoseVaccineType;
     private LocalDate firstDoseDate;
 
-    public Person(long id, String name, Location homeLocation, LocalDate birthdate, int age) {
+    @PlanningPin
+    private boolean pinned;
+
+    // In this implementation, a planning window is at most 2 weeks,
+    // so the 1st and 2nd dose won't be in the same planning window.
+    // So one assignment suffices. Change the model to support multiple doses in the same planning window.
+    @PlanningVariable(nullable = true, valueRangeProviderRefs = {"vaccinationSlotRange"})
+    private VaccinationSlot vaccinationSlot;
+
+    // No-arg constructor required for OptaPlanner
+    public Person() {
+    }
+
+    public Person(Long id, String name, Location homeLocation, LocalDate birthdate, int age) {
         this(id, name, homeLocation, birthdate, age, false, null, null);
     }
 
-    public Person(long id, String name, Location homeLocation, LocalDate birthdate, int age,
+    public Person(Long id, String name, Location homeLocation, LocalDate birthdate, int age,
             boolean firstDoseInjected, VaccineType firstDoseVaccineType, LocalDate firstDoseDate) {
         this.id = id;
         this.name = name;
@@ -52,6 +70,18 @@ public class Person {
         this.firstDoseVaccineType = firstDoseVaccineType;
         this.firstDoseDate = firstDoseDate;
     }
+
+    public Person(Long id, String name, Location homeLocation, LocalDate birthdate, int age, VaccinationSlot vaccinationSlot) {
+        this(id, name, homeLocation, birthdate, age);
+        this.vaccinationSlot = vaccinationSlot;
+    }
+
+    public Person(Long id, String name, Location homeLocation, LocalDate birthdate, int age,
+            boolean firstDoseInjected, VaccineType firstDoseVaccineType, LocalDate firstDoseDate, VaccinationSlot vaccinationSlot) {
+        this(id, name, homeLocation, birthdate, age, firstDoseInjected, firstDoseVaccineType, firstDoseDate);
+        this.vaccinationSlot = vaccinationSlot;
+    }
+
 
     @Override
     public String toString() {
@@ -92,6 +122,22 @@ public class Person {
 
     public LocalDate getFirstDoseDate() {
         return firstDoseDate;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+
+    public VaccinationSlot getVaccinationSlot() {
+        return vaccinationSlot;
+    }
+
+    public void setVaccinationSlot(VaccinationSlot vaccinationSlot) {
+        this.vaccinationSlot = vaccinationSlot;
     }
 
 }

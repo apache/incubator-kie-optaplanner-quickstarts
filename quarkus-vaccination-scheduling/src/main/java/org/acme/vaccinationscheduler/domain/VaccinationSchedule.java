@@ -16,7 +16,6 @@
 
 package org.acme.vaccinationscheduler.domain;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
@@ -25,7 +24,6 @@ import org.optaplanner.core.api.domain.solution.PlanningSolution;
 import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardmediumsoftlong.HardMediumSoftLongScore;
-import org.optaplanner.core.api.solver.SolverStatus;
 
 @PlanningSolution
 public class VaccinationSchedule {
@@ -35,32 +33,29 @@ public class VaccinationSchedule {
 
     @ProblemFactCollectionProperty
     private List<VaccinationCenter> vaccinationCenterList;
-
-    private List<LocalDateTime> timeslotDateTimeList;
+    @ProblemFactCollectionProperty
+    private List<Timeslot> timeslotList;
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "personRange")
-    private List<Person> personList;
+    @ValueRangeProvider(id = "vaccinationSlotRange")
+    private List<VaccinationSlot> vaccinationSlotList;
 
     @PlanningEntityCollectionProperty
-    private List<Injection> injectionList;
+    private List<Person> personList;
 
     @PlanningScore
     private HardMediumSoftLongScore score;
-
-    // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
-    private SolverStatus solverStatus;
 
     // No-arg constructor required for OptaPlanner
     public VaccinationSchedule() {
     }
 
-    public VaccinationSchedule(List<VaccineType> vaccineTypeList, List<VaccinationCenter> vaccinationCenterList, List<LocalDateTime> timeslotDateTimeList, List<Person> personList, List<Injection> injectionList) {
+    public VaccinationSchedule(List<VaccineType> vaccineTypeList, List<VaccinationCenter> vaccinationCenterList, List<Timeslot> timeslotList, List<VaccinationSlot> vaccinationSlotList, List<Person> personList) {
         this.vaccineTypeList = vaccineTypeList;
         this.vaccinationCenterList = vaccinationCenterList;
-        this.timeslotDateTimeList = timeslotDateTimeList;
+        this.timeslotList = timeslotList;
+        this.vaccinationSlotList = vaccinationSlotList;
         this.personList = personList;
-        this.injectionList = injectionList;
     }
 
     public List<VaccineType> getVaccineTypeList() {
@@ -71,28 +66,20 @@ public class VaccinationSchedule {
         return vaccinationCenterList;
     }
 
-    public List<LocalDateTime> getTimeslotDateTimeList() {
-        return timeslotDateTimeList;
+    public List<Timeslot> getTimeslotList() {
+        return timeslotList;
+    }
+
+    public List<VaccinationSlot> getVaccinationSlotList() {
+        return vaccinationSlotList;
     }
 
     public List<Person> getPersonList() {
         return personList;
     }
 
-    public List<Injection> getInjectionList() {
-        return injectionList;
-    }
-
     public HardMediumSoftLongScore getScore() {
         return score;
-    }
-
-    public SolverStatus getSolverStatus() {
-        return solverStatus;
-    }
-
-    public void setSolverStatus(SolverStatus solverStatus) {
-        this.solverStatus = solverStatus;
     }
 
 }

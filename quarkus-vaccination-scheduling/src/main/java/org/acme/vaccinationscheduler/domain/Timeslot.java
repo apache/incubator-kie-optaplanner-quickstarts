@@ -16,52 +16,45 @@
 
 package org.acme.vaccinationscheduler.domain;
 
-import org.optaplanner.core.api.domain.lookup.PlanningId;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-public class VaccinationCenter {
+public class Timeslot {
 
-    @PlanningId
-    private Long id;
+    private LocalDate date;
+    private LocalTime startTime;
+    private LocalTime endTime;
 
-    private String name;
-    private Location location;
-    private int lineCount;
-    private int injectionsPerLinePerTimeslot;
+    public Timeslot(LocalDate date, LocalTime startTime, LocalTime endTime) {
+        this.date = date;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
-    public VaccinationCenter(Long id, String name, Location location, int lineCount, int injectionsPerLinePerTimeslot) {
-        this.id = id;
-        this.name = name;
-        this.location = location;
-        this.lineCount = lineCount;
-        this.injectionsPerLinePerTimeslot = injectionsPerLinePerTimeslot;
+    public Duration getDuration() {
+        return Duration.between(startTime, endTime);
     }
 
     @Override
     public String toString() {
-        return name;
+        return date + "-" + startTime.toString();
     }
 
     // ************************************************************************
     // Getters and setters
     // ************************************************************************
 
-    public Long getId() {
-        return id;
+    public LocalDate getDate() {
+        return date;
     }
 
-    public String getName() {
-        return name;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public Location getLocation() {
-        return location;
+    public LocalTime getEndTime() {
+        return endTime;
     }
 
-    public int getLineCount() {
-        return lineCount;
-    }
-
-    public int getInjectionsPerLinePerTimeslot() {
-        return injectionsPerLinePerTimeslot;
-    }
 }

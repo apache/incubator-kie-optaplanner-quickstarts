@@ -16,58 +16,43 @@
 
 package org.acme.vaccinationscheduler.domain;
 
-import java.time.LocalDateTime;
-
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.entity.PlanningPin;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
-@PlanningEntity
-public class Injection {
+public class VaccinationSlot {
 
     @PlanningId
     private Long id;
 
     private VaccinationCenter vaccinationCenter;
-    private int lineIndex;
-    private LocalDateTime dateTime;
+    private Timeslot timeslot;
     @JsonIdentityReference(alwaysAsId = true)
     private VaccineType vaccineType;
 
-    @PlanningPin
-    private boolean pinned;
+    private final int lineIndexOffset;
+    private int lineCount;
+    private int capacity;
 
-    @PlanningVariable(valueRangeProviderRefs = {"personRange"})
-    private Person person;
-
-    // No-arg constructor required for OptaPlanner
-    public Injection() {
-    }
-
-    public Injection(Long id, VaccinationCenter vaccinationCenter, int lineIndex,
-            LocalDateTime dateTime, VaccineType vaccineType) {
+    public VaccinationSlot(Long id, VaccinationCenter vaccinationCenter, Timeslot timeslot, VaccineType vaccineType,
+            int lineIndexOffset, int lineCount, int capacity) {
         this.id = id;
         this.vaccinationCenter = vaccinationCenter;
-        this.lineIndex = lineIndex;
-        this.dateTime = dateTime;
+        this.timeslot = timeslot;
         this.vaccineType = vaccineType;
-    }
-
-    public Injection(long id, VaccinationCenter vaccinationCenter, int lineIndex, LocalDateTime dateTime, VaccineType vaccineType, Person person) {
-        this.id = id;
-        this.vaccinationCenter = vaccinationCenter;
-        this.lineIndex = lineIndex;
-        this.dateTime = dateTime;
-        this.vaccineType = vaccineType;
-        this.person = person;
+        this.lineIndexOffset = lineIndexOffset;
+        this.lineCount = lineCount;
+        if (lineCount > vaccinationCenter.getLineCount()) {
+            throw new IllegalStateException("A vaccination slot's lineCount (" + lineCount
+                    + ") must be less or equal to the vaccination center's lineCount ("
+                    + vaccinationCenter.getLineCount() + ").");
+        }
+        this.capacity = capacity;
     }
 
     @Override
     public String toString() {
-        return dateTime + "@" + vaccinationCenter.getName() + "(" + id + ")";
+        return vaccinationCenter + "@" + timeslot + "/" + vaccineType;
     }
 
     // ************************************************************************
@@ -82,24 +67,24 @@ public class Injection {
         return vaccinationCenter;
     }
 
-    public int getLineIndex() {
-        return lineIndex;
-    }
-
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public Timeslot getTimeslot() {
+        return timeslot;
     }
 
     public VaccineType getVaccineType() {
         return vaccineType;
     }
 
-    public Person getPerson() {
-        return person;
+    public int getLineIndexOffset() {
+        return lineIndexOffset;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public int getLineCount() {
+        return lineCount;
+    }
+
+    public int getCapacity() {
+        return capacity;
     }
 
 }
