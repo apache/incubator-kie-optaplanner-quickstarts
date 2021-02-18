@@ -3,18 +3,17 @@
 #
 # Before building the docker image run:
 #
-# mvn package -Pnative -Dquarkus.native.container-build=true -Dquarkus.profile=native
+# mvn package -Pnative -Dquarkus.native.container-build=true
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native -t optaplanner/maintenance-scheduling .
+# docker build -f src/main/docker/Dockerfile.native -t optaplanner/vaccination-scheduling .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 optaplanner/maintenance-scheduling
+# docker run -i --rm -p 8080:8080 optaplanner/vaccination-scheduling
 #
 ###
-
 FROM registry.access.redhat.com/ubi8/ubi-minimal
 WORKDIR /work/
 COPY target/*-runner /work/application

@@ -35,7 +35,7 @@ $ mvn package
 +
 [source, shell]
 ----
-$ java -jar ./target/*-runner.jar
+$ java -jar ./target/quarkus-app/quarkus-run.jar
 ----
 +
 [NOTE]
