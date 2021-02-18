@@ -41,32 +41,42 @@
       <directory>../quickstarts-showcase/target</directory>
       <outputDirectory>binaries</outputDirectory>
       <includes>
-        <include>lib/**</include>
-        <include>*-runner.jar</include>
+        <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../quarkus-school-timetabling/target</directory>
       <outputDirectory>binaries/quarkus-school-timetabling</outputDirectory>
       <includes>
-        <include>lib/**</include>
-        <include>*-runner.jar</include>
+        <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../quarkus-facility-location/target</directory>
       <outputDirectory>binaries/quarkus-facility-location</outputDirectory>
       <includes>
-        <include>lib/**</include>
-        <include>*-runner.jar</include>
+        <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../quarkus-factorio-layout/target</directory>
       <outputDirectory>binaries/quarkus-factorio-layout</outputDirectory>
       <includes>
-        <include>lib/**</include>
-        <include>*-runner.jar</include>
+        <include>quarkus-app/**</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../quarkus-maintenance-scheduling/target</directory>
+      <outputDirectory>binaries/quarkus-maintenance-scheduling</outputDirectory>
+      <includes>
+        <include>quarkus-app/**</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../quarkus-vaccination-scheduling/target</directory>
+      <outputDirectory>binaries/quarkus-vaccination-scheduling</outputDirectory>
+      <includes>
+        <include>quarkus-app/**</include>
       </includes>
     </fileSet>
   </fileSets>

@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.FileSystems;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -130,7 +131,7 @@ public class QuickstartLauncherResource {
             processBuilder = new ProcessBuilder(mvnCommand, "quarkus:dev", portArg, corsArg, "-Ddebug=false");
         } else {
             processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
-                    "optaplanner-" + quickstartId + "-quickstart-1.0-SNAPSHOT-runner.jar");
+                    getQuickstartRunnerJar(quickstartId).getAbsolutePath());
         }
         processBuilder.directory(new File(baseDirectory, quickstartId));
         processBuilder.inheritIO();
@@ -145,6 +146,17 @@ public class QuickstartLauncherResource {
         }
         portToProcessMap.put(port, process);
         quickstartMeta.getPorts().add(port);
+    }
+
+    private File getQuickstartRunnerJar(String quickstartId) {
+        File quickstartRunnerJar = FileSystems.getDefault().getPath(baseDirectory.getAbsolutePath(), quickstartId,
+                "quarkus-app", "quarkus-run.jar").toFile();
+        if (!quickstartRunnerJar.exists()) {
+            throw new IllegalStateException(
+                    "The quickstart (" + quickstartId + ") runner JAR file does not exist ("
+                            + quickstartRunnerJar.getAbsolutePath() + ").");
+        }
+        return quickstartRunnerJar;
     }
 
     private String findMvnCommand(File baseDirectory) {

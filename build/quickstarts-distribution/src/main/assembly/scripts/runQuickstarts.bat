@@ -2,7 +2,7 @@
 setLocal enableExtensions enableDelayedExpansion
 
 set "jvmOptions=-Xms128m -Xmx512m -Dstartup-open-browser=true"
-set "mainJar=binaries/optaplanner-quickstarts-showcase-${project.version}-runner.jar"
+set "mainJar=binaries\quarkus-app\quarkus-run.jar"
 
 echo Usage: runQuickstarts.bat
 echo Notes:
