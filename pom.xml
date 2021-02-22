@@ -47,7 +47,7 @@
       <url>https://repository.jboss.org/nexus/content/groups/public/</url>
       <releases>
         <!-- Get releases only from Maven Central which is faster. -->
-        <enabled>false</enabled>
+        <enabled>true</enabled>
       </releases>
       <snapshots>
         <enabled>true</enabled>
