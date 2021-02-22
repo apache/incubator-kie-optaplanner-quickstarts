@@ -69,6 +69,22 @@
         <include>*-runner.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>../../quarkus-maintenance-scheduling/target</directory>
+      <outputDirectory>binaries/quarkus-maintenance-scheduling</outputDirectory>
+      <includes>
+        <include>lib/**</include>
+        <include>*-runner.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../quarkus-vaccination-scheduling/target</directory>
+      <outputDirectory>binaries/quarkus-vaccination-scheduling</outputDirectory>
+      <includes>
+        <include>lib/**</include>
+        <include>*-runner.jar</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
 </assembly>
