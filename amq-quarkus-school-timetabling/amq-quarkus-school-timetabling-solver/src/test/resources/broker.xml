@@ -96,6 +96,20 @@
           <queue name="ExpiryQueue"/>
         </anycast>
       </address>
+      <address name="solver_request">
+        <anycast>
+          <queue name="solver_request">
+            <durable>true</durable>
+          </queue>
+        </anycast>
+      </address>
+      <address name="solver_response">
+        <anycast>
+          <queue name="solver_response">
+            <durable>true</durable>
+          </queue>
+        </anycast>
+      </address>
 
     </addresses>
   </core>

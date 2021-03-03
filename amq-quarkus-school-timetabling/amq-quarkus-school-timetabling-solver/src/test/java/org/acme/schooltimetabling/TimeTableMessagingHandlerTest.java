@@ -54,6 +54,7 @@ import io.quarkus.test.junit.QuarkusTest;
 public class TimeTableMessagingHandlerTest {
 
     private static final long TEST_TIMEOUT_SECONDS = 60L;
+    private static final int MESSAGE_RECEIVE_TIMEOUT_SECONDS = 10;
 
     private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
@@ -63,7 +64,7 @@ public class TimeTableMessagingHandlerTest {
         long problemId = 1L;
         TimeTable unsolvedTimeTable = createTestTimeTable();
         sendSolverRequest(new SolverRequest(problemId, unsolvedTimeTable));
-        SolverResponse solverResponse = receiveSolverResponse(10);
+        SolverResponse solverResponse = receiveSolverResponse(MESSAGE_RECEIVE_TIMEOUT_SECONDS);
 
         assertThat(SolverResponse.ResponseStatus.SUCCESS == solverResponse.getResponseStatus());
         assertThat(problemId == solverResponse.getProblemId());
@@ -79,7 +80,7 @@ public class TimeTableMessagingHandlerTest {
         unsolvedTimeTable.getLessonList().get(0).setId(null); // OptaPlanner doesn't tolerate null planningId.
         sendSolverRequest(new SolverRequest(problemId, unsolvedTimeTable));
 
-        SolverResponse solverResponse = receiveSolverResponse(10);
+        SolverResponse solverResponse = receiveSolverResponse(MESSAGE_RECEIVE_TIMEOUT_SECONDS);
         assertThat(SolverResponse.ResponseStatus.FAILURE == solverResponse.getResponseStatus());
         assertThat(problemId == solverResponse.getProblemId());
         assertThat(solverResponse.getErrorInfo().getExceptionClassName()).isEqualTo(IllegalArgumentException.class.getName());
