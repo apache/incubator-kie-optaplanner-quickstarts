@@ -2,7 +2,7 @@ var autoRefreshCount = 0;
 var autoRefreshIntervalId = null;
 
 // Initial date/time (next Monday)
-var initialDateTime = moment().utc().startOf('isoWeek').add(1, 'weeks').set('hour', 9);
+var initialDateTime = moment().startOf('isoWeek').add(1, 'weeks').set('hour', 9);
 
 // DOM element where the Timeline will be attached
 var container = document.getElementById('visualization');
@@ -13,10 +13,21 @@ var crewGroups = new vis.DataSet();
 var options = {
     // Make jobs editable through UI
     // editable: true,
-    // Set time zone to UTC
-    moment: function (date) {
-        return vis.moment(date).utc();
+
+    // Hide weekends using any weekend and repeat weekly
+    hiddenDates: [{
+        start: '2020-02-29 00:00:00',
+        end: '2020-03-02 00:00:00',
+        repeat: 'weekly'
     },
+    // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
+    {
+        start: '2020-02-29 17:00:00',
+        end: '2020-03-02 09:00:00',
+        repeat: 'daily'
+    }
+    ],
+
     // Always snap to full hours, independent of the scale
     snap: function (date, scale, step) {
         var hour = 60 * 60 * 1000;
