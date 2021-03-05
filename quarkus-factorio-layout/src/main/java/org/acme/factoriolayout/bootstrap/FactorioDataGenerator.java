@@ -17,11 +17,9 @@
 package org.acme.factoriolayout.bootstrap;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +49,9 @@ public class FactorioDataGenerator {
     @Inject
     FactorioLayoutRepository factorioLayoutRepository;
 
+    @Inject
+    ObjectMapper mapper;
+
     public void generateDemoData(@Observes StartupEvent startupEvent) {
         List<Recipe> recipeList = readRecipes();
         Map<String, Recipe> recipeMap = recipeList.stream().collect(Collectors.toMap(Recipe::getId, recipe -> recipe));
@@ -65,7 +66,6 @@ public class FactorioDataGenerator {
 
     private List<Recipe> readRecipes() {
         List<Recipe> recipeList;
-        ObjectMapper mapper = new ObjectMapper();
         try {
             recipeList = mapper.readValue(
                     Thread.currentThread().getContextClassLoader().getResource(RECIPES_JSON_RESOURCE),

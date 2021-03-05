@@ -17,7 +17,9 @@
 package org.acme.factoriolayout.domain;
 
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 public class RecipeInput {
 
     @JsonIdentityReference(alwaysAsId = true)
