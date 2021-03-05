@@ -21,7 +21,9 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
+@RegisterForReflection
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
 public class Recipe {
