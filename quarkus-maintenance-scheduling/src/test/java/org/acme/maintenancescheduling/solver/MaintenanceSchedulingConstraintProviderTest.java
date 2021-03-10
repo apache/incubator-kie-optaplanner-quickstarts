@@ -16,6 +16,9 @@
 
 package org.acme.maintenancescheduling.solver;
 
+import javax.inject.Inject;
+
+import io.quarkus.test.junit.QuarkusTest;
 import org.acme.maintenancescheduling.domain.MaintainableUnit;
 import org.acme.maintenancescheduling.domain.MaintenanceCrew;
 import org.acme.maintenancescheduling.domain.MaintenanceJob;
@@ -25,11 +28,11 @@ import org.acme.maintenancescheduling.domain.TimeGrain;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
+@QuarkusTest
 public class MaintenanceSchedulingConstraintProviderTest {
 
-    private final ConstraintVerifier<MaintenanceScheduleConstraintProvider, MaintenanceSchedule> constraintVerifier =
-            ConstraintVerifier.build(new MaintenanceScheduleConstraintProvider(), MaintenanceSchedule.class,
-                    MaintenanceJob.class);
+    @Inject
+    ConstraintVerifier<MaintenanceScheduleConstraintProvider, MaintenanceSchedule> constraintVerifier;
 
     @Test
     public void jobsMustStartAfterReadyTimeGrainUnpenalized() {

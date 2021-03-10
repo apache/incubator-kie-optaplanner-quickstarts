@@ -16,6 +16,7 @@
 
 package org.acme.kotlin.schooltimetabling.solver
 
+import io.quarkus.test.junit.QuarkusTest
 import org.acme.kotlin.schooltimetabling.domain.Lesson
 import org.acme.kotlin.schooltimetabling.domain.Room
 import org.acme.kotlin.schooltimetabling.domain.TimeTable
@@ -24,8 +25,10 @@ import org.junit.jupiter.api.Test
 import org.optaplanner.test.api.score.stream.ConstraintVerifier
 import java.time.DayOfWeek
 import java.time.LocalTime
+import javax.inject.Inject
 
-internal class TimeTableConstraintProviderTest {
+@QuarkusTest
+class TimeTableConstraintProviderTest {
     
     val ROOM1: Room = Room(1, "Room1")
     val ROOM2: Room = Room(2, "Room2")
@@ -34,7 +37,8 @@ internal class TimeTableConstraintProviderTest {
     val TIMESLOT3: Timeslot = Timeslot(3, DayOfWeek.TUESDAY, LocalTime.NOON.plusHours(1), LocalTime.NOON.plusHours(1).plusMinutes(50))
     val TIMESLOT4: Timeslot = Timeslot(4, DayOfWeek.TUESDAY, LocalTime.NOON.plusHours(3), LocalTime.NOON.plusHours(3).plusMinutes(50))
 
-    val constraintVerifier: ConstraintVerifier<TimeTableConstraintProvider, TimeTable> = ConstraintVerifier.build(TimeTableConstraintProvider(), TimeTable::class.java, Lesson::class.java)
+    @Inject
+    lateinit var constraintVerifier: ConstraintVerifier<TimeTableConstraintProvider, TimeTable>;
 
     @Test
     fun roomConflict() {

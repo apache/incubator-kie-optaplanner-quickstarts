@@ -16,16 +16,17 @@
 
 package org.acme.facilitylocation.domain;
 
+import javax.inject.Inject;
+
+import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
+@QuarkusTest
 class FacilityLocationConstraintProviderTest {
 
-    private final ConstraintVerifier<FacilityLocationConstraintProvider, FacilityLocationProblem> constraintVerifier =
-            ConstraintVerifier.build(
-                    new FacilityLocationConstraintProvider(),
-                    FacilityLocationProblem.class,
-                    Consumer.class);
+    @Inject
+    ConstraintVerifier<FacilityLocationConstraintProvider, FacilityLocationProblem> constraintVerifier;
 
     @Test
     void penalizes_capacity_exceeded_by_a_single_consumer() {
