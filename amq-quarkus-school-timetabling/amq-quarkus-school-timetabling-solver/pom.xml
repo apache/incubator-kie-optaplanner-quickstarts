@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>amq-quarkus-school-timetabling-solver</artifactId>
+  <description>AMQ Quarkus School Timetabling Quickstart : Solver Server</description>
 
   <dependencies>
     <dependency>

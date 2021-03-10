@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>amq-quarkus-school-timetabling-client</artifactId>
+  <description>AMQ Quarkus School Timetabling Quickstart : Client</description>
 
   <dependencies>
     <dependency>
