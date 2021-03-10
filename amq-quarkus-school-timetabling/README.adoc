@@ -1,4 +1,4 @@
-= School Timetabling (Java, Quarkus, AMQ, Maven)
+= School Timetabling (Java, AMQ, Quarkus, Maven)
 
 The quickstart consists of two modules:
 
