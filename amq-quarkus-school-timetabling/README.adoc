@@ -10,7 +10,7 @@ Starting the AMQ Artemis broker requires you to install https://docs.docker.com/
 
 == Run the application with live coding
 
-. Start the AMQ Artemis broker and both Solver and Client application with a `run.sh` script:
+. Start the AMQ Artemis broker, the Solver Server and Client application with the `run.sh` script, which starts all 3 processes:
 +
 [source, shell]
 ----
