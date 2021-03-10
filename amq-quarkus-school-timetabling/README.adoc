@@ -2,8 +2,8 @@
 
 The quickstart consists of two modules:
 
-* Client runs the UI and sends requests to the Solver via AMQ.
-* Solver optimizes the requests sent via AMQ and sends results back to AMQ broker.
+* Client runs the UI and sends requests to the Solver Server via AMQ.
+* Solver Server optimizes the requests sent via AMQ and sends results back to AMQ broker.
 
 == Run the application with live coding
 
@@ -82,9 +82,9 @@ $ java -jar ./target/*-runner.jar
 
 First, https://quarkus.io/guides/building-native-image#configuring-graalvm[install GraalVM and gu install the native-image tool]
 
-=== Compile and run the Solver application natively
+=== Compile and run the Solver Server application natively
 
-. Compile the Solver application natively:
+. Compile the Solver Server application natively:
 +
 [source, shell]
 ----
