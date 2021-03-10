@@ -19,6 +19,9 @@ package org.acme.vaccinationscheduler.solver;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import javax.inject.Inject;
+
+import io.quarkus.test.junit.QuarkusTest;
 import org.acme.vaccinationscheduler.domain.Injection;
 import org.acme.vaccinationscheduler.domain.Location;
 import org.acme.vaccinationscheduler.domain.Person;
@@ -28,6 +31,7 @@ import org.acme.vaccinationscheduler.domain.VaccineType;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
+@QuarkusTest
 class VaccinationScheduleConstraintProviderTest {
 
     private static final VaccineType PFIZER = new VaccineType("Pfizer", 19, 21);
@@ -52,8 +56,8 @@ class VaccinationScheduleConstraintProviderTest {
     private static final Person CARL = new Person(3, "Carl", new Location(3, 0), LocalDate.of(1970, 1, 1), 51,
             true, MODERNA, THURSDAY.minusDays(28));
 
-    private final ConstraintVerifier<VaccinationScheduleConstraintProvider, VaccinationSchedule> constraintVerifier =
-            ConstraintVerifier.build(new VaccinationScheduleConstraintProvider(), VaccinationSchedule.class, Injection.class);
+    @Inject
+    ConstraintVerifier<VaccinationScheduleConstraintProvider, VaccinationSchedule> constraintVerifier;
 
     @Test
     void personConflict() {
