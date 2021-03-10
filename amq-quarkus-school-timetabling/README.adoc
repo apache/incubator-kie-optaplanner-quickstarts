@@ -39,7 +39,7 @@ Before running any application, start the AMQ Artemis broker:
 $ docker-compose up
 ----
 
-=== Package and run the Solver application
+=== Package and run the Solver Server application
 
 . Compile it with Maven:
 +
