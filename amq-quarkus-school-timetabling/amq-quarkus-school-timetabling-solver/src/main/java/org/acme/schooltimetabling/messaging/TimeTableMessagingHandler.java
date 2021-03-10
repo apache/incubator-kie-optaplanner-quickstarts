@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ApplicationScoped
 public class TimeTableMessagingHandler {
@@ -43,6 +44,9 @@ public class TimeTableMessagingHandler {
     public static final String SOLVER_RESPONSE_CHANNEL = "solver_response";
 
     Solver<TimeTable> solver;
+
+    @Inject
+    ObjectMapper objectMapper;
 
     @Inject
     @Channel(SOLVER_RESPONSE_CHANNEL)
@@ -58,7 +62,7 @@ public class TimeTableMessagingHandler {
         return CompletableFuture.runAsync(() -> {
             SolverRequest solverRequest = null;
             try {
-                solverRequest = SolverJsonMapper.get().readValue(solverRequestMessage.getPayload(), SolverRequest.class);
+                solverRequest = objectMapper.readValue(solverRequestMessage.getPayload(), SolverRequest.class);
             } catch (JsonProcessingException ex) {
                 LOGGER.warn("Unable to deserialize solver request from JSON.", ex);
                 // Bad request should go directly to a DLQ.
@@ -93,7 +97,7 @@ public class TimeTableMessagingHandler {
     private void reply(Message<String> solverRequestMessage, SolverResponse solverResponse,
             Consumer<? super Exception> onFailure) {
         try {
-            String jsonResponse = SolverJsonMapper.get().writeValueAsString(solverResponse);
+            String jsonResponse = objectMapper.writeValueAsString(solverResponse);
             solverResponseEmitter.send(jsonResponse).thenAccept(x -> solverRequestMessage.ack());
         } catch (JsonProcessingException ex) {
             onFailure.accept(ex);

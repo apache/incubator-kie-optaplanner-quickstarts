@@ -36,15 +36,17 @@ import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Room;
 import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.domain.Timeslot;
-import org.acme.schooltimetabling.messaging.SolverJsonMapper;
 import org.acme.schooltimetabling.messaging.SolverRequest;
 import org.acme.schooltimetabling.messaging.SolverResponse;
 import org.acme.schooltimetabling.messaging.TimeTableMessagingHandler;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.optaplanner.persistence.jackson.api.OptaPlannerJacksonModule;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -57,6 +59,11 @@ public class TimeTableMessagingHandlerTest {
     private static final int MESSAGE_RECEIVE_TIMEOUT_SECONDS = 10;
 
     private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
+    // Native test does not support @Inject.
+    private ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .registerModule(OptaPlannerJacksonModule.createModule());
 
     @Test
     @Timeout(TEST_TIMEOUT_SECONDS)
@@ -99,7 +106,7 @@ public class TimeTableMessagingHandlerTest {
     private SolverResponse receiveSolverResponse(int timeoutSeconds) {
         String solverResponsePayload = receiveMessage(TimeTableMessagingHandler.SOLVER_RESPONSE_CHANNEL, timeoutSeconds);
         try {
-            return SolverJsonMapper.get().readValue(solverResponsePayload, SolverResponse.class);
+            return objectMapper.readValue(solverResponsePayload, SolverResponse.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -118,7 +125,7 @@ public class TimeTableMessagingHandlerTest {
 
     private void sendSolverRequest(SolverRequest solverRequest) {
         try {
-            String message = SolverJsonMapper.get().writeValueAsString(solverRequest);
+            String message = objectMapper.writeValueAsString(solverRequest);
             sendMessage(message);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);

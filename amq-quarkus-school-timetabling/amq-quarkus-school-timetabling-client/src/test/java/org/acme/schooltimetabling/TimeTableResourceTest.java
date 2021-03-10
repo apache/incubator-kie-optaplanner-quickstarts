@@ -34,7 +34,6 @@ import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Room;
 import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.domain.Timeslot;
-import org.acme.schooltimetabling.messaging.SolverJsonMapper;
 import org.acme.schooltimetabling.messaging.SolverRequest;
 import org.acme.schooltimetabling.messaging.SolverResponse;
 import org.acme.schooltimetabling.persistence.LessonRepository;
@@ -48,6 +47,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -81,6 +81,9 @@ public class TimeTableResourceTest {
     TimeTableRepository timeTableRepository;
 
     @Inject
+    ObjectMapper objectMapper;
+
+    @Inject
     UserTransaction transaction;
 
     private InMemorySink<String> solverRequestSink;
@@ -103,7 +106,7 @@ public class TimeTableResourceTest {
                 .until(solverRequestSink::received, messages -> messages.size() == 1);
 
         Message<String> solverRequestMessage = solverRequestSink.received().get(0);
-        SolverRequest solverRequest = SolverJsonMapper.get().readValue(solverRequestMessage.getPayload(), SolverRequest.class);
+        SolverRequest solverRequest = objectMapper.readValue(solverRequestMessage.getPayload(), SolverRequest.class);
 
         // Assign one lesson to simulate solving.
         TimeTable requestTimeTable = solverRequest.getTimeTable();
@@ -112,7 +115,7 @@ public class TimeTableResourceTest {
         firstLesson.setTimeslot(requestTimeTable.getTimeslotList().get(0));
 
         SolverResponse solverResponse = new SolverResponse(solverRequest.getProblemId(), requestTimeTable);
-        solverResponseSource.send(SolverJsonMapper.get().writeValueAsString(solverResponse));
+        solverResponseSource.send(objectMapper.writeValueAsString(solverResponse));
 
         // Wait until the client receives the message and saves the new timetable to a database.
         await()

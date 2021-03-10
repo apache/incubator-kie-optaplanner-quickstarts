@@ -24,7 +24,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.acme.schooltimetabling.domain.TimeTable;
-import org.acme.schooltimetabling.messaging.SolverJsonMapper;
 import org.acme.schooltimetabling.messaging.SolverRequest;
 import org.acme.schooltimetabling.messaging.SolverResponse;
 import org.acme.schooltimetabling.persistence.TimeTableRepository;
@@ -35,6 +34,7 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.optaplanner.core.api.solver.SolverStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.smallrye.reactive.messaging.annotations.Blocking;
 
@@ -50,14 +50,16 @@ public class TimeTableResource {
     @Channel("solver_request")
     Emitter<String> solverRequestEmitter;
 
+    @Inject
+    ObjectMapper objectMapper;
+
     @Incoming("solver_response")
     @Blocking
     @Acknowledgment(Acknowledgment.Strategy.POST_PROCESSING)
     public void process(String solverResponseMessage) {
         SolverResponse solverResponse;
         try {
-            solverResponse =
-                    SolverJsonMapper.get().readValue(solverResponseMessage, SolverResponse.class);
+            solverResponse = objectMapper.readValue(solverResponseMessage, SolverResponse.class);
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Unable to deserialize the solver response.", ex);
         }
@@ -91,7 +93,7 @@ public class TimeTableResource {
         timeTableRepository.save(timeTable);
 
         SolverRequest solverRequest = new SolverRequest(SINGLETON_TIME_TABLE_ID, timeTable);
-        String solverRequestJson = SolverJsonMapper.get().writeValueAsString(solverRequest);
+        String solverRequestJson = objectMapper.writeValueAsString(solverRequest);
         solverRequestEmitter.send(solverRequestJson);
     }
 }
