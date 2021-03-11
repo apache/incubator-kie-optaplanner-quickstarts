@@ -18,36 +18,15 @@ package org.acme.schooltimetabling.domain;
 
 import java.util.List;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
-
-import org.acme.schooltimetabling.persistence.HardSoftScoreConverter;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverStatus;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-@Entity
 public class TimeTable {
 
-    @Id
-    @JsonIgnore
-    private Long id;
-
-    @Transient
     private List<Timeslot> timeslotList;
-
-    @Transient
     private List<Room> roomList;
-
-    @Transient
     private List<Lesson> lessonList;
 
-    // TODO: switch to optaplanner-persistence-jpa once Quarkus upgrades to GraalVM 21.0.0
-    //  https://github.com/oracle/graal/issues/460
-    @Convert(converter = HardSoftScoreConverter.class)
     private HardSoftScore score;
 
     // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
@@ -57,8 +36,7 @@ public class TimeTable {
     public TimeTable() {
     }
 
-    public TimeTable(Long id, List<Timeslot> timeslotList, List<Room> roomList, List<Lesson> lessonList) {
-        this.id = id;
+    public TimeTable(List<Timeslot> timeslotList, List<Room> roomList, List<Lesson> lessonList) {
         this.timeslotList = timeslotList;
         this.roomList = roomList;
         this.lessonList = lessonList;
@@ -67,14 +45,6 @@ public class TimeTable {
     // ************************************************************************
     // Getters and setters
     // ************************************************************************
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public List<Timeslot> getTimeslotList() {
         return timeslotList;

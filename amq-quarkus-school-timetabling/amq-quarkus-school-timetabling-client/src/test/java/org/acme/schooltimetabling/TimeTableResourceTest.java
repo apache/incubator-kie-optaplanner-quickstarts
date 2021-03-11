@@ -28,7 +28,6 @@ import java.util.List;
 
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
-import javax.transaction.UserTransaction;
 
 import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Room;
@@ -36,10 +35,7 @@ import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.domain.Timeslot;
 import org.acme.schooltimetabling.messaging.SolverRequest;
 import org.acme.schooltimetabling.messaging.SolverResponse;
-import org.acme.schooltimetabling.persistence.LessonRepository;
-import org.acme.schooltimetabling.persistence.RoomRepository;
 import org.acme.schooltimetabling.persistence.TimeTableRepository;
-import org.acme.schooltimetabling.persistence.TimeslotRepository;
 import org.acme.schooltimetabling.rest.TimeTableResource;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,31 +65,19 @@ public class TimeTableResourceTest {
     TimeTableResource timeTableResource;
 
     @Inject
-    TimeslotRepository timeslotRepository;
-
-    @Inject
-    RoomRepository roomRepository;
-
-    @Inject
-    LessonRepository lessonRepository;
-
-    @Inject
     TimeTableRepository timeTableRepository;
 
     @Inject
     ObjectMapper objectMapper;
 
-    @Inject
-    UserTransaction transaction;
-
     private InMemorySink<String> solverRequestSink;
     private InMemorySource<String> solverResponseSource;
 
     @BeforeEach
-    void setupChannels() throws Exception {
+    void setupChannels() {
         solverRequestSink = connector.sink("solver_request");
         solverResponseSource = connector.source("solver_response");
-        persistTestTimeTable();
+        prepareTestTimeTable();
     }
 
     @Test
@@ -127,15 +111,11 @@ public class TimeTableResourceTest {
         assertThat(solvedFirstLesson.getTimeslot()).isNotNull();
     }
 
-    private void persistTestTimeTable() throws Exception {
-        transaction.begin();
-        List<Room> rooms = Collections.singletonList(new Room("room-A"));
-        List<Timeslot> timeslots = Collections.singletonList(new Timeslot(DayOfWeek.WEDNESDAY, LocalTime.NOON, LocalTime.NOON));
-        List<Lesson> lessons = Collections.singletonList(new Lesson("Physics", "M. Curie", "12th grade"));
-        roomRepository.persist(rooms);
-        timeslotRepository.persist(timeslots);
-        lessonRepository.persist(lessons);
-        timeTableRepository.persist(new TimeTable(1L, timeslots, rooms, lessons));
-        transaction.commit();
+    private void prepareTestTimeTable() {
+        List<Room> rooms = Collections.singletonList(new Room(1L, "room-A"));
+        List<Timeslot> timeslots =
+                Collections.singletonList(new Timeslot(1L, DayOfWeek.WEDNESDAY, LocalTime.NOON, LocalTime.NOON));
+        List<Lesson> lessons = Collections.singletonList(new Lesson(1L, "Physics", "M. Curie", "12th grade"));
+        timeTableRepository.update(new TimeTable(timeslots, rooms, lessons));
     }
 }

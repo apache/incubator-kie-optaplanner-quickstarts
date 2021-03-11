@@ -36,8 +36,6 @@ import org.optaplanner.core.api.solver.SolverStatus;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.smallrye.reactive.messaging.annotations.Blocking;
-
 @Path("timeTable")
 public class TimeTableResource {
 
@@ -54,7 +52,6 @@ public class TimeTableResource {
     ObjectMapper objectMapper;
 
     @Incoming("solver_response")
-    @Blocking
     @Acknowledgment(Acknowledgment.Strategy.POST_PROCESSING)
     public void process(String solverResponseMessage) {
         SolverResponse solverResponse;
@@ -67,9 +64,9 @@ public class TimeTableResource {
         if (solverResponse.isSuccess()) {
             TimeTable timeTable = solverResponse.getTimeTable();
             timeTable.setSolverStatus(SolverStatus.NOT_SOLVING);
-            timeTable.setId(solverResponse.getProblemId());
-            timeTableRepository.save(timeTable);
+            timeTableRepository.update(timeTable);
         } else {
+            timeTableRepository.get().setSolverStatus(SolverStatus.NOT_SOLVING);
             throw new IllegalStateException("Error during solving. "
                     + solverResponse.getErrorInfo().getExceptionClassName()
                     + " : "
@@ -81,16 +78,15 @@ public class TimeTableResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public TimeTable getTimeTable() {
-        TimeTable timeTable = timeTableRepository.load(SINGLETON_TIME_TABLE_ID);
+        TimeTable timeTable = timeTableRepository.get();
         return timeTable;
     }
 
     @POST
     @Path("solve")
     public void solve() throws JsonProcessingException {
-        TimeTable timeTable = timeTableRepository.load(SINGLETON_TIME_TABLE_ID);
+        TimeTable timeTable = timeTableRepository.get();
         timeTable.setSolverStatus(SolverStatus.SOLVING_SCHEDULED);
-        timeTableRepository.save(timeTable);
 
         SolverRequest solverRequest = new SolverRequest(SINGLETON_TIME_TABLE_ID, timeTable);
         String solverRequestJson = objectMapper.writeValueAsString(solverRequest);

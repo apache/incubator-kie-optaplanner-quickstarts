@@ -148,69 +148,6 @@ function refreshSolvingButtons(solving) {
   }
 }
 
-function addLesson() {
-  var subject = $("#lesson_subject").val().trim();
-  $.post("/lessons", JSON.stringify({
-    "subject": subject,
-    "teacher": $("#lesson_teacher").val().trim(),
-    "studentGroup": $("#lesson_studentGroup").val().trim()
-  }), function () {
-    refreshTimeTable();
-  }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Adding lesson (" + subject + ") failed.", xhr);
-  });
-  $('#lessonDialog').modal('toggle');
-}
-
-function deleteLesson(lesson) {
-  $.delete("/lessons/" + lesson.id, function () {
-    refreshTimeTable();
-  }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Deleting lesson (" + lesson.name + ") failed.", xhr);
-  });
-}
-
-function addTimeslot() {
-  $.post("/timeslots", JSON.stringify({
-    "dayOfWeek": $("#timeslot_dayOfWeek").val().trim().toUpperCase(),
-    "startTime": $("#timeslot_startTime").val().trim(),
-    "endTime": $("#timeslot_endTime").val().trim()
-  }), function () {
-    refreshTimeTable();
-  }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Adding timeslot failed.", xhr);
-  });
-  $('#timeslotDialog').modal('toggle');
-}
-
-function deleteTimeslot(timeslot) {
-  $.delete("/timeslots/" + timeslot.id, function () {
-    refreshTimeTable();
-  }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Deleting timeslot (" + timeslot.name + ") failed.", xhr);
-  });
-}
-
-function addRoom() {
-  var name = $("#room_name").val().trim();
-  $.post("/rooms", JSON.stringify({
-    "name": name
-  }), function () {
-    refreshTimeTable();
-  }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Adding room (" + name + ") failed.", xhr);
-  });
-  $("#roomDialog").modal('toggle');
-}
-
-function deleteRoom(room) {
-  $.delete("/rooms/" + room.id, function () {
-    refreshTimeTable();
-  }).fail(function (xhr, ajaxOptions, thrownError) {
-    showError("Deleting room (" + room.name + ") failed.", xhr);
-  });
-}
-
 function showError(title, xhr) {
   const serverErrorMessage = !xhr.responseJSON ? `${xhr.status}: ${xhr.statusText}` : xhr.responseJSON.message;
   console.error(title + "\n" + serverErrorMessage);
@@ -262,15 +199,6 @@ $(document).ready(function () {
   });
   $("#solveButton").click(function () {
     solve();
-  });
-  $("#addLessonSubmitButton").click(function () {
-    addLesson();
-  });
-  $("#addTimeslotSubmitButton").click(function () {
-    addTimeslot();
-  });
-  $("#addRoomSubmitButton").click(function () {
-    addRoom();
   });
 
   refreshTimeTable();

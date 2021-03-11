@@ -19,17 +19,9 @@ package org.acme.schooltimetabling.domain;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-@Entity
 public class Timeslot {
 
-    @Id
-    @GeneratedValue
     private Long id;
-
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -38,7 +30,8 @@ public class Timeslot {
     public Timeslot() {
     }
 
-    public Timeslot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+    public Timeslot(long id, DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
+        this.id = id;
         this.dayOfWeek = dayOfWeek;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -50,16 +43,11 @@ public class Timeslot {
     }
 
     // ************************************************************************
-    // Getters and setters
+    // Getters
     // ************************************************************************
 
     public Long getId() {
         return id;
-    }
-
-    // Setter is workaround for native build issue https://github.com/quarkusio/quarkus/issues/12458
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public DayOfWeek getDayOfWeek() {

@@ -16,46 +16,22 @@
 
 package org.acme.schooltimetabling.persistence;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import java.util.Objects;
 
-import org.acme.schooltimetabling.domain.Lesson;
+import javax.enterprise.context.ApplicationScoped;
+
 import org.acme.schooltimetabling.domain.TimeTable;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
-import io.quarkus.panache.common.Sort;
-
 @ApplicationScoped
-public class TimeTableRepository implements PanacheRepository<TimeTable> {
+public class TimeTableRepository {
 
-    @Inject
-    TimeslotRepository timeslotRepository;
-    @Inject
-    RoomRepository roomRepository;
-    @Inject
-    LessonRepository lessonRepository;
+    private TimeTable timeTable;
 
-    @Transactional
-    public TimeTable load(Long id) {
-        // Occurs in a single transaction, so each initialized lesson references the same timeslot/room instance
-        // that is contained by the timeTable's timeslotList/roomList.
-        TimeTable timeTable = findById(id);
-        timeTable.setTimeslotList(timeslotRepository.listAll(Sort.by("dayOfWeek").and("startTime").and("endTime").and("id")));
-        timeTable.setRoomList(roomRepository.listAll(Sort.by("name").and("id")));
-        timeTable.setLessonList(lessonRepository.listAll(Sort.by("subject").and("teacher").and("studentGroup").and("id")));
+    public TimeTable get() {
         return timeTable;
     }
 
-    @Transactional
-    public void save(TimeTable timeTable) {
-        for (Lesson lesson : timeTable.getLessonList()) {
-            Lesson attachedLesson = lessonRepository.findById(lesson.getId());
-            attachedLesson.setTimeslot(lesson.getTimeslot());
-            attachedLesson.setRoom(lesson.getRoom());
-        }
-        TimeTable attachedTimeTable = findById(timeTable.getId());
-        attachedTimeTable.setSolverStatus(timeTable.getSolverStatus());
-        attachedTimeTable.setScore(timeTable.getScore());
+    public void update(TimeTable timeTable) {
+        this.timeTable = Objects.requireNonNull(timeTable);
     }
 }

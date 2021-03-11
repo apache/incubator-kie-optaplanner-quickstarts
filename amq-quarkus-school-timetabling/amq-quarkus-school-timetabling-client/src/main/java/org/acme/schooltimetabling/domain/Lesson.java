@@ -16,33 +16,20 @@
 
 package org.acme.schooltimetabling.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-
-@Entity
 public class Lesson {
 
-    @Id
-    @GeneratedValue
     private Long id;
-
     private String subject;
     private String teacher;
     private String studentGroup;
-
-    @ManyToOne
     private Timeslot timeslot;
-
-    @ManyToOne
     private Room room;
 
-    // No-arg constructor required for Hibernate and OptaPlanner
     public Lesson() {
     }
 
-    public Lesson(String subject, String teacher, String studentGroup) {
+    public Lesson(long id, String subject, String teacher, String studentGroup) {
+        this.id = id;
         this.subject = subject.trim();
         this.teacher = teacher.trim();
         this.studentGroup = studentGroup.trim();

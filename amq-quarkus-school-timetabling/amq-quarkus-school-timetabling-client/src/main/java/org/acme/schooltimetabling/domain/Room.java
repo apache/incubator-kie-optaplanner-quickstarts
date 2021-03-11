@@ -16,30 +16,17 @@
 
 package org.acme.schooltimetabling.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-@Entity
 public class Room {
 
-    @Id
-    @GeneratedValue
     private Long id;
-
     private String name;
 
-    // No-arg constructor required for Hibernate
     public Room() {
     }
 
-    public Room(String name) {
-        this.name = name.trim();
-    }
-
     public Room(long id, String name) {
-        this(name);
         this.id = id;
+        this.name = name;
     }
 
     @Override
@@ -48,16 +35,11 @@ public class Room {
     }
 
     // ************************************************************************
-    // Getters and setters
+    // Getters
     // ************************************************************************
 
     public Long getId() {
         return id;
-    }
-
-    // Setter is workaround for native build issue https://github.com/quarkusio/quarkus/issues/12458
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
