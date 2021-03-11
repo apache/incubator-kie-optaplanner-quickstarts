@@ -29,13 +29,18 @@ function wait_for_url() {
   done
 }
 
+if [ ! -f target ]; then
+  echo "The target folder does not exist. Maybe build the project by running \"mvn clean install\"."
+  exit 1
+fi
+
 # Run docker-compose to start AMQ Artemis.
 docker-compose up > target/amq.log 2>&1 &
 readonly PID_DOCKER_AMQ=$!
 echo "Running the AMQ broker via docker."
 
 # Run the solver.
-mvn clean quarkus:dev -f amq-quarkus-school-timetabling-solver -Dquarkus.http.port=$SOLVER_PORT -Ddebug=8180 > target/solver.log 2>&1 &
+mvn clean quarkus:dev -f amq-quarkus-school-timetabling-solver -Dquarkus.http.port="$SOLVER_PORT" -Ddebug=8180 > target/solver.log 2>&1 &
 readonly PID_SOLVER=$!
 echo "Running the solver."
 
