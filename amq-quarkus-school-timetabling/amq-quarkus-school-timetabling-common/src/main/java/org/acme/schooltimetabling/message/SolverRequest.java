@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.acme.schooltimetabling.messaging;
+package org.acme.schooltimetabling.message;
 
 import org.acme.schooltimetabling.domain.TimeTable;
 

@@ -16,19 +16,30 @@
 
 package org.acme.schooltimetabling.domain;
 
+import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
+
+@PlanningEntity
 public class Lesson {
 
+    @PlanningId
     private Long id;
+
     private String subject;
     private String teacher;
     private String studentGroup;
+
+    @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
     private Timeslot timeslot;
+    @PlanningVariable(valueRangeProviderRefs = "roomRange")
     private Room room;
 
-    public Lesson() {
+    Lesson() {
+        // Required for JSON deserialization.
     }
 
-    public Lesson(long id, String subject, String teacher, String studentGroup) {
+    public Lesson(Long id, String subject, String teacher, String studentGroup) {
         this.id = id;
         this.subject = subject.trim();
         this.teacher = teacher.trim();
@@ -37,7 +48,7 @@ public class Lesson {
 
     @Override
     public String toString() {
-        return subject + "(" + id + ") room " + room;
+        return subject + "(" + id + ")";
     }
 
     // ************************************************************************
@@ -46,11 +57,6 @@ public class Lesson {
 
     public Long getId() {
         return id;
-    }
-
-    // Setter is workaround for native build issue https://github.com/quarkusio/quarkus/issues/12458
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getSubject() {

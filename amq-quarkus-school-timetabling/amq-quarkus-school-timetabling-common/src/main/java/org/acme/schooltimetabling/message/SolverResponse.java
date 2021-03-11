@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package org.acme.schooltimetabling.messaging;
+package org.acme.schooltimetabling.message;
 
 import org.acme.schooltimetabling.domain.TimeTable;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class SolverResponse {
-
-    public enum ResponseStatus {
-        SUCCESS,
-        FAILURE
-    }
 
     private Long problemId;
     private TimeTable timeTable;
@@ -63,5 +60,37 @@ public class SolverResponse {
 
     public ResponseStatus getResponseStatus() {
         return responseStatus;
+    }
+
+    @JsonIgnore
+    public boolean isSuccess() {
+        return ResponseStatus.SUCCESS == responseStatus;
+    }
+
+    public enum ResponseStatus {
+        SUCCESS,
+        FAILURE
+    }
+
+    public static class ErrorInfo {
+        private String exceptionClassName;
+        private String exceptionMessage;
+
+        ErrorInfo() {
+            // Required for JSON deserialization.
+        }
+
+        public ErrorInfo(String exceptionClassName, String exceptionMessage) {
+            this.exceptionClassName = exceptionClassName;
+            this.exceptionMessage = exceptionMessage;
+        }
+
+        public String getExceptionClassName() {
+            return exceptionClassName;
+        }
+
+        public String getExceptionMessage() {
+            return exceptionMessage;
+        }
     }
 }

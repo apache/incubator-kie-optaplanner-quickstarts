@@ -16,63 +16,39 @@
 
 package org.acme.schooltimetabling.domain;
 
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 
-public class Timeslot {
+public class Room {
 
     @PlanningId
     private Long id;
 
-    private DayOfWeek dayOfWeek;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private String name;
 
-    Timeslot() {
+    Room() {
         // Required for JSON deserialization.
     }
 
-    public Timeslot(DayOfWeek dayOfWeek, LocalTime startTime, LocalTime endTime) {
-        this.dayOfWeek = dayOfWeek;
-        this.startTime = startTime;
-        this.endTime = endTime;
-    }
-
-    public Timeslot(long id, DayOfWeek dayOfWeek, LocalTime startTime) {
-        this(dayOfWeek, startTime, startTime.plusMinutes(50));
+    public Room(long id, String name) {
+        this.name = name.trim();
         this.id = id;
     }
 
     @Override
     public String toString() {
-        return dayOfWeek + " " + startTime;
+        return name;
     }
 
     // ************************************************************************
-    // Getters and setters
+    // Getters
     // ************************************************************************
 
     public Long getId() {
         return id;
     }
 
-    // Setter is workaround for native build issue https://github.com/quarkusio/quarkus/issues/12458
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public DayOfWeek getDayOfWeek() {
-        return dayOfWeek;
-    }
-
-    public LocalTime getStartTime() {
-        return startTime;
-    }
-
-    public LocalTime getEndTime() {
-        return endTime;
+    public String getName() {
+        return name;
     }
 
 }

@@ -36,8 +36,8 @@ import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.Room;
 import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.domain.Timeslot;
-import org.acme.schooltimetabling.messaging.SolverRequest;
-import org.acme.schooltimetabling.messaging.SolverResponse;
+import org.acme.schooltimetabling.message.SolverRequest;
+import org.acme.schooltimetabling.message.SolverResponse;
 import org.acme.schooltimetabling.messaging.TimeTableMessagingHandler;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
@@ -83,9 +83,14 @@ public class TimeTableMessagingHandlerTest {
     @Timeout(TEST_TIMEOUT_SECONDS)
     void solvingThrowsException() {
         long problemId = 10L;
-        TimeTable unsolvedTimeTable = createTestTimeTable();
-        unsolvedTimeTable.getLessonList().get(0).setId(null); // OptaPlanner doesn't tolerate null planningId.
-        sendSolverRequest(new SolverRequest(problemId, unsolvedTimeTable));
+
+        // OptaPlanner doesn't tolerate a null planningId.
+        TimeTable timeTableWithIncorrectLesson = new TimeTable(
+                Arrays.asList(new Timeslot(1L, DayOfWeek.MONDAY, LocalTime.NOON, LocalTime.NOON.plusMinutes(30))),
+                Arrays.asList(new Room(1L, "room-A")),
+                Arrays.asList(new Lesson(null, "Math", "A. Touring", "10th grade")));
+
+        sendSolverRequest(new SolverRequest(problemId, timeTableWithIncorrectLesson));
 
         SolverResponse solverResponse = receiveSolverResponse(MESSAGE_RECEIVE_TIMEOUT_SECONDS);
         assertThat(SolverResponse.ResponseStatus.FAILURE == solverResponse.getResponseStatus());
@@ -143,9 +148,9 @@ public class TimeTableMessagingHandlerTest {
     private TimeTable createTestTimeTable() {
         List<Room> rooms = Collections.singletonList(new Room(1L, "room-A"));
         List<Timeslot> timeslots = Arrays.asList(
-                new Timeslot(1L, DayOfWeek.MONDAY, LocalTime.NOON),
-                new Timeslot(2L, DayOfWeek.TUESDAY, LocalTime.NOON),
-                new Timeslot(3L, DayOfWeek.WEDNESDAY, LocalTime.NOON));
+                new Timeslot(1L, DayOfWeek.MONDAY, LocalTime.NOON, LocalTime.NOON.plusMinutes(30)),
+                new Timeslot(2L, DayOfWeek.TUESDAY, LocalTime.NOON, LocalTime.NOON.plusMinutes(30)),
+                new Timeslot(3L, DayOfWeek.WEDNESDAY, LocalTime.NOON, LocalTime.NOON.plusMinutes(30)));
         List<Lesson> lessons = Arrays.asList(
                 new Lesson(1L, "Math", "A. Touring", "10th grade"),
                 new Lesson(2L, "Biology", "C. Darwin", "11th grade"),

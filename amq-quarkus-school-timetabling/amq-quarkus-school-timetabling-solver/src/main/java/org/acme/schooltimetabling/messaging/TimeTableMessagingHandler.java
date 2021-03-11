@@ -24,6 +24,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.acme.schooltimetabling.domain.TimeTable;
+import org.acme.schooltimetabling.message.SolverRequest;
+import org.acme.schooltimetabling.message.SolverResponse;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
@@ -88,7 +90,8 @@ public class TimeTableMessagingHandler {
 
     private void replyFailure(Message<String> solverRequestMessage, Long problemId, Exception exception) {
         SolverResponse solverResponse =
-                new SolverResponse(problemId, new ErrorInfo(exception.getClass().getName(), exception.getMessage()));
+                new SolverResponse(problemId,
+                        new SolverResponse.ErrorInfo(exception.getClass().getName(), exception.getMessage()));
         reply(solverRequestMessage, solverResponse, serializationException -> {
             throw new IllegalStateException("Unable to serialize error response.", serializationException);
         });

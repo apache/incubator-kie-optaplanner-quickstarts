@@ -24,8 +24,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.acme.schooltimetabling.domain.TimeTable;
-import org.acme.schooltimetabling.messaging.SolverRequest;
-import org.acme.schooltimetabling.messaging.SolverResponse;
+import org.acme.schooltimetabling.message.SolverResponse;
+import org.acme.schooltimetabling.message.SolverRequest;
 import org.acme.schooltimetabling.persistence.TimeTableRepository;
 import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
 import org.eclipse.microprofile.reactive.messaging.Channel;

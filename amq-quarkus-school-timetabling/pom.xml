@@ -20,6 +20,7 @@
   </properties>
 
   <modules>
+    <module>amq-quarkus-school-timetabling-common</module>
     <module>amq-quarkus-school-timetabling-client</module>
     <module>amq-quarkus-school-timetabling-solver</module>
   </modules>
@@ -41,6 +42,11 @@
         <version>${version.org.optaplanner}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.acme</groupId>
+        <artifactId>amq-quarkus-school-timetabling-common</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.awaitility</groupId>

@@ -15,6 +15,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.acme</groupId>
+      <artifactId>amq-quarkus-school-timetabling-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-quarkus</artifactId>
     </dependency>
