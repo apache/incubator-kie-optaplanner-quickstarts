@@ -29,7 +29,7 @@ function wait_for_url() {
   done
 }
 
-if [ ! -f target ]; then
+if [ ! -d target ]; then
   echo "The target folder does not exist. Maybe build the project by running \"mvn clean install\"."
   exit 1
 fi
