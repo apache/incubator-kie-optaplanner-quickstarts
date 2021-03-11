@@ -7,7 +7,15 @@ The quickstart consists of two modules:
 
 == Run the application with live coding
 
-. Install https://docs.docker.com/compose/install/[docker-compose].
+. Build the project:
++
+[source, shell]
+----
+$ mvn clean install
+----
++
+
+. Install https://docs.docker.com/get-docker/[docker] and https://docs.docker.com/compose/install/[docker-compose].
 
 . Start the AMQ Artemis broker, the Solver Server and Client application with the `run.sh` script, which starts all 3 processes:
 +
