@@ -62,23 +62,25 @@ public class TimeTableMessagingHandler {
     @Incoming(SOLVER_REQUEST_CHANNEL)
     public CompletionStage<Void> solve(Message<String> solverRequestMessage) {
         return CompletableFuture.runAsync(() -> {
-            SolverRequest solverRequest = null;
+            SolverRequest solverRequest;
             try {
                 solverRequest = objectMapper.readValue(solverRequestMessage.getPayload(), SolverRequest.class);
-            } catch (JsonProcessingException ex) {
-                LOGGER.warn("Unable to deserialize solver request from JSON.", ex);
-                // Bad request should go directly to a DLQ.
-                solverRequestMessage.nack(ex);
+            } catch (Throwable throwable) {
+                LOGGER.warn("Unable to deserialize solver request from JSON.", throwable);
+                /* Usually a bad request, which should be immediately rejected. No error response can be sent back
+                   as the problemId is unknown. Such a NACKed message is redirected to the DLQ (Dead letter queue).
+                   Catching the Throwable to make sure no unchecked exceptions are missed. */
+                solverRequestMessage.nack(throwable);
                 return;
             }
 
-            TimeTable solution = null;
+            TimeTable solution;
             try {
                 solution = solver.solve(solverRequest.getTimeTable());
                 replySuccess(solverRequestMessage, solverRequest.getProblemId(), solution);
-            } catch (Exception ex) {
-                LOGGER.warn("Error during processing a solver request ({}).", solverRequest.getProblemId(), ex);
-                replyFailure(solverRequestMessage, solverRequest.getProblemId(), ex);
+            } catch (Throwable throwable) {
+                LOGGER.warn("Error during processing a solver request ({}).", solverRequest.getProblemId(), throwable);
+                replyFailure(solverRequestMessage, solverRequest.getProblemId(), throwable);
             }
         });
     }
@@ -88,10 +90,10 @@ public class TimeTableMessagingHandler {
         reply(solverRequestMessage, solverResponse, exception -> replyFailure(solverRequestMessage, problemId, exception));
     }
 
-    private void replyFailure(Message<String> solverRequestMessage, Long problemId, Exception exception) {
+    private void replyFailure(Message<String> solverRequestMessage, Long problemId, Throwable throwable) {
         SolverResponse solverResponse =
                 new SolverResponse(problemId,
-                        new SolverResponse.ErrorInfo(exception.getClass().getName(), exception.getMessage()));
+                        new SolverResponse.ErrorInfo(throwable.getClass().getName(), throwable.getMessage()));
         reply(solverRequestMessage, solverResponse, serializationException -> {
             throw new IllegalStateException("Unable to serialize error response.", serializationException);
         });

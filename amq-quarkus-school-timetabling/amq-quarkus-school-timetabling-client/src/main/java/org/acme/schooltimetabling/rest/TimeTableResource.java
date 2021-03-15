@@ -67,10 +67,9 @@ public class TimeTableResource {
             timeTableRepository.update(timeTable);
         } else {
             timeTableRepository.get().setSolverStatus(SolverStatus.NOT_SOLVING);
-            throw new IllegalStateException("Error during solving. "
+            throw new IllegalStateException("Solving failed with exception class ("
                     + solverResponse.getErrorInfo().getExceptionClassName()
-                    + " : "
-                    + solverResponse.getErrorInfo().getExceptionMessage());
+                    + ") and message (" + solverResponse.getErrorInfo().getExceptionMessage() + ").");
         }
     }
 
