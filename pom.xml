@@ -23,6 +23,7 @@
     <module>quarkus-factorio-layout</module>
     <module>spring-boot-school-timetabling</module>
     <module>kotlin-quarkus-school-timetabling</module>
+    <module>amq-quarkus-school-timetabling</module>
     <module>build/quickstarts-showcase</module>
   </modules>
 
