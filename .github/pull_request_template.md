@@ -1,6 +1,9 @@
 <!--
 Thank you for submitting this pull request.
 
+*Do NOT use the default branch `stable` to create a pull request,
+use the branch `development` instead. The latter uses SNAPSHOT versions.*
+
 Please provide all relevant information as outlined below. Feel free to delete
 a section if that type of information is not available.
 
