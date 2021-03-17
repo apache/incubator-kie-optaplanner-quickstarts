@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.io.quarkus>1.11.4.Final</version.io.quarkus>
-    <version.org.optaplanner>8.4.0.Final</version.org.optaplanner>
+    <version.org.optaplanner>8.4.1-SNAPSHOT</version.org.optaplanner>
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.surefire.plugin>2.22.1</version.surefire.plugin>
