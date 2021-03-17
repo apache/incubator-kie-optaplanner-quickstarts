@@ -5,12 +5,17 @@ var autoRefreshIntervalId = null;
 var initialDateTime = moment().startOf('isoWeek').add(1, 'weeks').set('hour', 9);
 
 // DOM element where the Timeline will be attached
-var container = document.getElementById('visualization');
+var employeeContainer = document.getElementById('employeeVisualization');
 var assignedMaintenanceJobs = new vis.DataSet();
 var crewGroups = new vis.DataSet();
 
-// Configuration for the Timeline
-var options = {
+// Manager timeline element
+var managerContainer = document.getElementById('managerVisualization');
+var maintenanceJobReadyDueTimes = new vis.DataSet();
+var unitGroups = new vis.DataSet();
+
+// Configuration for the employee timeline
+var employeeTimelineOptions = {
     // Make jobs editable through UI
     // editable: true,
 
@@ -36,8 +41,38 @@ var options = {
 
 };
 
-// Create timeline displaying maintenance jobs
-var timeline = new vis.Timeline(container, assignedMaintenanceJobs, crewGroups, options);
+// Configuration for the manager timeline
+var managerTimelineOptions = {
+    // Make jobs editable through UI
+    // editable: true,
+
+    // Hide weekends using any weekend and repeat weekly
+    hiddenDates: [{
+        start: '2020-02-29 00:00:00',
+        end: '2020-03-02 00:00:00',
+        repeat: 'weekly'
+    },
+    // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
+    {
+        start: '2020-02-29 17:00:00',
+        end: '2020-03-02 09:00:00',
+        repeat: 'daily'
+    }
+    ],
+
+    // Always snap to full hours, independent of the scale
+    snap: function (date, scale, step) {
+        var hour = 60 * 60 * 1000;
+        return Math.round(date / hour) * hour;
+    },
+
+};
+
+// Create timelines displaying maintenance jobs
+var employeeTimeline = new vis.Timeline(employeeContainer, assignedMaintenanceJobs, crewGroups,
+    employeeTimelineOptions);
+var managerTimeline = new vis.Timeline(managerContainer, maintenanceJobReadyDueTimes, unitGroups,
+    managerTimelineOptions);
 
 $(document).ready(function () {
     $.ajaxSetup({
@@ -65,7 +100,7 @@ $(document).ready(function () {
     });
 
     $("#refreshButton").click(function () {
-        refreshSchedule(true);
+        refreshSchedule();
     });
     $("#solveButton").click(function () {
         solve();
@@ -73,11 +108,17 @@ $(document).ready(function () {
     $("#stopSolvingButton").click(function () {
         stopSolving();
     });
+    $("#employeeViewTab").click(function () {
+        setTimeout(() => { refreshSchedule() }, 200);
+    });
+    $("#managerViewTab").click(function () {
+        setTimeout(() => { refreshSchedule() }, 200);
+    });
     $("#addJobButton").click(function () {
         dropdownMaintenanceUnits();
     });
 
-    refreshSchedule(true);
+    refreshSchedule();
 });
 
 function solve() {
@@ -104,7 +145,7 @@ function refreshSolvingButtons(solving) {
 }
 
 function autoRefresh() {
-    refreshSchedule(true);
+    refreshSchedule();
     autoRefreshCount--;
     if (autoRefreshCount <= 0) {
         clearInterval(autoRefreshIntervalId);
@@ -115,7 +156,7 @@ function autoRefresh() {
 function stopSolving() {
     $.post("/schedule/stopSolving", function () {
         refreshSolvingButtons(false);
-        refreshSchedule(true);
+        refreshSchedule();
         clearInterval(autoRefreshIntervalId);
         autoRefreshIntervalId = null;
     }).fail(function (xhr, ajaxOptions, thrownError) {
@@ -136,7 +177,7 @@ function dropdownMaintenanceUnits() {
     });
 }
 
-function refreshSchedule(fitSchedule) {
+function refreshSchedule() {
     $.getJSON("/schedule", function (schedule) {
         refreshSolvingButtons(schedule.solverStatus != null && schedule.solverStatus !== "NOT_SOLVING");
         $("#score").text("Score: " + (schedule.score == null ? "?" : schedule.score));
@@ -150,6 +191,15 @@ function refreshSchedule(fitSchedule) {
             crewGroups.add({
                 id: crew.id,
                 content: crew.crewName
+            });
+        });
+
+        // Add a group for each unit
+        unitGroups.clear();
+        $.each(schedule.maintainableUnitList, (index, unit) => {
+            unitGroups.add({
+                id: unit.id,
+                content: unit.unitName
             });
         });
 
@@ -167,6 +217,7 @@ function refreshSchedule(fitSchedule) {
         });
 
         assignedMaintenanceJobs.clear();
+        maintenanceJobReadyDueTimes.clear();
         $.each(schedule.maintenanceJobList, (index, job) => {
             if (job.assignedCrew != null && job.startingTimeGrain != null) {
                 assignedMaintenanceJobs.add({
@@ -192,11 +243,17 @@ function refreshSchedule(fitSchedule) {
                 });
                 unassignedJobs.append(unassignedJobElement);
             }
+            maintenanceJobReadyDueTimes.add({
+                id: job.id,
+                group: job.maintainableUnit.id,
+                content: `<b>` + job.jobName + `</b>`,
+                start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`),
+                end: moment(initialDateTime).add(job.dueTimeGrainIndex, `hours`)
+            });
         });
 
-        if (fitSchedule) {
-            timeline.fit();
-        }
+        employeeTimeline.fit();
+        managerTimeline.fit();
     });
 }
 

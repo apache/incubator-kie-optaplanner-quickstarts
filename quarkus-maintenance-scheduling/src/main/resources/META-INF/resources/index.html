@@ -54,6 +54,19 @@
         </button>
         <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span>
 
+        <div class="float-right">
+            <ul class="nav nav-pills" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="employeeViewTab" data-toggle="tab" href="#employeeView" role="tab"
+                        aria-controls="employeeView" aria-selected="true">Employee View</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="managerViewTab" data-toggle="tab" href="#managerView" role="tab"
+                        aria-controls="managerView" aria-selected="false">Manager View</a>
+                </li>
+            </ul>
+        </div>
+
         <!-- TODO: Add job/unit/crew button functionality -->
         <!-- <div class="float-right">
             <button id="addJobButton" type="button" class="btn btn-primary" data-toggle="modal"
@@ -69,7 +82,14 @@
         </div> -->
     </div>
 
-    <div id="visualization"></div>
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="employeeView" role="tabpanel" aria-labelledby="employeeViewTab">
+            <div id="employeeVisualization"></div>
+        </div>
+        <div class="tab-pane fade" id="managerView" role="tabpanel" aria-labelledby="managerViewTab">
+            <div id="managerVisualization"></div>
+        </div>
+    </div>
 
     <h2 style="margin-top: 2rem">Unassigned jobs</h2>
     <div id="unassignedJobs" class="card-columns"></div>
