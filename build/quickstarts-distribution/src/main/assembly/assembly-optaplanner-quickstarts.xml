@@ -10,6 +10,10 @@
 
   <includeBaseDirectory>true</includeBaseDirectory>
 
+  <componentDescriptors>
+    <componentDescriptor>src/main/assembly/sources.xml</componentDescriptor>
+  </componentDescriptors>
+
   <fileSets>
     <fileSet>
       <directory>../..</directory>
