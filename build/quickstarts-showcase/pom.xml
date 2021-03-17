@@ -14,6 +14,8 @@
 
   <properties>
     <java.module.name>org.optaplanner.quickstarts.showcase</java.module.name>
+    <!-- Workaround for https://github.com/quarkusio/quarkus/issues/15817. -->
+    <version.compiler.plugin>3.8.1</version.compiler.plugin>
   </properties>
 
   <dependencyManagement>
