@@ -12,7 +12,7 @@ var crewGroups = new vis.DataSet();
 // Manager timeline element
 var managerContainer = document.getElementById('managerVisualization');
 var maintenanceJobReadyDueTimes = new vis.DataSet();
-var unitGroups = new vis.DataSet();
+var unitAndJobGroups = new vis.DataSet();
 
 // Configuration for the employee timeline
 var employeeTimelineOptions = {
@@ -60,18 +60,12 @@ var managerTimelineOptions = {
     }
     ],
 
-    // Always snap to full hours, independent of the scale
-    snap: function (date, scale, step) {
-        var hour = 60 * 60 * 1000;
-        return Math.round(date / hour) * hour;
-    },
-
 };
 
 // Create timelines displaying maintenance jobs
 var employeeTimeline = new vis.Timeline(employeeContainer, assignedMaintenanceJobs, crewGroups,
     employeeTimelineOptions);
-var managerTimeline = new vis.Timeline(managerContainer, maintenanceJobReadyDueTimes, unitGroups,
+var managerTimeline = new vis.Timeline(managerContainer, maintenanceJobReadyDueTimes, unitAndJobGroups,
     managerTimelineOptions);
 
 $(document).ready(function () {
@@ -194,12 +188,31 @@ function refreshSchedule() {
             });
         });
 
+        // Map jobs to units
+        var unitToJobs = {};
+
+        // Add a nested group for each job under its unit
+        unitAndJobGroups.clear();
+        $.each(schedule.maintenanceJobList, (index, job) => {
+            unitAndJobGroups.add({
+                id: job.id,
+                content: job.jobName
+            });
+
+            // Map job to unit
+            if (unitToJobs[job.maintainableUnit.unitName]) {
+                unitToJobs[job.maintainableUnit.unitName].push(job.id)
+            } else {
+                unitToJobs[job.maintainableUnit.unitName] = [job.id]
+            }
+        });
+
         // Add a group for each unit
-        unitGroups.clear();
         $.each(schedule.maintainableUnitList, (index, unit) => {
-            unitGroups.add({
+            unitAndJobGroups.add({
                 id: unit.id,
-                content: unit.unitName
+                content: unit.unitName,
+                nestedGroups: unitToJobs[unit.unitName]
             });
         });
 
@@ -243,13 +256,24 @@ function refreshSchedule() {
                 });
                 unassignedJobs.append(unassignedJobElement);
             }
-            maintenanceJobReadyDueTimes.add({
-                id: job.id,
-                group: job.maintainableUnit.id,
-                content: `<b>` + job.jobName + `</b>`,
-                start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`),
-                end: moment(initialDateTime).add(job.dueTimeGrainIndex, `hours`)
-            });
+            maintenanceJobReadyDueTimes.add([
+                {
+                    group: job.id,
+                    content: ``,
+                    type: `background`,
+                    start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`),
+                    end: moment(initialDateTime).add(job.dueTimeGrainIndex, `hours`)
+                },
+                {
+                    id: job.id,
+                    group: job.id,
+                    content: `<b>` + job.jobName + `</b>`,
+                    start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
+                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 1/3, `hours`),
+                    end: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
+                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 2/3, `hours`)
+                }
+            ]);
         });
 
         employeeTimeline.fit();
