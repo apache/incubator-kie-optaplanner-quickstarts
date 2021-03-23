@@ -52,21 +52,23 @@ public class MaintenanceJob {
     @ManyToOne
     private MaintenanceCrew assignedCrew;
 
+    private int safetyMarginDurationInGrains;
+
     // TODO: Make it an enum? Range of priorities (not in MVP, but make it easy for users to do)
     private boolean critical;
-
-    // TODO: Add safetyMargin
 
     public MaintenanceJob() {
     }
 
     public MaintenanceJob(String jobName, MaintainableUnit maintainableUnit, int readyTimeGrainIndex,
-                          int dueTimeGrainIndex, int durationInGrains, boolean critical) {
+                          int dueTimeGrainIndex, int durationInGrains, int safetyMarginDurationInGrains, 
+                          boolean critical) {
         this.jobName = jobName;
         this.maintainableUnit = maintainableUnit;
         this.readyTimeGrainIndex = readyTimeGrainIndex;
         this.dueTimeGrainIndex = dueTimeGrainIndex;
         this.durationInGrains = durationInGrains;
+        this.safetyMarginDurationInGrains = safetyMarginDurationInGrains;
         this.critical = critical;
     }
 
@@ -91,6 +93,20 @@ public class MaintenanceJob {
         return Math.min(end, otherEnd) - Math.max(start, otherStart);
     }
 
+    public int calculateSafetyMarginPenalty() {
+        if (startingTimeGrain == null) {
+            return 0;
+        }
+        int start = startingTimeGrain.getGrainIndex();
+        int end = start + durationInGrains;
+        int safetyMarginStart = dueTimeGrainIndex - safetyMarginDurationInGrains;
+
+        if (end < safetyMarginStart) {
+            return 0;
+        }
+        return (end - safetyMarginStart) * (end - safetyMarginStart);
+    }
+
     @Override
     public String toString() {
         return "MaintenanceJob{" +
@@ -100,6 +116,7 @@ public class MaintenanceJob {
                 ", readyTimeGrainIndex=" + readyTimeGrainIndex +
                 ", dueTimeGrainIndex=" + dueTimeGrainIndex +
                 ", durationInGrains=" + durationInGrains +
+                ", safetyMarginDurationInGrains=" + safetyMarginDurationInGrains +
                 ", isCritical=" + critical +
                 '}';
     }
@@ -170,6 +187,14 @@ public class MaintenanceJob {
 
     public void setAssignedCrew(MaintenanceCrew assignedCrew) {
         this.assignedCrew = assignedCrew;
+    }
+
+    public int getSafetyMarginDurationInGrains() {
+        return safetyMarginDurationInGrains;
+    }
+
+    public void setSafetyMarginDurationInGrains(int safetyMarginDurationInGrains) {
+        this.safetyMarginDurationInGrains = safetyMarginDurationInGrains;
     }
 
     public boolean isCritical() {

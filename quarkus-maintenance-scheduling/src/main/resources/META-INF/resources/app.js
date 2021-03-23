@@ -233,6 +233,7 @@ function refreshSchedule() {
         maintenanceJobReadyDueTimes.clear();
         $.each(schedule.maintenanceJobList, (index, job) => {
             if (job.assignedCrew != null && job.startingTimeGrain != null) {
+                // Display assigned job in employee view timeline
                 assignedMaintenanceJobs.add({
                     id: job.id,
                     group: job.assignedCrew.id,
@@ -241,6 +242,16 @@ function refreshSchedule() {
                     start: moment(initialDateTime).add(job.startingTimeGrain.grainIndex, `hours`),
                     end: moment(initialDateTime).add(job.startingTimeGrain.grainIndex + job.durationInGrains, `hours`)
                 });
+
+                // Display assigned job in manager view timeline
+                maintenanceJobReadyDueTimes.add({
+                    id: job.id,
+                    group: job.id,
+                    content: `<b>` + job.jobName + `</b>`,
+                    style: `background-color: lightgreen`,
+                    start: moment(initialDateTime).add(job.startingTimeGrain.grainIndex, `hours`),
+                    end: moment(initialDateTime).add(job.startingTimeGrain.grainIndex + job.durationInGrains, `hours`)
+                })
             }
             else {
                 const unassignedJobElement = $(`<div class="card bg-secondary"/>`)
@@ -255,8 +266,21 @@ function refreshSchedule() {
                         .text(mutuallyExclusiveTag));
                 });
                 unassignedJobs.append(unassignedJobElement);
+
+                // Display unassigned job in manager view timeline
+                maintenanceJobReadyDueTimes.add({
+                    id: job.id,
+                    group: job.id,
+                    content: `<b>` + job.jobName + `</b><br><i>Unassigned</i><br>`,
+                    style: `background-color: red`,
+                    start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
+                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 1/3, `hours`),
+                    end: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
+                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 2/3, `hours`)
+                })
             }
             maintenanceJobReadyDueTimes.add([
+                // Ready/due date
                 {
                     group: job.id,
                     content: ``,
@@ -264,14 +288,14 @@ function refreshSchedule() {
                     start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`),
                     end: moment(initialDateTime).add(job.dueTimeGrainIndex, `hours`)
                 },
+                // Safety margin
                 {
-                    id: job.id,
                     group: job.id,
-                    content: `<b>` + job.jobName + `</b>`,
-                    start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
-                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 1/3, `hours`),
-                    end: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
-                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 2/3, `hours`)
+                    content: ``,
+                    type: `background`,
+                    style: `background-color: pink`,
+                    start: moment(initialDateTime).add(job.dueTimeGrainIndex - job.safetyMarginDurationInGrains, `hours`),
+                    end: moment(initialDateTime).add(job.dueTimeGrainIndex, `hours`)
                 }
             ]);
         });

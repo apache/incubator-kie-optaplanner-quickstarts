@@ -38,4 +38,6 @@ public class MaintenanceSchedulingConstraintConfiguration {
 
     @ConstraintWeight("Assign all non critical jobs")
     private HardSoftScore assignAllNonCriticalJobs = HardSoftScore.ofSoft(10);
+    @ConstraintWeight("Jobs should finish before safety margin")
+    private HardSoftScore jobsShouldFinishBeforeSafetyMargin = HardSoftScore.ofSoft(10);
 }

@@ -48,7 +48,7 @@ public class MaintenanceJobResourceTest {
         MaintenanceJob job = given()
                 .when()
                 .contentType(ContentType.JSON)
-                .body(new MaintenanceJob("Test job", null, 0, 8, 1, true))
+                .body(new MaintenanceJob("Test job", null, 0, 8, 1, 2, true))
                 .post("/jobs")
                 .then()
                 .statusCode(201)
