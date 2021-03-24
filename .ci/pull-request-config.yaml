@@ -1,0 +1,12 @@
+version: "2.0"
+
+dependencies: ./project-dependencies.yaml
+
+build:
+  - project: kiegroup/optaplanner
+    build-command:
+      upstream: mvn -e clean install -Dquickly -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
+
+  - project: kiegroup/optaplanner-quickstarts
+    build-command:
+      current: mvn -e -nsu -Dfull clean install --fail-at-end -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3

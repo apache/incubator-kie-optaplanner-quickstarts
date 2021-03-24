@@ -1,0 +1,33 @@
+name: Build Chain
+
+on: [pull_request]
+
+jobs:
+  build-chain:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        java-version: [11]
+      fail-fast: true
+    runs-on: ${{ matrix.os }}
+    name: Maven Build
+    steps:
+      - name: Support longpaths
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: git config --system core.longpaths true
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java-version }}
+      # See https://docs.github.com/en/actions/guides/building-and-testing-java-with-maven#caching-dependencies
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build Chain ${{ matrix.java-version }}
+        id: build-chain
+        uses: kiegroup/github-action-build-chain@v2.5.3
+        with:
+          definition-file: https://raw.githubusercontent.com/${GROUP}/optaplanner-quickstarts/${BRANCH}/.ci/pull-request-config.yaml        
