@@ -1,0 +1,14 @@
+version: "2.0"
+dependencies:
+  - project: kiegroup/optaplanner
+
+  - project: kiegroup/optaplanner-quickstarts
+    dependencies:
+      - project: kiegroup/optaplanner    
+    mapping:
+      dependencies:
+        default:
+          source: development
+          target: master
+      source: master
+      target: development
