@@ -29,9 +29,23 @@ function wait_for_url() {
   done
 }
 
-if [ ! -d target ]; then
-  echo "The target folder does not exist. Maybe build the project by running \"mvn clean install\"."
+function check_directory_exists() {
+  local _directory=$1
+  local _hint=$2
+  if [ ! -d "$_directory" ]; then
+  echo "The directory $_directory does not exist. $_hint"
   exit 1
+fi
+}
+
+readonly solverModule=activemq-quarkus-school-timetabling-solver
+readonly clientModule=activemq-quarkus-school-timetabling-client
+
+check_directory_exists $solverModule/target "Maybe build the project by running \"mvn clean install\"."
+check_directory_exists $clientModule/target "Maybe build the project by running \"mvn clean install\"."
+
+if [ ! -d target ]; then
+  mkdir target
 fi
 
 # Run docker-compose to start ActiveMQ broker.
@@ -40,12 +54,12 @@ readonly PID_DOCKER_AMQ=$!
 echo "Running the ActiveMQ broker via docker."
 
 # Run the solver.
-mvn clean quarkus:dev -f activemq-quarkus-school-timetabling-solver -Dquarkus.http.port="$SOLVER_PORT" -Ddebug=8180 > target/solver.log 2>&1 &
+mvn clean quarkus:dev -f $solverModule -Dquarkus.http.port="$SOLVER_PORT" -Ddebug=8180 > target/solver.log 2>&1 &
 readonly PID_SOLVER=$!
 echo "Running the solver."
 
 # Run the client.
-mvn clean quarkus:dev -f activemq-quarkus-school-timetabling-client > target/client.log 2>&1 &
+mvn clean quarkus:dev -f $clientModule > target/client.log 2>&1 &
 readonly PID_CLIENT=$!
 echo "Running the client."
 
