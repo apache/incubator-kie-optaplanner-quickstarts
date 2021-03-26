@@ -39,6 +39,7 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 * link:quarkus-school-timetabling/README.adoc[Run quarkus-school-timetabling] (Java, Maven or Gradle, Quarkus, H2)
 * link:spring-boot-school-timetabling/README.adoc[Run spring-boot-school-timetabling] (Java, Maven or Gradle, Spring Boot, H2)
 * link:kotlin-quarkus-school-timetabling/README.adoc[Run kotlin-quarkus-school-timetabling] (Kotlin, Maven, Quarkus, H2)
+* link:activemq-quarkus-school-timetabling/README.adoc[Run activemq-quarkus-school-timetabling] (ActiveMQ, Maven, Quarkus)
 
 [[facility-location]]
 === Facility location problem
