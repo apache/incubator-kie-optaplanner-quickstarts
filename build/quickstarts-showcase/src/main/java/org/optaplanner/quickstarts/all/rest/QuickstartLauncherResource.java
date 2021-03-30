@@ -16,9 +16,6 @@
 
 package org.optaplanner.quickstarts.all.rest;
 
-import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.StartupEvent;
-
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import javax.enterprise.event.Observes;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -40,10 +38,14 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.optaplanner.quickstarts.all.domain.QuickstartMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.quarkus.runtime.ShutdownEvent;
+import io.quarkus.runtime.StartupEvent;
 
 @Path("quickstart")
 @Produces(MediaType.APPLICATION_JSON)
