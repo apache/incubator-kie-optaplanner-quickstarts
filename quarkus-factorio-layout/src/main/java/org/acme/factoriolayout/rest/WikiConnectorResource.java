@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.acme.factoriolayout.domain.Recipe;
 import org.acme.factoriolayout.domain.RecipeInput;
 import org.jsoup.Jsoup;
@@ -41,8 +39,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.util.stream.Collectors.groupingBy;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * To update the recipes, first call http://localhost:8080/wikiConnector/scrape
@@ -53,7 +50,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Consumes(MediaType.APPLICATION_JSON)
 public class WikiConnectorResource {
 
-    private static final Logger LOG  = LoggerFactory.getLogger(WikiConnectorResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WikiConnectorResource.class);
     private static final List<String> IGNORE_RECIPE_IDS = Arrays.asList(
             // Not materials
             "Blueprint", "Deconstruction_planner", "Upgrade_planner", "Blueprint_book",
@@ -161,7 +158,7 @@ public class WikiConnectorResource {
                         }
                         Recipe inputRecipe = recipeMap.get(id);
                         if (inputRecipe == null) {
-                            LOG.warn("Wiki parsing of recipe ({}) has non-existing ingredient ({}).", recipe.getId(), id);
+                            LOGGER.warn("Wiki parsing of recipe ({}) has non-existing ingredient ({}).", recipe.getId(), id);
                         } else {
                             recipe.getInputSet().add(new RecipeInput(inputRecipe, amountMillis));
                         }
@@ -184,7 +181,7 @@ public class WikiConnectorResource {
             throw new IllegalStateException(
                     "Recipe (" + recipe.getId() + ") has no output amount.");
         }
-        LOG.info("Parsed recipe ({}): {}ms + {} -> ?.", recipe.getId(),
+        LOGGER.info("Parsed recipe ({}): {}ms + {} -> ?.", recipe.getId(),
                 recipe.getDurationMillis(),
                 recipe.getInputSet().isEmpty() ? "mining"
                 : recipe.getInputSet().stream()

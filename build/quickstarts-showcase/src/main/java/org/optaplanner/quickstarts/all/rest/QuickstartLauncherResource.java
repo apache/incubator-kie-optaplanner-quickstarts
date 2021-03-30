@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ import io.quarkus.runtime.StartupEvent;
 @Consumes(MediaType.APPLICATION_JSON)
 public class QuickstartLauncherResource {
 
-    protected static final Logger logger = LoggerFactory.getLogger(QuickstartLauncherResource.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuickstartLauncherResource.class);
 
     @ConfigProperty(name = "startup-open-browser", defaultValue = "false")
     boolean startupOpenBrowser;
@@ -118,7 +118,7 @@ public class QuickstartLauncherResource {
                 .filter(quickstartMeta_ -> quickstartMeta_.getId().equals(quickstartId))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("The quickstartId (" + quickstartId + ") doesn't exist."));
-        logger.info("Starting quickstart ({})...", quickstartId);
+        LOGGER.info("Starting quickstart ({})...", quickstartId);
 
         ProcessBuilder processBuilder;
         int port = this.nextPort;
@@ -165,7 +165,7 @@ public class QuickstartLauncherResource {
                 .filter(s -> s != null)
                 .findFirst();
         if (!maybeMavenHome.isPresent()) {
-            logger.warn("Cannot find Maven home. Falling back to Maven Wrapper."
+            LOGGER.warn("Cannot find Maven home. Falling back to Maven Wrapper."
                     + " Maybe define environment variable M3_HOME instead.");
             String scriptFileName = System.getProperty("os.name").startsWith("Windows") ? "mvnw.cmd" : "mvnw";
             return new File(baseDirectory, scriptFileName).getAbsolutePath();
@@ -202,7 +202,7 @@ public class QuickstartLauncherResource {
         String url = "http://localhost:" + port;
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
         if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
-            logger.warn("There is no default browser to show the URL (" + url + ").");
+            LOGGER.warn("There is no default browser to show the URL (" + url + ").");
             return;
         }
         try {
