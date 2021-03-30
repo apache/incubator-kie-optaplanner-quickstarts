@@ -15,7 +15,7 @@ defaults:
     shell: bash
 
 jobs:
-  quarkus:
+  quickstarts:
     name: Matrix
     runs-on: ubuntu-latest
     strategy:
