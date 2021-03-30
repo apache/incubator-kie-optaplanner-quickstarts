@@ -61,4 +61,8 @@ test {
     // Gradle needs native tests in src/native-test/java, but maven needs them in src/test/java instead.
     // Maven first, so we skip them in Gradle unfortunately.
     exclude '**/**IT.class'
+    // Log the test execution results.
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
