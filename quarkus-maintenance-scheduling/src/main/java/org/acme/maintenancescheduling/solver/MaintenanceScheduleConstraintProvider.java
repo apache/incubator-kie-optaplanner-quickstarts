@@ -123,9 +123,6 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                 .penalizeConfigurable("Assign all non critical jobs");
     }
 
-    // TODO: Risk: when job completion date falls within the “SafetyMargin” before the due date,
-    //  square the time between the start of the “SafetyMargin” and completion date, sum for all jobs
-    //  (quadratic, will scale faster. Sq root the sum of squares)
     public Constraint jobsShouldFinishBeforeSafetyMargin(ConstraintFactory constraintFactory) {
         return constraintFactory.fromUnfiltered(MaintenanceJob.class)
                 .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null
