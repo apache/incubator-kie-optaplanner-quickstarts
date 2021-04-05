@@ -74,6 +74,15 @@
         <exclude>.gitignore</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <useDefaultExcludes>false</useDefaultExcludes>
+      <directory>../../quarkus-call-center</directory>
+      <outputDirectory>sources/quarkus-call-center</outputDirectory>
+      <excludes>
+        <exclude>**/target/**</exclude>
+        <exclude>.gitignore</exclude>
+      </excludes>
+    </fileSet>
   </fileSets>
 
 </component>

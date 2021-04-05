@@ -76,6 +76,13 @@
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>../../quarkus-call-center/target</directory>
+      <outputDirectory>binaries/quarkus-call-center</outputDirectory>
+      <includes>
+        <include>quarkus-app/**</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
 </assembly>

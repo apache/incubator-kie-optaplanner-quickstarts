@@ -1,0 +1,75 @@
+<!--
+  ~ Copyright 2021 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Call center scheduling - OptaPlanner Quarkus</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/webjars/font-awesome/css/all.css" />
+    <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="https://www.optaplanner.org">
+            <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
+        </a>
+    </nav>
+    <div class="sticky-top d-flex justify-content-center align-items-center" aria-live="polite" aria-atomic="true">
+        <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
+    </div>
+    <h1>Call center realtime scheduling</h1>
+    <p>Assign incoming calls to agents based on required skills and minimize the customer waiting time.</p>
+
+    <div style="margin-bottom: .5rem">
+        <button id="solveButton" type="button" class="btn btn-success">
+            <span class="fas fa-play"></span> Solve
+        </button>
+        <button id="stopSolvingButton" type="button" class="btn btn-danger">
+            <span class="fas fa-stop"></span> Stop solving
+        </button>
+        <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span>
+        <div class="float-right">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><span id="callFrequencyValue"></span> new calls per minute</p>
+                    <input type="range" min="0" max="60" value="10" id="callFrequencyRange"/>
+                </div>
+
+                <div class="col-md-6">
+                    <p>Call duration <span id="callLengthValue"></span> seconds</p>
+                    <input type="range" min="10" max="60" value="10" id="callLengthRange"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="myTabContent">
+        <table class="table table-borderless table-striped" id="callTable">
+            <!-- Filled in by app.js -->
+        </table>
+    </div>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script src="/webjars/js-joda/dist/js-joda.min.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

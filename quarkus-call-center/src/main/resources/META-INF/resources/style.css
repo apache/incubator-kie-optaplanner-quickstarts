@@ -1,0 +1,11 @@
+.call-btn {
+  background-color: White;
+  border: 2px solid red;
+  color: Red;
+  padding: 4px 4px;
+  cursor: pointer;
+}
+
+.agent-row {
+    border: 2px solid grey;
+}
