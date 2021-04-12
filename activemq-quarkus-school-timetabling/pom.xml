@@ -5,7 +5,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.acme</groupId>
-  <artifactId>activemq-quarkus-school-timetabling</artifactId>
+  <artifactId>optaplanner-activemq-quarkus-school-timetabling</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -45,7 +45,7 @@
       </dependency>
       <dependency>
         <groupId>org.acme</groupId>
-        <artifactId>activemq-quarkus-school-timetabling-common</artifactId>
+        <artifactId>optaplanner-activemq-quarkus-school-timetabling-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

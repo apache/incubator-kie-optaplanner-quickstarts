@@ -4,19 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>activemq-quarkus-school-timetabling</artifactId>
+    <artifactId>optaplanner-activemq-quarkus-school-timetabling</artifactId>
     <groupId>org.acme</groupId>
     <version>1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <artifactId>activemq-quarkus-school-timetabling-solver</artifactId>
+  <artifactId>optaplanner-activemq-quarkus-school-timetabling-solver</artifactId>
   <description>ActiveMQ Quarkus School Timetabling Quickstart : Solver Server</description>
 
   <dependencies>
     <dependency>
       <groupId>org.acme</groupId>
-      <artifactId>activemq-quarkus-school-timetabling-common</artifactId>
+      <artifactId>optaplanner-activemq-quarkus-school-timetabling-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.optaplanner</groupId>
