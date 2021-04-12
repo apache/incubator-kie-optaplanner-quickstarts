@@ -41,6 +41,10 @@ public class Timeslot {
         this.id = id;
     }
 
+    public Timeslot(long id, DayOfWeek dayOfWeek, LocalTime startTime) {
+        this(id, dayOfWeek, startTime, startTime.plusMinutes(50));
+    }
+
     @Override
     public String toString() {
         return dayOfWeek + " " + startTime;
