@@ -96,6 +96,11 @@
           </executions>
         </plugin>
         <plugin>
+          <groupId>org.jboss.jandex</groupId>
+          <artifactId>jandex-maven-plugin</artifactId>
+          <version>1.0.8</version>
+        </plugin>
+        <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${surefire-plugin.version}</version>
           <configuration>
