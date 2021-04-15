@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package org.acme.vaccinationscheduler.domain;
+package org.acme.vaccinationscheduler.solver;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import java.util.Comparator;
 
-@JsonFormat(shape = JsonFormat.Shape.ARRAY)
-public class Location {
+import org.acme.vaccinationscheduler.domain.solver.PersonAssignment;
 
-    public double latitude;
-    public double longitude;
+public class PersonAssignmentDifficultyComparator implements Comparator<PersonAssignment> {
 
-    // No-arg constructor required for Jackson
-    public Location() {}
-
-    public Location(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+    private static final Comparator<PersonAssignment> COMPARATOR = Comparator.comparing(PersonAssignment::getDoseNumber)
+            .thenComparing(PersonAssignment::getPriorityRating);
 
     @Override
-    public String toString() {
-        return String.format("[%.4fN, %.4fE]", latitude, longitude);
+    public int compare(PersonAssignment a, PersonAssignment b) {
+        return COMPARATOR.compare(a, b);
     }
 
 }

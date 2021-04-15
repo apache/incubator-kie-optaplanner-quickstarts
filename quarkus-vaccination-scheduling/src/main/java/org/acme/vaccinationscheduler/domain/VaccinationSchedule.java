@@ -16,52 +16,45 @@
 
 package org.acme.vaccinationscheduler.domain;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
-import org.optaplanner.core.api.domain.solution.PlanningScore;
-import org.optaplanner.core.api.domain.solution.PlanningSolution;
-import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
-import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
-import org.optaplanner.core.api.score.buildin.hardmediumsoftlong.HardMediumSoftLongScore;
+import org.acme.vaccinationscheduler.domain.solver.VaccinationSolution;
+import org.optaplanner.core.api.score.buildin.bendablelong.BendableLongScore;
 import org.optaplanner.core.api.solver.SolverStatus;
 
-@PlanningSolution
 public class VaccinationSchedule {
 
-    @ProblemFactCollectionProperty
     private List<VaccineType> vaccineTypeList;
 
-    @ProblemFactCollectionProperty
     private List<VaccinationCenter> vaccinationCenterList;
 
-    private List<LocalDateTime> timeslotDateTimeList;
+    /**
+     * Translated to {@link VaccinationSolution#getVaccinationCenterList()} before solving and back again after solving.
+     * See {@link VaccinationSolution#VaccinationSolution(VaccinationSchedule)} and {@link VaccinationSolution#toSchedule()}.
+     */
+    private List<Appointment> appointmentList;
 
-    @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "personRange")
     private List<Person> personList;
 
-    @PlanningEntityCollectionProperty
-    private List<Injection> injectionList;
+    private BendableLongScore score;
 
-    @PlanningScore
-    private HardMediumSoftLongScore score;
-
-    // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
     private SolverStatus solverStatus;
 
-    // No-arg constructor required for OptaPlanner
+    // No-arg constructor required for Jackson
     public VaccinationSchedule() {
     }
 
-    public VaccinationSchedule(List<VaccineType> vaccineTypeList, List<VaccinationCenter> vaccinationCenterList, List<LocalDateTime> timeslotDateTimeList, List<Person> personList, List<Injection> injectionList) {
+    public VaccinationSchedule(List<VaccineType> vaccineTypeList, List<VaccinationCenter> vaccinationCenterList,
+            List<Appointment> appointmentList, List<Person> personList) {
         this.vaccineTypeList = vaccineTypeList;
         this.vaccinationCenterList = vaccinationCenterList;
-        this.timeslotDateTimeList = timeslotDateTimeList;
+        this.appointmentList = appointmentList;
         this.personList = personList;
-        this.injectionList = injectionList;
     }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
 
     public List<VaccineType> getVaccineTypeList() {
         return vaccineTypeList;
@@ -71,20 +64,20 @@ public class VaccinationSchedule {
         return vaccinationCenterList;
     }
 
-    public List<LocalDateTime> getTimeslotDateTimeList() {
-        return timeslotDateTimeList;
+    public List<Appointment> getAppointmentList() {
+        return appointmentList;
     }
 
     public List<Person> getPersonList() {
         return personList;
     }
 
-    public List<Injection> getInjectionList() {
-        return injectionList;
+    public BendableLongScore getScore() {
+        return score;
     }
 
-    public HardMediumSoftLongScore getScore() {
-        return score;
+    public void setScore(BendableLongScore score) {
+        this.score = score;
     }
 
     public SolverStatus getSolverStatus() {

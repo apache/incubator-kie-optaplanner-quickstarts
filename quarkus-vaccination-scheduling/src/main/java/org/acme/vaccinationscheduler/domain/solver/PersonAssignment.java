@@ -1,0 +1,187 @@
+/*
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.acme.vaccinationscheduler.domain.solver;
+
+import java.time.LocalDate;
+import java.util.Map;
+
+import org.acme.vaccinationscheduler.domain.Appointment;
+import org.acme.vaccinationscheduler.domain.Location;
+import org.acme.vaccinationscheduler.domain.Person;
+import org.acme.vaccinationscheduler.domain.VaccinationCenter;
+import org.acme.vaccinationscheduler.domain.VaccinationSchedule;
+import org.acme.vaccinationscheduler.domain.VaccineType;
+import org.acme.vaccinationscheduler.solver.PersonAssignmentDifficultyComparator;
+import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.entity.PlanningPin;
+import org.optaplanner.core.api.domain.lookup.PlanningId;
+import org.optaplanner.core.api.domain.variable.PlanningVariable;
+
+@PlanningEntity(difficultyComparatorClass = PersonAssignmentDifficultyComparator.class)
+public class PersonAssignment {
+
+    private Person person;
+
+    private Map<VaccinationCenter, Long> distanceMap;
+    private Long nearestVaccinationCenterDistance;
+
+    /**
+     * Following the bucket design pattern, a {@link VaccinationSlot} is a bucket of {@link Appointment} instances.
+     * <p>
+     * Translated from {@link Person#getAppointment()} before solving and back again after solving.
+     * See {@link VaccinationSolution#VaccinationSolution(VaccinationSchedule)} and {@link VaccinationSolution#toSchedule()}.
+     */
+    private VaccinationSlot vaccinationSlot = null;
+
+    // No-arg constructor required for OptaPlanner
+    public PersonAssignment() {
+    }
+
+    public PersonAssignment(Person person, Map<VaccinationCenter, Long> distanceMap) {
+        this.person = person;
+        this.distanceMap = distanceMap;
+        if (distanceMap != null) {
+            nearestVaccinationCenterDistance = distanceMap.values().stream().mapToLong(Long::valueOf).min().orElse(0);
+        }
+    }
+
+    public PersonAssignment(PersonAssignment original) {
+        this.person = original.person;
+        this.distanceMap = original.distanceMap;
+        this.nearestVaccinationCenterDistance = original.nearestVaccinationCenterDistance;
+        this.vaccinationSlot = original.vaccinationSlot;
+    }
+
+    public PersonAssignment(String id, String name, Location homeLocation, Map<VaccinationCenter, Long> distanceMap, LocalDate birthdate, long priorityRating, VaccinationSlot vaccinationSlot) {
+        this(new Person(id, name, homeLocation, birthdate, priorityRating), distanceMap);
+        this.vaccinationSlot = vaccinationSlot;
+    }
+
+    public PersonAssignment(String id, String name, Location homeLocation, Map<VaccinationCenter, Long> distanceMap, LocalDate birthdate, long priorityRating,
+            int doseNumber, VaccineType requiredVaccineType, VaccineType preferredVaccineType,
+            VaccinationCenter requiredVaccinationCenter, VaccinationCenter preferredVaccinationCenter,
+            LocalDate readyDate, LocalDate idealDate, LocalDate dueDate,
+            VaccinationSlot vaccinationSlot) {
+        this(new Person(id, name, homeLocation, birthdate, priorityRating, doseNumber,
+                requiredVaccineType, preferredVaccineType, requiredVaccinationCenter, preferredVaccinationCenter,
+                readyDate, idealDate, dueDate), distanceMap);
+        this.vaccinationSlot = vaccinationSlot;
+    }
+
+    public long getDistanceTo(VaccinationCenter vaccinationCenter) {
+        Long distance = distanceMap.get(vaccinationCenter);
+        if (distance == null) {
+            throw new IllegalStateException("The person (" + person
+                    + ") is lacking a distance to vaccination center (" + vaccinationCenter + ").");
+        }
+        return distance;
+    }
+
+    public long getRegretDistanceTo(VaccinationCenter vaccinationCenter) {
+        long distance = getDistanceTo(vaccinationCenter);
+        VaccinationCenter requiredVaccinationCenter = getRequiredVaccinationCenter();
+        if (requiredVaccinationCenter != null) {
+            return (requiredVaccinationCenter == vaccinationCenter) ? 0L : distance;
+        }
+        VaccinationCenter preferedVaccinationCenter = getPreferredVaccinationCenter();
+        if (preferedVaccinationCenter != null) {
+            return (preferedVaccinationCenter == vaccinationCenter) ? 0L : distance;
+        }
+        return distance - nearestVaccinationCenterDistance;
+    }
+
+    @Override
+    public String toString() {
+        return person.toString();
+    }
+
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
+
+    public Person getPerson() {
+        return person;
+    }
+
+    @PlanningId
+    public String getId() {
+        return person.getId();
+    }
+
+    public String getName() {
+        return person.getName();
+    }
+
+    public Location getHomeLocation() {
+        return person.getHomeLocation();
+    }
+
+    public LocalDate getBirthdate() {
+        return person.getBirthdate();
+    }
+
+    public long getPriorityRating() {
+        return person.getPriorityRating();
+    }
+
+    public int getDoseNumber() {
+        return person.getDoseNumber();
+    }
+
+    public VaccineType getRequiredVaccineType() {
+        return person.getRequiredVaccineType();
+    }
+
+    public VaccineType getPreferredVaccineType() {
+        return person.getPreferredVaccineType();
+    }
+
+    public VaccinationCenter getRequiredVaccinationCenter() {
+        return person.getRequiredVaccinationCenter();
+    }
+
+    public VaccinationCenter getPreferredVaccinationCenter() {
+        return person.getPreferredVaccinationCenter();
+    }
+
+    public LocalDate getReadyDate() {
+        return person.getReadyDate();
+    }
+
+    public LocalDate getIdealDate() {
+        return person.getIdealDate();
+    }
+
+    public LocalDate getDueDate() {
+        return person.getDueDate();
+    }
+
+    @PlanningPin
+    public boolean isPinned() {
+        return person.isPinned();
+    }
+
+    @PlanningVariable(nullable = true, valueRangeProviderRefs = {"vaccinationSlotRange"})
+    public VaccinationSlot getVaccinationSlot() {
+        return vaccinationSlot;
+    }
+
+    public void setVaccinationSlot(VaccinationSlot vaccinationSlot) {
+        this.vaccinationSlot = vaccinationSlot;
+    }
+
+}

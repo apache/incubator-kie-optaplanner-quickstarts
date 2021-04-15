@@ -16,16 +16,25 @@
 
 package org.acme.vaccinationscheduler.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class VaccinationCenter {
+
+    private String id;
 
     private String name;
     private Location location;
-    private int lineCount;
 
-    public VaccinationCenter(String name, Location location, int lineCount) {
+    // No-arg constructor required for Jackson
+    public VaccinationCenter() {}
+
+    public VaccinationCenter(String id, String name, Location location) {
+        this.id = id;
         this.name = name;
         this.location = location;
-        this.lineCount = lineCount;
     }
 
     @Override
@@ -37,16 +46,16 @@ public class VaccinationCenter {
     // Getters and setters
     // ************************************************************************
 
+    public String getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
 
     public Location getLocation() {
         return location;
-    }
-
-    public int getLineCount() {
-        return lineCount;
     }
 
 }

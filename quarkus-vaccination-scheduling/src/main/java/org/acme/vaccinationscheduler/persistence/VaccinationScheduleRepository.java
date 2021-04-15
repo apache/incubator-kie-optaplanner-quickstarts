@@ -16,8 +16,6 @@
 
 package org.acme.vaccinationscheduler.persistence;
 
-import java.util.Optional;
-
 import javax.enterprise.context.ApplicationScoped;
 
 import org.acme.vaccinationscheduler.domain.VaccinationSchedule;

@@ -17,130 +17,240 @@
 package org.acme.vaccinationscheduler.solver;
 
 import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.YEARS;
 
-import org.acme.vaccinationscheduler.domain.Injection;
-import org.acme.vaccinationscheduler.domain.Person;
-import org.optaplanner.core.api.score.buildin.hardmediumsoftlong.HardMediumSoftLongScore;
+import java.time.LocalDateTime;
+import java.util.function.Predicate;
+
+import org.acme.vaccinationscheduler.domain.solver.PersonAssignment;
+import org.optaplanner.core.api.score.buildin.bendablelong.BendableLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
+import org.optaplanner.core.api.score.stream.ConstraintCollectors;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
-import org.optaplanner.core.api.score.stream.Joiners;
 
 public class VaccinationScheduleConstraintProvider implements ConstraintProvider {
+
+    public static final int HARD_LEVELS_SIZE = 1;
+    public static final int SOFT_LEVELS_SIZE = 5;
+
+    private static final LocalDateTime COVID_EPOCH = LocalDateTime.of(2021, 1, 1, 0, 0);
+
+    private BendableLongScore ofHard(long hardScore) {
+        return BendableLongScore.ofHard(HARD_LEVELS_SIZE, SOFT_LEVELS_SIZE, 0, hardScore);
+    }
+
+    private BendableLongScore ofSoft(int softLevel, long softScore) {
+        return BendableLongScore.ofSoft(HARD_LEVELS_SIZE, SOFT_LEVELS_SIZE, softLevel, softScore);
+    }
+
+    // Because the @PlanningVariable is nullable=true, the from() classes needed to be filtered
+    private Predicate<PersonAssignment> personAssignedFilter = (personAssignment -> personAssignment.getVaccinationSlot() != null);
 
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
-                personConflict(constraintFactory),
-                secondDoseInvalidVaccineType(constraintFactory),
-                secondDoseReadyDate(constraintFactory),
-                secondDoseIdealDate(constraintFactory),
-                secondDoseMustBeAssigned(constraintFactory),
-                assignAllOlderPeople(constraintFactory),
-                vaccinationTypeMaximumAge(constraintFactory),
-                distanceCost(constraintFactory),
-//                elderlyFirstPerVaccinationCenter(constraintFactory)
+                // Hard constraints
+                vaccinationSlotCapacity(constraintFactory),
+                requiredVaccineType(constraintFactory),
+                requiredVaccinationCenter(constraintFactory),
+                minimumAgeVaccineType(constraintFactory),
+                maximumAgeVaccineType(constraintFactory),
+                readyDate(constraintFactory),
+                dueDate(constraintFactory),
+                // TODO restrict maximum distance
+                // Medium constraints
+                scheduleSecondOrLaterDosePeople(constraintFactory),
+                scheduleHigherPriorityRatingPeople(constraintFactory),
+                // Soft constraints
+                preferredVaccineType(constraintFactory),
+                preferredVaccinationCenter(constraintFactory),
+                regretDistance(constraintFactory),
+                idealDate(constraintFactory),
+                higherPriorityRatingEarlier(constraintFactory)
         };
     }
 
-    Constraint personConflict(ConstraintFactory constraintFactory) {
-        // Don't assign a person to two injections in the same planning window
-        // In this implementation, a planning window is at most 2 weeks,
-        // so the 1st and 2nd dose won't be in the same schedule (this can be fixed by changing the model).
+    // ************************************************************************
+    // Hard constraints
+    // ************************************************************************
+
+    Constraint vaccinationSlotCapacity(ConstraintFactory constraintFactory) {
         return constraintFactory
-                .fromUniquePair(Injection.class,
-                        Joiners.equal(Injection::getPerson))
-                .penalize("Person conflict", HardMediumSoftLongScore.ofHard(1000));
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .groupBy(PersonAssignment::getVaccinationSlot, ConstraintCollectors.count())
+                .filter((vaccinationSlot, personCount) -> personCount > vaccinationSlot.getCapacity())
+                .penalizeLong("Vaccination slot capacity", ofHard(1_000),
+                        (vaccinationSlot, personCount) -> personCount - vaccinationSlot.getCapacity());
     }
 
-    Constraint secondDoseInvalidVaccineType(ConstraintFactory constraintFactory) {
-        // If a person is coming for their 2nd dose, use the same vaccine type as their 1st dose.
+    Constraint requiredVaccineType(ConstraintFactory constraintFactory) {
+        // Typical usage: if a person is coming for their 2nd dose, use the same vaccine type as their 1st dose.
         return constraintFactory
-                .from(Injection.class)
-                .filter((injection -> injection.getPerson().isFirstDoseInjected()
-                        && injection.getVaccineType() != injection.getPerson().getFirstDoseVaccineType()))
-                .penalize("Second dose invalid vaccine type", HardMediumSoftLongScore.ofHard(1000));
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter((personAssignment -> personAssignment.getRequiredVaccineType() != null
+                        && personAssignment.getVaccinationSlot().getVaccineType() != personAssignment.getRequiredVaccineType()))
+                .penalize("Required vaccine type", ofHard(10_000_000));
     }
 
-    Constraint secondDoseReadyDate(ConstraintFactory constraintFactory) {
-        // If a person is coming for their 2nd dose, don't inject it before the ready day.
+    Constraint requiredVaccinationCenter(ConstraintFactory constraintFactory) {
+        // Typical usage: if a person is coming for their 2nd dose, enforce the same vaccination center as their 1st dose.
+        return constraintFactory
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter((personAssignment -> personAssignment.getRequiredVaccinationCenter() != null
+                        && personAssignment.getVaccinationSlot().getVaccinationCenter() != personAssignment.getRequiredVaccinationCenter()))
+                .penalize("Required vaccination center", ofHard(1_000_000));
+    }
+
+    Constraint minimumAgeVaccineType(ConstraintFactory constraintFactory) {
+        // Don't inject too young people with a vaccine that has minimum age
+        return constraintFactory
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter(personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge() != null
+                        && YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate())
+                        < personAssignment.getVaccinationSlot().getVaccineType().getMinimumAge()
+                        && personAssignment.getRequiredVaccineType() == null)
+                .penalizeLong("Minimum age of vaccination type", ofHard(1),
+                        personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMinimumAge()
+                                - YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate()));
+    }
+
+    Constraint maximumAgeVaccineType(ConstraintFactory constraintFactory) {
+        // Don't inject too oldr people with a vaccine that has maximum age
+        return constraintFactory
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter(personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge() != null
+                        && YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate())
+                        > personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge()
+                        // If the 1th dose was a max 55 year vaccine, then it's ok to inject someone who only turned 56 last week with it
+                        && personAssignment.getRequiredVaccineType() == null)
+                .penalizeLong("Maximum age of vaccination type", ofHard(1),
+                        personAssignment -> YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate())
+                                - personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge());
+    }
+
+    Constraint readyDate(ConstraintFactory constraintFactory) {
+        // Typical usage 1: If a person is coming for their 2nd dose, don't inject it before the ready day.
         // For example, Pfizer is ready to injected 19 days after the first dose. Moderna after 26 days.
+        // Typical usage 2: If a person wants to reschedule an invited/accepted appointment,
+        // set the readyDate one day after the appointment date to avoid inviting the same day (especially for multiple reschedules)
+        // and also prohibit gamification (to get an earlier appointment).
         return constraintFactory
-                .from(Injection.class)
-                .filter(injection -> injection.getPerson().isFirstDoseInjected()
-                        && injection.getDateTime().toLocalDate().compareTo(
-                                injection.getPerson().getFirstDoseDate().plusDays(
-                                        injection.getPerson().getFirstDoseVaccineType().getSecondDoseReadyDays()))
-                        < 0)
-                .penalizeLong("Second dose ready date", HardMediumSoftLongScore.ONE_HARD,
-                        injection -> Math.abs(DAYS.between(injection.getPerson().getFirstDoseDate()
-                                .plusDays(injection.getPerson().getFirstDoseVaccineType().getSecondDoseReadyDays()),
-                                injection.getDateTime())));
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter(personAssignment -> personAssignment.getReadyDate() != null
+                        && personAssignment.getVaccinationSlot().getDate().compareTo(personAssignment.getReadyDate()) < 0)
+                .penalizeLong("Ready date", ofHard(1),
+                        personAssignment -> DAYS.between(personAssignment.getVaccinationSlot().getDate(),
+                                personAssignment.getReadyDate()));
     }
 
-    Constraint secondDoseIdealDate(ConstraintFactory constraintFactory) {
-        // If a person is coming for their 2nd dose, inject it on the ideal day.
+    Constraint dueDate(ConstraintFactory constraintFactory) {
+        // Typical usage 1: If a person is coming for their 2nd dose, don't inject it after the due day.
+        // For example, Pfizer is due to be injected 3 months after the first dose.
+        return constraintFactory
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter(personAssignment -> personAssignment.getDueDate() != null
+                        && personAssignment.getVaccinationSlot().getDate().compareTo(personAssignment.getDueDate()) > 0)
+                .penalizeLong("Due date", ofHard(1),
+                        personAssignment -> DAYS.between(personAssignment.getDueDate(),
+                                personAssignment.getVaccinationSlot().getDate()));
+    }
+
+    // ************************************************************************
+    // Medium constraints
+    // ************************************************************************
+
+    Constraint scheduleSecondOrLaterDosePeople(ConstraintFactory constraintFactory) {
+        // If a person is coming for their 2nd dose, assign them to an appointment,
+        // even before 1st dose healthcare workers and older people (although 2nd dosers will normally be that too).
+        // This is to avoid a snowball effect on the backlog.
+        return constraintFactory
+                .from(PersonAssignment.class)
+                // TODO filter for ideal date is earlier or equal to planning window last day
+                .filter(personAssignment -> personAssignment.getDoseNumber() > 1 && personAssignment.getVaccinationSlot() == null)
+                .penalizeLong("Schedule second (or later) dose people", ofSoft(0, 1),
+                        personAssignment -> personAssignment.getDoseNumber() - 1);
+    }
+
+    Constraint scheduleHigherPriorityRatingPeople(ConstraintFactory constraintFactory) {
+        // Assign healthcare workers and older people for an appointment.
+        // Priority rating is a person's age augmented by a few hundred points if they're a healthcare worker.
+        return constraintFactory
+                .from(PersonAssignment.class)
+                .filter(personAssignment -> personAssignment.getVaccinationSlot() == null)
+                // This is softer than scheduleSecondOrLaterDosePeople()
+                // to avoid creating a backlog of 2nd dose persons, that would grow too big to respect due dates.
+                .penalizeLong("Schedule higher priority rating people", ofSoft(1, 1),
+                        PersonAssignment::getPriorityRating);
+    }
+
+    // ************************************************************************
+    // Soft constraints
+    // ************************************************************************
+
+    Constraint preferredVaccineType(ConstraintFactory constraintFactory) {
+        // Typical usage: if a person can pick a favorite vaccine type
+        return constraintFactory
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter((personAssignment -> personAssignment.getPreferredVaccineType() != null
+                        && personAssignment.getVaccinationSlot().getVaccineType() != personAssignment.getPreferredVaccineType()))
+                .penalize("Preferred vaccine type", ofSoft(2, 1_000_000_000));
+    }
+
+    Constraint preferredVaccinationCenter(ConstraintFactory constraintFactory) {
+        // Typical usage: if a person is coming for their 2nd dose, prefer the same vaccination center as their 1st dose.
+        return constraintFactory
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter((personAssignment -> personAssignment.getPreferredVaccinationCenter() != null
+                        && personAssignment.getVaccinationSlot().getVaccinationCenter() != personAssignment.getPreferredVaccinationCenter()))
+                // TODO ignore the distance cost instead
+                .penalize("Preferred vaccination center", ofSoft(2, 1_000_000_000));
+    }
+
+    Constraint regretDistance(ConstraintFactory constraintFactory) {
+        // Minimize the distance from each person's home location to their assigned vaccination center
+        // subtracted by the distance to the nearest vaccination center
+        return constraintFactory
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .penalizeLong("Regret distance cost", ofSoft(2, 1),
+                        personAssignment -> {
+                            long regretDistance = personAssignment.getRegretDistanceTo(
+                                    personAssignment.getVaccinationSlot().getVaccinationCenter());
+                            // Penalize outliers more for fairness
+                            return regretDistance * regretDistance;
+                        });
+    }
+
+    Constraint idealDate(ConstraintFactory constraintFactory) {
+        // Typical usage: If a person is coming for their 2nd dose, inject it on the ideal day.
         // For example, Pfizer is ideally injected 21 days after the first dose. Moderna after 28 days.
         return constraintFactory
-                .from(Injection.class)
-                .filter(injection -> injection.getPerson().isFirstDoseInjected()
-                        && !injection.getPerson().getFirstDoseDate()
-                        .plusDays(injection.getPerson().getFirstDoseVaccineType().getSecondDoseIdealDays())
-                        .equals(injection.getDateTime().toLocalDate()))
-                // 2_000_000 means that to get closer to the ideal day, the person is willing to ride to extra 2km
-                // It is 2_000 meters multiplied by distanceCost's soft weight (1000).
-                .penalizeLong("Second dose ideal date", HardMediumSoftLongScore.ofSoft(2_000_000),
-                        injection -> Math.abs(DAYS.between(injection.getPerson().getFirstDoseDate()
-                                .plusDays(injection.getPerson().getFirstDoseVaccineType().getSecondDoseIdealDays()),
-                                injection.getDateTime())));
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .filter(personAssignment -> personAssignment.getIdealDate() != null
+                        && !personAssignment.getIdealDate().equals(personAssignment.getVaccinationSlot().getDate()))
+                // This constraint is softer than distanceCost() to avoid sending people
+                // half-way across the country just to be one day closer to their ideal date.
+                .penalizeLong("Ideal date", ofSoft(3, 1),
+                        personAssignment -> {
+                            long daysDiff = DAYS.between(personAssignment.getIdealDate(),
+                                    personAssignment.getVaccinationSlot().getDate());
+                            // Penalize outliers more for fairness
+                            return daysDiff * daysDiff;
+                        });
     }
 
-    Constraint secondDoseMustBeAssigned(ConstraintFactory constraintFactory) {
-        // If a person is coming for their 2nd dose, assign them to a dose, regardless of their age.
+    Constraint higherPriorityRatingEarlier(ConstraintFactory constraintFactory) {
+        // Assign healthcare workers and older people earlier in the planning window.
+        // Priority rating is a person's age augmented by a few hundred points if they're a healthcare worker.
+        // Differs from scheduleHigherPriorityRatingPeople(), which requires they be assigned
         return constraintFactory
-                .from(Person.class)
-                .filter(Person::isFirstDoseInjected)
-                .ifNotExists(Injection.class, Joiners.equal(person -> person, Injection::getPerson))
-                .penalize("Second dose must be assigned", HardMediumSoftLongScore.ONE_HARD);
+                .from(PersonAssignment.class).filter(personAssignedFilter)
+                // This constraint is softer than distanceCost() to avoid sending people
+                // half-way across the country just to get their vaccine one day earlier.
+                .penalizeLong("Higher priority rating earlier", ofSoft(4, 1),
+                        personAssignment -> personAssignment.getPriorityRating()
+                                * MINUTES.between(COVID_EPOCH, personAssignment.getVaccinationSlot().getStartDateTime()));
     }
-
-    Constraint assignAllOlderPeople(ConstraintFactory constraintFactory) {
-        // Schedule all older people for an injection. This is softer than secondDoseMustBeAssigned().
-        return constraintFactory
-                .from(Person.class)
-                .ifNotExists(Injection.class, Joiners.equal(person -> person, Injection::getPerson))
-                .penalizeLong("Assign all older people", HardMediumSoftLongScore.ONE_MEDIUM, Person::getAge);
-    }
-
-    Constraint vaccinationTypeMaximumAge(ConstraintFactory constraintFactory) {
-        // Don't inject older people with a vaccine that has maximum age (for example AstraZeneca)
-        return constraintFactory
-                .from(Injection.class)
-                .filter(injection -> !injection.getVaccineType().isOkForMaximumAge(injection.getPerson().getAge()))
-                .penalize("Maximum age of vaccination type", HardMediumSoftLongScore.ONE_HARD,
-                        injection -> injection.getPerson().getAge() - injection.getVaccineType().getMaximumAge());
-    }
-
-    Constraint distanceCost(ConstraintFactory constraintFactory) {
-        // Minimize the distance from each person's home location to the vaccination center
-        return constraintFactory
-                .from(Injection.class)
-                .penalizeLong("Distance cost", HardMediumSoftLongScore.ofSoft(1000),
-                        injection -> injection.getPerson().getHomeLocation().getDistanceTo(
-                                injection.getVaccinationCenter().getLocation()));
-    }
-
-    // TODO This works, but it hurts performance and there are better ways to write this
-    // Do not confuse with assignAllOlderPeople
-//    Constraint elderlyFirstPerVaccinationCenter(ConstraintFactory constraintFactory) {
-//        Predicate<Injection> firstDosePredicate = (injection) -> !injection.getPerson().isFirstDoseInjected();
-//        return constraintFactory
-//                .from(Injection.class).filter(firstDosePredicate)
-//                .join(constraintFactory.from(Injection.class).filter(firstDosePredicate),
-//                        Joiners.equal(Injection::getVaccinationCenter),
-//                        Joiners.greaterThan(injection -> injection.getPerson().getAge()),
-//                        Joiners.lessThan(Injection::getDateTime))
-//                .penalize("Elderly first per vaccination center", HardMediumSoftLongScore.ONE_SOFT);
-//    }
 
 }

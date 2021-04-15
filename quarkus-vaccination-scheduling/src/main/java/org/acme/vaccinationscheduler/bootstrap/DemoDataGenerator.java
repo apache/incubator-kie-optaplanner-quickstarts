@@ -17,7 +17,7 @@
 package org.acme.vaccinationscheduler.bootstrap;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.HOURS;
 import static java.time.temporal.ChronoUnit.YEARS;
 
 import java.time.DayOfWeek;
@@ -26,6 +26,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -34,14 +37,18 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
-import org.acme.vaccinationscheduler.domain.Injection;
+import org.acme.vaccinationscheduler.domain.Appointment;
 import org.acme.vaccinationscheduler.domain.Location;
 import org.acme.vaccinationscheduler.domain.Person;
 import org.acme.vaccinationscheduler.domain.VaccinationCenter;
 import org.acme.vaccinationscheduler.domain.VaccinationSchedule;
 import org.acme.vaccinationscheduler.domain.VaccineType;
 import org.acme.vaccinationscheduler.persistence.VaccinationScheduleRepository;
+import org.acme.vaccinationscheduler.solver.geo.DistanceCalculator;
+import org.acme.vaccinationscheduler.solver.geo.EuclideanDistanceCalculator;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.quarkus.runtime.StartupEvent;
 
@@ -61,10 +68,12 @@ public class DemoDataGenerator {
     public static final LocalDate MINIMUM_BIRTH_DATE = LocalDate.of(1930, 1, 1);
     public static final int BIRTH_DATE_RANGE_LENGTH = (int) DAYS.between(MINIMUM_BIRTH_DATE, LocalDate.of(2000, 1, 1));
 
+    protected static final Logger logger = LoggerFactory.getLogger(DemoDataGenerator.class);
+
     @ConfigProperty(name = "demo-data.vaccination-center-count", defaultValue = "3")
     int vaccinationCenterCount;
-    @ConfigProperty(name = "demo-data.total-line-count", defaultValue = "5")
-    int totalLineCount;
+    @ConfigProperty(name = "demo-data.total-booth-count", defaultValue = "5")
+    int totalBoothCount;
 
     // Default latitude and longitude window: city of Atlanta, US.
     @ConfigProperty(name = "demo-data.map.minimum-latitude", defaultValue = "33.40")
@@ -76,88 +85,129 @@ public class DemoDataGenerator {
     @ConfigProperty(name = "demo-data.map.maximum-longitude", defaultValue = "-83.90")
     double maximumLongitude;
 
+    public DemoDataGenerator() {
+    }
+
+    public DemoDataGenerator(double minimumLatitude, double maximumLatitude, double minimumLongitude, double maximumLongitude) {
+        this.minimumLatitude = minimumLatitude;
+        this.maximumLatitude = maximumLatitude;
+        this.minimumLongitude = minimumLongitude;
+        this.maximumLongitude = maximumLongitude;
+    }
+
     @Inject
     VaccinationScheduleRepository vaccinationScheduleRepository;
 
-    public void generateDemoData(@Observes StartupEvent startupEvent) {
-        List<VaccineType> vaccineTypeList = List.of(
-                new VaccineType("Pfizer", 19, 21),
-                new VaccineType("Moderna", 26, 28),
-                new VaccineType("AstraZeneca", 4 * 7, 6 * 7, 55)
+    public void startup(@Observes StartupEvent startupEvent) {
+        vaccinationScheduleRepository.save(generate(vaccinationCenterCount, totalBoothCount, 0.0));
+    }
+
+    public VaccinationSchedule generate(int vaccinationCenterCount, int totalBoothCount, double pinnedAppointmentRatio) {
+        List<VaccineType> vaccineTypeList = Arrays.asList(
+                new VaccineType("Pfizer"),
+                new VaccineType("Moderna"),
+                new VaccineType("AstraZeneca")
         );
+
         LocalDate windowStartDate = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
         int windowDaysLength = 5;
         LocalTime dayStartTime = LocalTime.of(9, 0);
-        int injectionDurationInMinutes = 15;
-        int injectionsPerLinePerDay = (int) (MINUTES.between(dayStartTime, LocalTime.of(17, 0))
-                / injectionDurationInMinutes);
+        int injectionsPerBoothPerTimeslot = 4;
+        int timeslotsPerBoothPerDay = (int) HOURS.between(dayStartTime, LocalTime.of(17, 0));
 
         Random random = new Random(17);
         List<VaccinationCenter> vaccinationCenterList = new ArrayList<>(vaccinationCenterCount);
         int massCount = (int) Math.round(massVaccinationCenterRatio * vaccinationCenterCount);
-        int massExtraLineCount = totalLineCount - vaccinationCenterCount;
+        int massExtraBoothCount = totalBoothCount - vaccinationCenterCount;
+        List<Appointment> appointmentList = new ArrayList<>(windowDaysLength * timeslotsPerBoothPerDay * totalBoothCount * injectionsPerBoothPerTimeslot);
+        long vaccinationCenterId = 0L;
         for (int i = 0; i < vaccinationCenterCount; i++) {
             String name = VACCINATION_CENTER_NAMES[i % VACCINATION_CENTER_NAMES.length]
                     + (i < VACCINATION_CENTER_NAMES.length ? "" : " " + (i / VACCINATION_CENTER_NAMES.length + 1));
-            int lineCount;
+            int boothCount;
             if (i < massCount) {
-                // The + i distributes the remainder, for example if massExtraLineCount=8 and massCount=3
-                lineCount = 1 + (massExtraLineCount + i) / massCount;
+                // The + i distributes the remainder, for example if massExtraBoothCount=8 and massCount=3
+                boothCount = 1 + (massExtraBoothCount + i) / massCount;
             } else {
-                lineCount = 1;
+                boothCount = 1;
             }
-            vaccinationCenterList.add(new VaccinationCenter(name, pickLocation(random), lineCount));
-        }
+            VaccinationCenter vaccinationCenter = new VaccinationCenter(Long.toString(vaccinationCenterId++), name, pickLocation(random));
+            vaccinationCenterList.add(vaccinationCenter);
 
-        List<LocalDateTime> timeslotDateTimeList = new ArrayList<>(windowDaysLength * injectionsPerLinePerDay);
-        for (int dayIndex = 0; dayIndex < windowDaysLength; dayIndex++) {
-            LocalDate date = windowStartDate.plusDays(dayIndex);
-            for (int timeIndex = 0; timeIndex < injectionsPerLinePerDay; timeIndex++) {
-                LocalTime time = dayStartTime.plusMinutes(injectionDurationInMinutes * timeIndex);
-                timeslotDateTimeList.add(LocalDateTime.of(date, time));
-            }
-        }
-
-        int personListSize = (totalLineCount * injectionsPerLinePerDay * windowDaysLength) * 5 / 4; // 25% too many
-        List<Person> personList = new ArrayList<>(personListSize);
-        long personId = 0L;
-        for (int i = 0; i < personListSize; i++) {
-            int lastNameI = i / PERSON_FIRST_NAMES.length;
-            String name = PERSON_FIRST_NAMES[i % PERSON_FIRST_NAMES.length]
-                    + " " + (lastNameI < 26 ? ((char) ('A' + lastNameI)) + "." : lastNameI + 1);
-            Location location = pickLocation(random);
-            LocalDate birthdate = MINIMUM_BIRTH_DATE.plusDays(random.nextInt(BIRTH_DATE_RANGE_LENGTH));
-            int age = (int) YEARS.between(birthdate, windowStartDate);
-            boolean firstDoseInjected = random.nextDouble() < 0.25;
-            VaccineType firstDoseVaccineType = firstDoseInjected ? pickVaccineType(vaccineTypeList, random, age) : null;
-            LocalDate secondDoseIdealDate = firstDoseInjected ?
-                    windowStartDate.plusDays(random.nextInt(windowDaysLength))
-                    : null;
-            LocalDate firstDoseDate = firstDoseInjected ?
-                    secondDoseIdealDate.minusDays(firstDoseVaccineType.getSecondDoseIdealDays())
-                    : null;
-            Person person = new Person(personId++, name, location,
-                    birthdate, age, firstDoseInjected, firstDoseVaccineType, firstDoseDate);
-            personList.add(person);
-        }
-
-        List<Injection> injectionList = new ArrayList<>();
-        long injectionId = 0L;
-        for (VaccinationCenter vaccinationCenter : vaccinationCenterList) {
-            for (int dayIndex = 0; dayIndex < windowDaysLength; dayIndex++) {
-                LocalDate date = windowStartDate.plusDays(dayIndex);
-                for (int lineIndex = 0; lineIndex < vaccinationCenter.getLineCount(); lineIndex++) {
+            for (long boothId = 0; boothId < boothCount; boothId++) {
+                for (int dayIndex = 0; dayIndex < windowDaysLength; dayIndex++) {
                     VaccineType vaccineType = pickVaccineType(vaccineTypeList, random, null);
-                    for (int timeIndex = 0; timeIndex < injectionsPerLinePerDay; timeIndex++) {
-                        LocalTime time = dayStartTime.plusMinutes(injectionDurationInMinutes * timeIndex);
-                        injectionList.add(new Injection(
-                                injectionId++, vaccinationCenter, lineIndex,
-                                LocalDateTime.of(date, time), vaccineType));
+                    LocalDate date = windowStartDate.plusDays(dayIndex);
+                    for (int timeIndex = 0; timeIndex < timeslotsPerBoothPerDay; timeIndex++) {
+                        LocalTime time = dayStartTime.plusHours(timeIndex);
+                        for (int j = 0; j < injectionsPerBoothPerTimeslot; j++) {
+                            LocalDateTime dateTime = LocalDateTime.of(date, time.plusMinutes(j * (60 / injectionsPerBoothPerTimeslot)));
+                            Appointment appointment = new Appointment(
+                                    vaccinationCenter, Long.toString(boothId), dateTime, vaccineType);
+                            appointmentList.add(appointment);
+                        }
                     }
                 }
             }
         }
-        vaccinationScheduleRepository.save(new VaccinationSchedule(vaccineTypeList, vaccinationCenterList, timeslotDateTimeList, personList, injectionList));
+
+        int personListSize = appointmentList.size() * 6 / 5; // 20% too many
+        List<Person> personList = new ArrayList<>(personListSize);
+        long personId = 0L;
+        DistanceCalculator distanceCalculator = new EuclideanDistanceCalculator();
+        List<Appointment> shuffledAppointmentList;
+        int pinnedAppointmentSize;
+        if (pinnedAppointmentRatio <= 0.0) {
+            shuffledAppointmentList = null;
+            pinnedAppointmentSize = 0;
+        } else {
+            LocalDate windowEndDate = windowStartDate.plusDays(windowDaysLength - 1);
+            shuffledAppointmentList = appointmentList.stream()
+                    .filter(appointment -> appointment.getDateTime().toLocalDate().isBefore(windowEndDate))
+                    .collect(Collectors.toList());
+            Collections.shuffle(shuffledAppointmentList, random);
+            pinnedAppointmentSize = Math.min((int) (appointmentList.size() * pinnedAppointmentRatio),
+                    shuffledAppointmentList.size());
+        }
+        for (int i = 0; i < personListSize; i++) {
+            int lastNameI = i / PERSON_FIRST_NAMES.length;
+            String name = PERSON_FIRST_NAMES[i % PERSON_FIRST_NAMES.length]
+                    + " " + (lastNameI < 26 ? ((char) ('A' + lastNameI)) + "." : lastNameI - 25);
+            Location location = pickLocation(random);
+            LocalDate birthdate = MINIMUM_BIRTH_DATE.plusDays(random.nextInt(BIRTH_DATE_RANGE_LENGTH));
+            int age = (int) YEARS.between(birthdate, windowStartDate);
+            boolean healthcareWorker = random.nextDouble() < 0.05;
+            if (healthcareWorker) {
+                name = "Dr. " + name;
+            }
+            long priorityRating = age + (healthcareWorker ? 1_000 : 0);
+            boolean firstDoseInjected = random.nextDouble() < 0.25;
+            Person person;
+            if (!firstDoseInjected) {
+                person = new Person(Long.toString(personId++), name, location, birthdate, priorityRating);
+            } else {
+                VaccineType firstDoseVaccineType = pickVaccineType(vaccineTypeList, random, age);
+                VaccinationCenter preferredVaccinationCenter = (random.nextDouble() > 0.10) ? null
+                        : vaccinationCenterList.stream()
+                        .sorted(Comparator.comparing(vc -> distanceCalculator.calculateDistance(location, vc.getLocation())))
+                        .skip(1).findFirst().orElse(null);
+                LocalDate idealDate = windowStartDate.plusDays(random.nextInt(windowDaysLength));
+                LocalDate readyDate = idealDate.minusDays(2);
+                LocalDate dueDate = idealDate.plusDays(windowDaysLength - 2);
+                person = new Person(Long.toString(personId++), name, location, birthdate, priorityRating,
+                        2, firstDoseVaccineType, null, null, preferredVaccinationCenter, readyDate, idealDate, dueDate);
+
+            }
+            if (i < pinnedAppointmentSize) {
+                person.setAppointment(shuffledAppointmentList.get(i));
+                person.setPinned(true);
+            }
+            personList.add(person);
+        }
+        logger.info("Generated dataset with {} appointments and {} persons.",
+                appointmentList.size(),
+                personList.size());
+        return new VaccinationSchedule(vaccineTypeList, vaccinationCenterList, appointmentList, personList);
     }
 
     public Location pickLocation(Random random) {
@@ -172,7 +222,9 @@ public class DemoDataGenerator {
             suitableVaccineTypeList = vaccineTypeList;
         } else {
             suitableVaccineTypeList = vaccineTypeList.stream()
-                    .filter(vaccineType -> vaccineType.isOkForMaximumAge(age)).collect(Collectors.toList());
+                    .filter(vaccineType -> (vaccineType.getMinimumAge() == null || age >= vaccineType.getMinimumAge())
+                            && (vaccineType.getMaximumAge() == null || age <= vaccineType.getMaximumAge()))
+                    .collect(Collectors.toList());
         }
         return suitableVaccineTypeList.get(random.nextInt(suitableVaccineTypeList.size()));
     }
