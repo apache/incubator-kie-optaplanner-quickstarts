@@ -17,11 +17,11 @@
 package org.acme.maintenancescheduling.rest;
 
 import io.quarkus.panache.common.Sort;
-import org.acme.maintenancescheduling.domain.MaintenanceJob;
+import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
 import org.acme.maintenancescheduling.persistence.MaintainableUnitRepository;
 import org.acme.maintenancescheduling.persistence.MaintenanceCrewRepository;
-import org.acme.maintenancescheduling.persistence.MaintenanceJobRepository;
+import org.acme.maintenancescheduling.persistence.MaintenanceJobAssignmentRepository;
 import org.acme.maintenancescheduling.persistence.MutuallyExclusiveJobsRepository;
 import org.acme.maintenancescheduling.persistence.TimeGrainRepository;
 import org.optaplanner.core.api.score.ScoreManager;
@@ -50,7 +50,7 @@ public class MaintenanceScheduleResource {
     @Inject
     MaintenanceCrewRepository maintenanceCrewRepository;
     @Inject
-    MaintenanceJobRepository maintenanceJobRepository;
+    MaintenanceJobAssignmentRepository maintenanceJobAssignmentRepository;
     @Inject
     MutuallyExclusiveJobsRepository mutuallyExclusiveJobsRepository;
     @Inject
@@ -102,17 +102,16 @@ public class MaintenanceScheduleResource {
                 mutuallyExclusiveJobsRepository.listAll(Sort.by("id")),
                 maintenanceCrewRepository.listAll(Sort.by("crewName").and("id")),
                 timeGrainRepository.listAll(Sort.by("grainIndex").and("id")),
-                maintenanceJobRepository.listAll(Sort.by("maintainableUnit")
-                        .and("startingTimeGrain").and("readyTimeGrainIndex").and("dueTimeGrainIndex").and("id")));
+                maintenanceJobAssignmentRepository.listAll(Sort.by("id")));
     }
 
     @Transactional
     protected void save(MaintenanceSchedule schedule) {
-        for (MaintenanceJob job : schedule.getMaintenanceJobList()) {
+        for (MaintenanceJobAssignment job : schedule.getMaintenanceJobAssignmentList()) {
             // TODO this is awfully naive: optimistic locking causes issues if called by the SolverManager
-            MaintenanceJob persistedJob = maintenanceJobRepository.findById(job.getId());
-            persistedJob.setStartingTimeGrain(job.getStartingTimeGrain());
-            persistedJob.setAssignedCrew(job.getAssignedCrew());
+            MaintenanceJobAssignment persistedJobAssignment = maintenanceJobAssignmentRepository.findById(job.getId());
+            persistedJobAssignment.setStartingTimeGrain(job.getStartingTimeGrain());
+            persistedJobAssignment.setAssignedCrew(job.getAssignedCrew());
         }
     }
 }

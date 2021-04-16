@@ -197,17 +197,18 @@ function refreshSchedule() {
 
         // Add a nested group for each job under its unit
         unitAndJobGroups.clear();
-        $.each(schedule.maintenanceJobList, (index, job) => {
+        $.each(schedule.maintenanceJobAssignmentList, (index, jobAssignment) => {
+            var maintenanceJob = jobAssignment.maintenanceJob;
             unitAndJobGroups.add({
-                id: job.id,
-                content: job.jobName
+                id: jobAssignment.id,
+                content: maintenanceJob.jobName
             });
 
             // Map job to unit
-            if (unitToJobs[job.maintainableUnit.unitName]) {
-                unitToJobs[job.maintainableUnit.unitName].push(job.id)
+            if (unitToJobs[maintenanceJob.maintainableUnit.unitName]) {
+                unitToJobs[maintenanceJob.maintainableUnit.unitName].push(jobAssignment.id)
             } else {
-                unitToJobs[job.maintainableUnit.unitName] = [job.id]
+                unitToJobs[maintenanceJob.maintainableUnit.unitName] = [jobAssignment.id]
             }
         });
 
@@ -236,88 +237,94 @@ function refreshSchedule() {
         assignedMaintenanceJobs.clear();
         maintenanceJobReadyDueTimes.clear();
         var managerTimelineFocusIds = [];
-        $.each(schedule.maintenanceJobList, (index, job) => {
-            if (job.assignedCrew != null && job.startingTimeGrain != null) {
-                var startDateTime = moment(initialDateTime).add(job.startingTimeGrain.grainIndex, `hours`);
-                var endDateTime = moment(initialDateTime).add(job.startingTimeGrain.grainIndex + 
-                    job.durationInGrains, `hours`);
+        $.each(schedule.maintenanceJobAssignmentList, (index, jobAssignment) => {
+            var maintenanceJob = jobAssignment.maintenanceJob;
+            if (jobAssignment.assignedCrew != null && jobAssignment.startingTimeGrain != null) {
+                var startDateTime = moment(initialDateTime).add(jobAssignment.startingTimeGrain.grainIndex, `hours`);
+                var endDateTime = moment(initialDateTime).add(jobAssignment.startingTimeGrain.grainIndex +
+                    maintenanceJob.durationInGrains, `hours`);
 
                 // Display assigned job in employee view timeline
                 assignedMaintenanceJobs.add({
-                    id: job.id,
-                    group: job.assignedCrew.id,
-                    content: `<b>` + job.jobName + `</b><br><i>at ` + startDateTime.format(`HH:mm`) + `</i><br>` + 
-                        job.maintainableUnit.unitName,
+                    id: jobAssignment.id,
+                    group: jobAssignment.assignedCrew.id,
+                    content: `<b>` + maintenanceJob.jobName + `</b><br><i>at ` +
+                        startDateTime.format(`HH:mm`) + `</i><br>` +
+                        maintenanceJob.maintainableUnit.unitName,
                     start: startDateTime,
                     end: endDateTime
                 });
 
                 // Display assigned job in manager view timeline
                 maintenanceJobReadyDueTimes.add({
-                    id: job.id,
-                    group: job.id,
-                    content: `<b>` + job.assignedCrew.crewName + `</b><br><i> at ` + 
+                    id: jobAssignment.id,
+                    group: jobAssignment.id,
+                    content: `<b>` + jobAssignment.assignedCrew.crewName + `</b><br><i> at ` +
                         startDateTime.format(`HH:mm`) + `</i><br>`,
                     style: `background-color: lightgreen`,
                     start: startDateTime,
                     end: endDateTime
                 });
 
-                managerTimelineFocusIds.push(job.id);
+                managerTimelineFocusIds.push(jobAssignment.id);
             }
             else {
                 const unassignedJobElement = $(`<div class="card bg-secondary"/>`)
                     .append($(`<div class="card-body p-2"/>`)
-                    .append($(`<b h6 class="card-title"/>`).text(job.jobName))
-                    .append($(`<br><span class="badge" style="background-color: white"/>`)
-                        .text(job.maintainableUnit.unitName)));
+                        .append($(`<b h6 class="card-title"/>`).text(maintenanceJob.jobName))
+                        .append($(`<br><span class="badge" style="background-color: white"/>`)
+                            .text(maintenanceJob.maintainableUnit.unitName)));
                 // Append mutually exclusive tags on jobs
-                $.each(jobToMutuallyExclusiveTagMap[job.jobName], (index, mutuallyExclusiveTag) => {
-                    const color = pickColor(mutuallyExclusiveTag);
-                    unassignedJobElement.append($(`<span class="badge badge-info m-2" style="background-color: ${color}"/>`)
-                        .text(mutuallyExclusiveTag));
-                });
+                $.each(jobToMutuallyExclusiveTagMap[maintenanceJob.jobName],
+                    (index, mutuallyExclusiveTag) => {
+                        const color = pickColor(mutuallyExclusiveTag);
+                        unassignedJobElement.append($(`<span class="badge badge-info m-2" style="background-color: 
+                        ${color}"/>`).text(mutuallyExclusiveTag));
+                    });
                 unassignedJobs.append(unassignedJobElement);
 
                 // Display unassigned job in manager view timeline
                 maintenanceJobReadyDueTimes.add({
-                    id: job.id,
-                    group: job.id,
-                    content: `<b>` + job.jobName + `</b><br><i>Unassigned</i><br>`,
+                    id: jobAssignment.id,
+                    group: jobAssignment.id,
+                    content: `<b>` + maintenanceJob.jobName + `</b><br><i>Unassigned</i><br>`,
                     style: `background-color: red`,
-                    start: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
-                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 1/3, `hours`),
-                    end: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
-                        .add((job.dueTimeGrainIndex - job.readyTimeGrainIndex) * 2/3, `hours`)
+                    start: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`)
+                        .add((maintenanceJob.dueTimeGrainIndex -
+                            maintenanceJob.readyTimeGrainIndex) * 1 / 3, `hours`),
+                    end: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`)
+                        .add((maintenanceJob.dueTimeGrainIndex -
+                            maintenanceJob.readyTimeGrainIndex) * 2 / 3, `hours`)
                 })
-                managerTimelineFocusIds.push(job.id);
+                managerTimelineFocusIds.push(jobAssignment.id);
             }
             maintenanceJobReadyDueTimes.add([
                 // Ready/due date
                 {
-                    group: job.id,
+                    group: jobAssignment.id,
                     content: ``,
                     type: `background`,
                     style: `background-color: lightgrey`,
                     start: moment(initialDateTime).subtract(1, `years`),
-                    end: moment(initialDateTime).add(job.readyTimeGrainIndex, `hours`)
+                    end: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`)
                 },
                 {
-                    group: job.id,
+                    group: jobAssignment.id,
                     content: ``,
                     type: `background`,
                     style: `background-color: lightgrey`,
-                    start: moment(initialDateTime).add(job.dueTimeGrainIndex, `hours`),
+                    start: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`),
                     end: moment(initialDateTime).add(1, `years`)
                 },
                 // Safety margin
                 {
-                    group: job.id,
+                    group: jobAssignment.id,
                     content: ``,
                     type: `background`,
                     style: `background-color: orange`,
-                    start: moment(initialDateTime).add(job.dueTimeGrainIndex - job.safetyMarginDurationInGrains, `hours`),
-                    end: moment(initialDateTime).add(job.dueTimeGrainIndex, `hours`)
+                    start: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex -
+                        maintenanceJob.safetyMarginDurationInGrains, `hours`),
+                    end: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`)
                 }
             ]);
         });

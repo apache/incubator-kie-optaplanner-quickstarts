@@ -22,6 +22,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.acme.maintenancescheduling.domain.MaintainableUnit;
 import org.acme.maintenancescheduling.domain.MaintenanceCrew;
 import org.acme.maintenancescheduling.domain.MaintenanceJob;
+import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
 import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
 import org.acme.maintenancescheduling.domain.TimeGrain;
@@ -38,11 +39,12 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void jobsMustStartAfterReadyTimeGrainUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustStartAfterReadyTimeGrain)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -50,11 +52,12 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void jobsMustStartAfterReadyTimeGrainPenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 2, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustStartAfterReadyTimeGrain)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(2);
     }
 
@@ -62,11 +65,12 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void jobsMustFinishBeforeDueTimeUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustFinishBeforeDueTime)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -74,11 +78,12 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void jobsMustFinishBeforeDueTimePenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(8);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsMustFinishBeforeDueTime)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(2);
     }
 
@@ -86,9 +91,10 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void assignAllCriticalJobsUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, false);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::assignAllCriticalJobs)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -96,9 +102,10 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void assignAllCriticalJobsPenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::assignAllCriticalJobs)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(1);
     }
 
@@ -106,21 +113,23 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void oneJobPerCrewPerPeriodUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
         MaintenanceCrew maintenanceCrew = new MaintenanceCrew("Maintenance crew");
-        maintenanceJob.setAssignedCrew(maintenanceCrew);
-        maintenanceJob.setId(0L);
+        maintenanceJobAssignment.setAssignedCrew(maintenanceCrew);
+        maintenanceJobAssignment.setId(0L);
 
         MaintainableUnit otherUnit = new MaintainableUnit("Other unit");
         MaintenanceJob otherJob = new MaintenanceJob("Other job", otherUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment otherJobAssignment = new MaintenanceJobAssignment(otherJob);
         TimeGrain otherTimeGrain = new TimeGrain(4);
-        otherJob.setStartingTimeGrain(otherTimeGrain);
-        otherJob.setAssignedCrew(maintenanceCrew);
-        otherJob.setId(1L);
+        otherJobAssignment.setStartingTimeGrain(otherTimeGrain);
+        otherJobAssignment.setAssignedCrew(maintenanceCrew);
+        otherJobAssignment.setId(1L);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::oneJobPerCrewPerPeriod)
-                .given(maintenanceJob, otherJob)
+                .given(maintenanceJobAssignment, otherJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -128,21 +137,23 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void oneJobPerCrewPerPeriodPenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
         MaintenanceCrew maintenanceCrew = new MaintenanceCrew("Maintenance crew");
-        maintenanceJob.setAssignedCrew(maintenanceCrew);
-        maintenanceJob.setId(0L);
+        maintenanceJobAssignment.setAssignedCrew(maintenanceCrew);
+        maintenanceJobAssignment.setId(0L);
 
         MaintainableUnit otherUnit = new MaintainableUnit("Other unit");
         MaintenanceJob otherJob = new MaintenanceJob("Other job", otherUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment otherJobAssignment = new MaintenanceJobAssignment(otherJob);
         TimeGrain otherTimeGrain = new TimeGrain(2);
-        otherJob.setStartingTimeGrain(otherTimeGrain);
-        otherJob.setAssignedCrew(maintenanceCrew);
-        otherJob.setId(1L);
+        otherJobAssignment.setStartingTimeGrain(otherTimeGrain);
+        otherJobAssignment.setAssignedCrew(maintenanceCrew);
+        otherJobAssignment.setId(1L);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::oneJobPerCrewPerPeriod)
-                .given(maintenanceJob, otherJob)
+                .given(maintenanceJobAssignment, otherJobAssignment)
                 .penalizesBy(2);
     }
 
@@ -150,18 +161,20 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void mutuallyExclusiveJobsUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
-        maintenanceJob.setId(0L);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setId(0L);
 
         MaintainableUnit otherUnit = new MaintainableUnit("Other unit");
         MaintenanceJob otherJob = new MaintenanceJob("Other job", otherUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment otherJobAssignment = new MaintenanceJobAssignment(otherJob);
         TimeGrain otherTimeGrain = new TimeGrain(2);
-        otherJob.setStartingTimeGrain(otherTimeGrain);
-        otherJob.setId(1L);
+        otherJobAssignment.setStartingTimeGrain(otherTimeGrain);
+        otherJobAssignment.setId(1L);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveJobs)
-                .given(maintenanceJob, otherJob)
+                .given(maintenanceJobAssignment, otherJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -169,24 +182,26 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void mutuallyExclusiveJobsPenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         MaintenanceCrew maintenanceCrew = new MaintenanceCrew("Maintenance crew");
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setAssignedCrew(maintenanceCrew);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
-        maintenanceJob.setId(0L);
+        maintenanceJobAssignment.setAssignedCrew(maintenanceCrew);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setId(0L);
 
         MaintainableUnit otherUnit = new MaintainableUnit("Other unit");
         MaintenanceJob otherJob = new MaintenanceJob("Other job", otherUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment otherJobAssignment = new MaintenanceJobAssignment(otherJob);
         TimeGrain otherTimeGrain = new TimeGrain(2);
-        otherJob.setAssignedCrew(maintenanceCrew);
-        otherJob.setStartingTimeGrain(otherTimeGrain);
-        otherJob.setId(1L);
+        otherJobAssignment.setAssignedCrew(maintenanceCrew);
+        otherJobAssignment.setStartingTimeGrain(otherTimeGrain);
+        otherJobAssignment.setId(1L);
 
         MutuallyExclusiveJobs mutuallyExclusiveJobs =
-                new MutuallyExclusiveJobs("Exclusive tag", maintenanceJob, otherJob);
+                new MutuallyExclusiveJobs("Exclusive tag", maintenanceJobAssignment.getMaintenanceJob(), otherJobAssignment.getMaintenanceJob());
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveJobs)
-                .given(maintenanceJob, otherJob, mutuallyExclusiveJobs)
+                .given(maintenanceJobAssignment, otherJobAssignment, mutuallyExclusiveJobs)
                 .penalizesBy(2);
     }
 
@@ -194,17 +209,23 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void oneJobPerUnitPerPeriodUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
+        MaintenanceCrew maintenanceCrew = new MaintenanceCrew("Maintenance crew");
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
-        maintenanceJob.setId(0L);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setAssignedCrew(maintenanceCrew);
+        maintenanceJobAssignment.setId(0L);
 
-        MaintenanceJob otherJob = new MaintenanceJob("Other job", maintainableUnit, 0, 10, 4, 2, true);
-        TimeGrain otherTimeGrain = new TimeGrain(4);
-        otherJob.setStartingTimeGrain(otherTimeGrain);
-        otherJob.setId(1L);
+        MaintainableUnit otherUnit = new MaintainableUnit("Test unit");
+        MaintenanceJob otherJob = new MaintenanceJob("Other job", otherUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment otherJobAssignment = new MaintenanceJobAssignment(otherJob);
+        TimeGrain otherTimeGrain = new TimeGrain(0);
+        otherJobAssignment.setStartingTimeGrain(otherTimeGrain);
+        otherJobAssignment.setAssignedCrew(maintenanceCrew);
+        otherJobAssignment.setId(1L);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::oneJobPerUnitPerPeriod)
-                .given(maintenanceJob, otherJob)
+                .given(maintenanceJobAssignment, otherJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -212,20 +233,22 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void oneJobPerUnitPerPeriodPenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         MaintenanceCrew maintenanceCrew = new MaintenanceCrew("Maintenance crew");
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setAssignedCrew(maintenanceCrew);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
-        maintenanceJob.setId(0L);
+        maintenanceJobAssignment.setAssignedCrew(maintenanceCrew);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setId(0L);
 
         MaintenanceJob otherJob = new MaintenanceJob("Other job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment otherJobAssignment = new MaintenanceJobAssignment(otherJob);
         TimeGrain otherTimeGrain = new TimeGrain(2);
-        otherJob.setAssignedCrew(maintenanceCrew);
-        otherJob.setStartingTimeGrain(otherTimeGrain);
-        otherJob.setId(1L);
+        otherJobAssignment.setAssignedCrew(maintenanceCrew);
+        otherJobAssignment.setStartingTimeGrain(otherTimeGrain);
+        otherJobAssignment.setId(1L);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::oneJobPerUnitPerPeriod)
-                .given(maintenanceJob, otherJob)
+                .given(maintenanceJobAssignment, otherJobAssignment)
                 .penalizesBy(2);
     }
 
@@ -233,9 +256,10 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void assignAllNonCriticalJobsUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::assignAllNonCriticalJobs)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -243,9 +267,10 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void assignAllNonCriticalJobsPenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, false);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::assignAllNonCriticalJobs)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(1);
     }
 
@@ -253,11 +278,12 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void jobsShouldFinishBeforeSafetyMarginUnpenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(0);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsShouldFinishBeforeSafetyMargin)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(0);
     }
 
@@ -265,11 +291,12 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void jobsShouldFinishBeforeSafetyMarginPenalized() {
         MaintainableUnit maintainableUnit = new MaintainableUnit("Test unit");
         MaintenanceJob maintenanceJob = new MaintenanceJob("Maintenance job", maintainableUnit, 0, 10, 4, 2, true);
+        MaintenanceJobAssignment maintenanceJobAssignment = new MaintenanceJobAssignment(maintenanceJob);
         TimeGrain startingTimeGrain = new TimeGrain(6);
-        maintenanceJob.setStartingTimeGrain(startingTimeGrain);
+        maintenanceJobAssignment.setStartingTimeGrain(startingTimeGrain);
 
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::jobsShouldFinishBeforeSafetyMargin)
-                .given(maintenanceJob)
+                .given(maintenanceJobAssignment)
                 .penalizesBy(4);
     }
 }

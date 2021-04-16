@@ -49,7 +49,7 @@ public class MaintenanceSchedule {
     private List<TimeGrain> timeGrainList;
 
     @PlanningEntityCollectionProperty
-    private List<MaintenanceJob> maintenanceJobList;
+    private List<MaintenanceJobAssignment> maintenanceJobAssignmentList;
 
     @PlanningScore
     private HardSoftScore score;
@@ -62,12 +62,12 @@ public class MaintenanceSchedule {
 
     public MaintenanceSchedule(List<MaintainableUnit> maintainableUnitList,
             List<MutuallyExclusiveJobs> mutuallyExclusiveJobsList, List<MaintenanceCrew> assignedCrewList,
-            List<TimeGrain> timeGrainList, List<MaintenanceJob> maintenanceJobList) {
+            List<TimeGrain> timeGrainList, List<MaintenanceJobAssignment> maintenanceJobAssignmentList) {
         this.maintainableUnitList = maintainableUnitList;
         this.mutuallyExclusiveJobsList = mutuallyExclusiveJobsList;
         this.assignedCrewList = assignedCrewList;
         this.timeGrainList = timeGrainList;
-        this.maintenanceJobList = maintenanceJobList;
+        this.maintenanceJobAssignmentList = maintenanceJobAssignmentList;
     }
 
     // ************************************************************************
@@ -114,12 +114,12 @@ public class MaintenanceSchedule {
         this.timeGrainList = timeGrainList;
     }
 
-    public List<MaintenanceJob> getMaintenanceJobList() {
-        return maintenanceJobList;
+    public List<MaintenanceJobAssignment> getMaintenanceJobAssignmentList() {
+        return maintenanceJobAssignmentList;
     }
 
-    public void setMaintenanceJobList(List<MaintenanceJob> maintenanceJobList) {
-        this.maintenanceJobList = maintenanceJobList;
+    public void setMaintenanceJobList(List<MaintenanceJobAssignment> maintenanceJobAssignmentList) {
+        this.maintenanceJobAssignmentList = maintenanceJobAssignmentList;
     }
 
     public HardSoftScore getScore() {

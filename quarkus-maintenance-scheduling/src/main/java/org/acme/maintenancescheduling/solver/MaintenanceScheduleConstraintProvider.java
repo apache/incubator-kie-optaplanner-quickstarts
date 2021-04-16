@@ -20,7 +20,7 @@ import static org.optaplanner.core.api.score.stream.Joiners.equal;
 import static org.optaplanner.core.api.score.stream.Joiners.filtering;
 import static org.optaplanner.core.api.score.stream.Joiners.lessThan;
 
-import org.acme.maintenancescheduling.domain.MaintenanceJob;
+import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
 import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -49,64 +49,64 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     // ************************************************************************
 
     public Constraint jobsMustStartAfterReadyTimeGrain(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
-                .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null
-                        && maintenanceJob.getStartingTimeGrain().getGrainIndex() < maintenanceJob.getReadyTimeGrainIndex())
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
+                        && maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex() < maintenanceJobAssignment.getMaintenanceJob().getReadyTimeGrainIndex())
                 .penalizeConfigurable("Jobs must start after ready time grain",
-                        maintenanceJob -> maintenanceJob.getReadyTimeGrainIndex()
-                                - maintenanceJob.getStartingTimeGrain().getGrainIndex());
+                        maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().getReadyTimeGrainIndex()
+                                - maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex());
     }
 
     public Constraint jobsMustFinishBeforeDueTime(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
-                .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null
-                        && maintenanceJob.getStartingTimeGrain().getGrainIndex()
-                                + maintenanceJob.getDurationInGrains() > maintenanceJob.getDueTimeGrainIndex())
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
+                        && maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex()
+                                + maintenanceJobAssignment.getMaintenanceJob().getDurationInGrains() > maintenanceJobAssignment.getMaintenanceJob().getDueTimeGrainIndex())
                 .penalizeConfigurable("Jobs must finish before due time",
-                        maintenanceJob -> maintenanceJob.getStartingTimeGrain().getGrainIndex()
-                                + maintenanceJob.getDurationInGrains() - maintenanceJob.getDueTimeGrainIndex());
+                        maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex()
+                                + maintenanceJobAssignment.getMaintenanceJob().getDurationInGrains() - maintenanceJobAssignment.getMaintenanceJob().getDueTimeGrainIndex());
     }
 
     public Constraint assignAllCriticalJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
                 // Critical maintenance jobs must be assigned a crew and start period
-                .filter(maintenanceJob -> maintenanceJob.isCritical() && (maintenanceJob.getAssignedCrew() == null
-                        || maintenanceJob.getStartingTimeGrain() == null))
+                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().isCritical() && (maintenanceJobAssignment.getAssignedCrew() == null
+                        || maintenanceJobAssignment.getStartingTimeGrain() == null))
                 .penalizeConfigurable("Assign all critical jobs");
     }
 
     public Constraint oneJobPerCrewPerPeriod(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
-                .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null
-                        && maintenanceJob.getAssignedCrew() != null)
-                .join(MaintenanceJob.class,
-                        equal(MaintenanceJob::getAssignedCrew),
-                        lessThan(MaintenanceJob::getId),
-                        filtering((maintenanceJob, otherJob) -> maintenanceJob.calculateOverlap(otherJob) > 0))
-                .penalizeConfigurable("One job per crew per period", MaintenanceJob::calculateOverlap);
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
+                        && maintenanceJobAssignment.getAssignedCrew() != null)
+                .join(MaintenanceJobAssignment.class,
+                        equal(MaintenanceJobAssignment::getAssignedCrew),
+                        lessThan(MaintenanceJobAssignment::getId),
+                        filtering((maintenanceJobAssignment, otherJob) -> maintenanceJobAssignment.calculateOverlap(otherJob) > 0))
+                .penalizeConfigurable("One job per crew per period", MaintenanceJobAssignment::calculateOverlap);
     }
 
     public Constraint mutuallyExclusiveJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
-                .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null)
-                .join(MaintenanceJob.class,
-                        lessThan(MaintenanceJob::getId),
-                        filtering((maintenanceJob, otherJob) -> maintenanceJob.calculateOverlap(otherJob) > 0))
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null)
+                .join(MaintenanceJobAssignment.class,
+                        lessThan(MaintenanceJobAssignment::getId),
+                        filtering((maintenanceJobAssignment, otherJobAssignment) -> maintenanceJobAssignment.calculateOverlap(otherJobAssignment) > 0))
                 .join(MutuallyExclusiveJobs.class,
-                        filtering((maintenanceJob, otherJob, mutuallyExclusiveJobs) -> 
-                        mutuallyExclusiveJobs.isMutuallyExclusive(maintenanceJob,otherJob)))
+                        filtering((maintenanceJobAssignment, otherJobAssignment, mutuallyExclusiveJobs) ->
+                        mutuallyExclusiveJobs.isMutuallyExclusive(maintenanceJobAssignment.getMaintenanceJob(), otherJobAssignment.getMaintenanceJob())))
                 .penalizeConfigurable("Mutually exclusive jobs cannot overlap",
-                        (maintenanceJob, otherJob, mutuallyExclusiveJobs) -> maintenanceJob.calculateOverlap(otherJob));
+                        (maintenanceJobAssignment, otherJobAssignment, mutuallyExclusiveJobs) -> maintenanceJobAssignment.calculateOverlap(otherJobAssignment));
     }
 
     public Constraint oneJobPerUnitPerPeriod(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
-                .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null)
-                .join(MaintenanceJob.class,
-                        equal(MaintenanceJob::getMaintainableUnit),
-                        lessThan(MaintenanceJob::getId),
-                        filtering((maintenanceJob, otherJob) -> maintenanceJob.calculateOverlap(otherJob) > 0))
-                .penalizeConfigurable("One job per unit per period", MaintenanceJob::calculateOverlap);
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null)
+                .join(MaintenanceJobAssignment.class,
+                        equal(maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().getMaintainableUnit()),
+                        lessThan(MaintenanceJobAssignment::getId),
+                        filtering((maintenanceJobAssignment, otherJobAssignment) -> maintenanceJobAssignment.calculateOverlap(otherJobAssignment) > 0))
+                .penalizeConfigurable("One job per unit per period", MaintenanceJobAssignment::calculateOverlap);
     }
 
     // TODO: Add constraint that prevents specific unit from being maintained at certain period (outside of MVP)
@@ -116,19 +116,19 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     // ************************************************************************
 
     public Constraint assignAllNonCriticalJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
                 // Non critical maintenance jobs must be assigned a crew and start period
-                .filter(maintenanceJob -> !maintenanceJob.isCritical()
-                        && (maintenanceJob.getAssignedCrew() == null || maintenanceJob.getStartingTimeGrain() == null))
+                .filter(maintenanceJobAssignment -> !maintenanceJobAssignment.getMaintenanceJob().isCritical()
+                        && (maintenanceJobAssignment.getAssignedCrew() == null || maintenanceJobAssignment.getStartingTimeGrain() == null))
                 .penalizeConfigurable("Assign all non critical jobs");
     }
 
     public Constraint jobsShouldFinishBeforeSafetyMargin(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJob.class)
-                .filter(maintenanceJob -> maintenanceJob.getStartingTimeGrain() != null
-                        && maintenanceJob.calculateSafetyMarginPenalty() > 0)
+        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
+                        && maintenanceJobAssignment.calculateSafetyMarginPenalty() > 0)
                 .penalizeConfigurable("Jobs should finish before safety margin",
-                        MaintenanceJob::calculateSafetyMarginPenalty);
+                        MaintenanceJobAssignment::calculateSafetyMarginPenalty);
     }
 
 }

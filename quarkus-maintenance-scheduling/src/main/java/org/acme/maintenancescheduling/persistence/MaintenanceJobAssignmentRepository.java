@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package org.acme.maintenancescheduling.rest;
+package org.acme.maintenancescheduling.persistence;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
 
-@NativeImageTest
-public class MaintenanceJobResourceIT extends MaintenanceJobResourceTest {
+import javax.enterprise.context.ApplicationScoped;
+
+@ApplicationScoped
+public class MaintenanceJobAssignmentRepository implements PanacheRepository<MaintenanceJobAssignment> {
+
 }
