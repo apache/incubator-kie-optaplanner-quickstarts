@@ -48,8 +48,8 @@ public class MutuallyExclusiveJobs {
     // Complex methods
     // ************************************************************************
 
-    public boolean isMutuallyExclusive(MaintenanceJob maintenanceJob, MaintenanceJob otherJob) {
-        if (mutuallyExclusiveJobList.contains(maintenanceJob) && mutuallyExclusiveJobList.contains(otherJob)) {
+    public boolean isMutuallyExclusive(MaintenanceJob MaintenanceJob, MaintenanceJob otherJob) {
+        if (mutuallyExclusiveJobList.contains(MaintenanceJob) && mutuallyExclusiveJobList.contains(otherJob)) {
             return true;
         }
         return false;

@@ -17,7 +17,7 @@
 package org.acme.maintenancescheduling.rest;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.acme.maintenancescheduling.domain.MaintenanceJob;
+import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -46,8 +46,8 @@ public class MaintenanceScheduleResourceTest {
             Thread.sleep(20L);
             maintenanceSchedule = maintenanceScheduleResource.getSchedule();
         }
-        assertFalse(maintenanceSchedule.getMaintenanceJobList().isEmpty());
-        for (MaintenanceJob job : maintenanceSchedule.getMaintenanceJobList()) {
+        assertFalse(maintenanceSchedule.getMaintenanceJobAssignmentList().isEmpty());
+        for (MaintenanceJobAssignment job : maintenanceSchedule.getMaintenanceJobAssignmentList()) {
             assertNotNull(job.getStartingTimeGrain());
             assertNotNull(job.getAssignedCrew());
         }

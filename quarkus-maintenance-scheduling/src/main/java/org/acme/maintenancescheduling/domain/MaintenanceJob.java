@@ -16,20 +16,14 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.lookup.PlanningId;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-@PlanningEntity
 public class MaintenanceJob {
 
-    @PlanningId
     @Id
     @GeneratedValue
     private Long id;
@@ -38,57 +32,29 @@ public class MaintenanceJob {
 
     @ManyToOne
     private MaintainableUnit maintainableUnit;
-    
+
     private int readyTimeGrainIndex;
     private int dueTimeGrainIndex;
     private int durationInGrains;
 
-    // TODO: Add configuration option for how long each TimeGrain is
-    @PlanningVariable(valueRangeProviderRefs = "timeGrainRange")
-    @ManyToOne
-    private TimeGrain startingTimeGrain;
-
-    @PlanningVariable(valueRangeProviderRefs = "assignedCrewRange")
-    @ManyToOne
-    private MaintenanceCrew assignedCrew;
+    private int safetyMarginDurationInGrains;
 
     // TODO: Make it an enum? Range of priorities (not in MVP, but make it easy for users to do)
     private boolean critical;
-
-    // TODO: Add safetyMargin
 
     public MaintenanceJob() {
     }
 
     public MaintenanceJob(String jobName, MaintainableUnit maintainableUnit, int readyTimeGrainIndex,
-                          int dueTimeGrainIndex, int durationInGrains, boolean critical) {
+                                    int dueTimeGrainIndex, int durationInGrains, int safetyMarginDurationInGrains,
+                                    boolean critical) {
         this.jobName = jobName;
         this.maintainableUnit = maintainableUnit;
         this.readyTimeGrainIndex = readyTimeGrainIndex;
         this.dueTimeGrainIndex = dueTimeGrainIndex;
         this.durationInGrains = durationInGrains;
+        this.safetyMarginDurationInGrains = safetyMarginDurationInGrains;
         this.critical = critical;
-    }
-
-    // ************************************************************************
-    // Complex methods
-    // ************************************************************************
-
-    public int calculateOverlap(MaintenanceJob other) {
-        if (startingTimeGrain == null || other.getStartingTimeGrain() == null) {
-            return 0;
-        }
-        int start = startingTimeGrain.getGrainIndex();
-        int end = start + durationInGrains;
-        int otherStart = other.getStartingTimeGrain().getGrainIndex();
-        int otherEnd = otherStart + other.getDurationInGrains();
-
-        if (end < otherStart) {
-            return 0;
-        } else if (otherEnd < start) {
-            return 0;
-        }
-        return Math.min(end, otherEnd) - Math.max(start, otherStart);
     }
 
     @Override
@@ -100,6 +66,7 @@ public class MaintenanceJob {
                 ", readyTimeGrainIndex=" + readyTimeGrainIndex +
                 ", dueTimeGrainIndex=" + dueTimeGrainIndex +
                 ", durationInGrains=" + durationInGrains +
+                ", safetyMarginDurationInGrains=" + safetyMarginDurationInGrains +
                 ", isCritical=" + critical +
                 '}';
     }
@@ -156,20 +123,12 @@ public class MaintenanceJob {
         this.durationInGrains = durationInGrains;
     }
 
-    public TimeGrain getStartingTimeGrain() {
-        return startingTimeGrain;
+    public int getSafetyMarginDurationInGrains() {
+        return safetyMarginDurationInGrains;
     }
 
-    public void setStartingTimeGrain(TimeGrain startingTimeGrain) {
-        this.startingTimeGrain = startingTimeGrain;
-    }
-
-    public MaintenanceCrew getAssignedCrew() {
-        return assignedCrew;
-    }
-
-    public void setAssignedCrew(MaintenanceCrew assignedCrew) {
-        this.assignedCrew = assignedCrew;
+    public void setSafetyMarginDurationInGrains(int safetyMarginDurationInGrains) {
+        this.safetyMarginDurationInGrains = safetyMarginDurationInGrains;
     }
 
     public boolean isCritical() {

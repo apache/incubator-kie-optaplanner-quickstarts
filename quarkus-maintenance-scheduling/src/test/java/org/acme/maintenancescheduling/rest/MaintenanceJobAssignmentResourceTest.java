@@ -19,6 +19,7 @@ package org.acme.maintenancescheduling.rest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.acme.maintenancescheduling.domain.MaintenanceJob;
+import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -28,19 +29,19 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
-public class MaintenanceJobResourceTest {
+public class MaintenanceJobAssignmentResourceTest {
 
     @Test
     public void getAll() {
-        List<MaintenanceJob> jobList = given()
-                .when().get("/jobs")
+        List<MaintenanceJobAssignment> jobList = given()
+                .when().get("/jobAssignments")
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getList(".", MaintenanceJob.class);
+                .extract().body().jsonPath().getList(".", MaintenanceJobAssignment.class);
         assertFalse(jobList.isEmpty());
-        MaintenanceJob firstJob = jobList.get(0);
-        assertNotNull(firstJob.getJobName());
-        assertNotNull(firstJob.getMaintainableUnit().getUnitName());
+        MaintenanceJobAssignment firstJobAssignment = jobList.get(0);
+        assertNotNull(firstJobAssignment.getMaintenanceJob().getJobName());
+        assertNotNull(firstJobAssignment.getMaintenanceJob().getMaintainableUnit().getUnitName());
     }
 
     @Test
@@ -48,11 +49,26 @@ public class MaintenanceJobResourceTest {
         MaintenanceJob job = given()
                 .when()
                 .contentType(ContentType.JSON)
-                .body(new MaintenanceJob("Test job", null, 0, 8, 1, true))
+                .body(new MaintenanceJob("Test job", null, 0, 8, 1, 2, true))
                 .post("/jobs")
                 .then()
                 .statusCode(201)
                 .extract().as(MaintenanceJob.class);
+
+        MaintenanceJobAssignment jobAssignment = given()
+                .when()
+                .contentType(ContentType.JSON)
+                .body(new MaintenanceJobAssignment(job))
+                .post("/jobAssignments")
+                .then()
+                .statusCode(201)
+                .extract().as(MaintenanceJobAssignment.class);
+
+        given()
+                .when()
+                .delete("/jobAssignments/{id}", jobAssignment.getId())
+                .then()
+                .statusCode(204);
 
         given()
                 .when()
