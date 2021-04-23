@@ -37,7 +37,7 @@ import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
-public class DemoDataGenerator {
+public class TimeTableDataGenerator {
 
     private static final AtomicLong idGenerator = new AtomicLong();
 

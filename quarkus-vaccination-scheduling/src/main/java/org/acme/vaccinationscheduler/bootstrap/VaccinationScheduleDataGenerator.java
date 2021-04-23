@@ -46,7 +46,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
-public class DemoDataGenerator {
+public class VaccinationScheduleDataGenerator {
 
     public static final String[] PERSON_FIRST_NAMES = {
             "Ann", "Beth", "Carl", "Dan", "Elsa", "Flo", "Gus", "Hugo", "Ivy", "Jay",

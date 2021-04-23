@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
-public class DemoDataGenerator {
+public class MaintenanceScheduleDataGenerator {
 
     @ConfigProperty(name = "schedule.demoData", defaultValue = "SMALL")
     public DemoData demoData;

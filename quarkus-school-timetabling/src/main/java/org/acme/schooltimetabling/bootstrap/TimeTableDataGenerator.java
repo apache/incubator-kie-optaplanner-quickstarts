@@ -37,7 +37,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import io.quarkus.runtime.StartupEvent;
 
 @ApplicationScoped
-public class DemoDataGenerator {
+public class TimeTableDataGenerator {
 
     @ConfigProperty(name = "timeTable.demoData", defaultValue = "SMALL")
     DemoData demoData;

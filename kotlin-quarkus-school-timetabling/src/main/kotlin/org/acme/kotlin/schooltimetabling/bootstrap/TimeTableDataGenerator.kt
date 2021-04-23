@@ -17,7 +17,7 @@ import javax.transaction.Transactional
 
 
 @ApplicationScoped
-class DemoDataGenerator {
+class TimeTableDataGenerator {
 
     @ConfigProperty(name = "timeTable.demoData", defaultValue = "SMALL")
     lateinit var demoData: DemoData
