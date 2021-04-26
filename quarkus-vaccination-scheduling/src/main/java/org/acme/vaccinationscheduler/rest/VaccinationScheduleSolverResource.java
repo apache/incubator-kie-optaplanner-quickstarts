@@ -93,6 +93,7 @@ public class VaccinationScheduleSolverResource {
                         List<String> boothIdList = new ArrayList<>(boothIdSet);
                         int pageLength = Math.max(1, boothIdList.size() * APPOINTMENT_PAGE_LIMIT / appointmentListSize);
                         subBoothIdSetMap.put(vaccinationCenter, new HashSet<>(
+                                // For a page, filter the number of booths per page from each vaccination center
                                 boothIdList.subList(page * pageLength,
                                         Math.min(boothIdList.size(), (page + 1) * pageLength))));
                     });

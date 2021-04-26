@@ -49,11 +49,11 @@ public class VaccinationCustomConstructionHeuristic implements CustomPhaseComman
                 = schedule.getVaccinationSlotList().stream()
                 .sorted(Comparator
                         .comparing((VaccinationSlot vaccinationSlot) -> vaccinationSlot.getVaccineType().getName())
-                        .thenComparing(vaccinationSlot -> vaccinationSlot.getDate())
-                        .thenComparing(vaccinationSlot -> vaccinationSlot.getStartTime()))
+                        .thenComparing(VaccinationSlot::getDate)
+                        .thenComparing(VaccinationSlot::getStartTime))
                 .collect(groupingBy(VaccinationSlot::getVaccinationCenter, LinkedHashMap::new,
                         groupingBy(VaccinationSlot::getVaccineType, LinkedHashMap::new,
-                                groupingBy(vaccinationSlot -> vaccinationSlot.getDate(),
+                                groupingBy(VaccinationSlot::getDate,
                                         LinkedHashMap::new, Collectors.toMap(
                                                 vaccinationSlot -> vaccinationSlot, VaccinationSlot::getCapacity,
                                                 (key, value) -> {
@@ -61,7 +61,8 @@ public class VaccinationCustomConstructionHeuristic implements CustomPhaseComman
                                                 },
                                                 LinkedHashMap::new)))));
         schedule.getPersonAssignmentList().stream()
-                .filter(person -> person.getVaccinationSlot() != null).forEach(person ->  {
+                .filter(person -> person.getVaccinationSlot() != null)
+                .forEach(person ->  {
             VaccinationSlot vaccinationSlot = person.getVaccinationSlot();
             VaccinationCenter vaccinationCenter = vaccinationSlot.getVaccinationCenter();
             Map<VaccineType, Map<LocalDate, Map<VaccinationSlot, Integer>>> vaccineTypeToSlotMap

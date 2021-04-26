@@ -18,7 +18,6 @@ package org.acme.vaccinationscheduler.solver;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MINUTES;
-import static java.time.temporal.ChronoUnit.YEARS;
 
 import java.time.LocalDateTime;
 import java.util.function.Predicate;
@@ -108,12 +107,12 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         return constraintFactory
                 .from(PersonAssignment.class).filter(personAssignedFilter)
                 .filter(personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge() != null
-                        && YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate())
+                        && personAssignment.getAgeOnVaccinationDate()
                         < personAssignment.getVaccinationSlot().getVaccineType().getMinimumAge()
                         && personAssignment.getRequiredVaccineType() == null)
                 .penalizeLong("Minimum age of vaccination type", ofHard(1),
                         personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMinimumAge()
-                                - YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate()));
+                                - personAssignment.getAgeOnVaccinationDate());
     }
 
     Constraint maximumAgeVaccineType(ConstraintFactory constraintFactory) {
@@ -121,12 +120,12 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         return constraintFactory
                 .from(PersonAssignment.class).filter(personAssignedFilter)
                 .filter(personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge() != null
-                        && YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate())
+                        && personAssignment.getAgeOnVaccinationDate()
                         > personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge()
                         // If the 1th dose was a max 55 year vaccine, then it's ok to inject someone who only turned 56 last week with it
                         && personAssignment.getRequiredVaccineType() == null)
                 .penalizeLong("Maximum age of vaccination type", ofHard(1),
-                        personAssignment -> YEARS.between(personAssignment.getBirthdate(), personAssignment.getVaccinationSlot().getDate())
+                        personAssignment -> personAssignment.getAgeOnVaccinationDate()
                                 - personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge());
     }
 

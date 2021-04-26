@@ -16,6 +16,8 @@
 
 package org.acme.vaccinationscheduler.domain.solver;
 
+import static java.time.temporal.ChronoUnit.YEARS;
+
 import java.time.LocalDate;
 import java.util.Map;
 
@@ -102,6 +104,13 @@ public class PersonAssignment {
             return (preferedVaccinationCenter == vaccinationCenter) ? 0L : distance;
         }
         return distance - nearestVaccinationCenterDistance;
+    }
+
+    public long getAgeOnVaccinationDate() {
+        if (vaccinationSlot == null) {
+            return -1;
+        }
+        return YEARS.between(person.getBirthdate(), vaccinationSlot.getDate());
     }
 
     @Override
