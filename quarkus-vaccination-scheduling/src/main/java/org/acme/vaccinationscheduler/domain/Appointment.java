@@ -18,72 +18,42 @@ package org.acme.vaccinationscheduler.domain;
 
 import java.time.LocalDateTime;
 
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.entity.PlanningPin;
-import org.optaplanner.core.api.domain.lookup.PlanningId;
-import org.optaplanner.core.api.domain.variable.PlanningVariable;
-
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 
-@PlanningEntity
-public class Injection {
+public class Appointment {
 
-    @PlanningId
-    private Long id;
-
+    @JsonIdentityReference(alwaysAsId = true)
     private VaccinationCenter vaccinationCenter;
-    private int lineIndex;
+    private String boothId;
     private LocalDateTime dateTime;
     @JsonIdentityReference(alwaysAsId = true)
     private VaccineType vaccineType;
 
-    @PlanningPin
-    private boolean pinned;
+    // No-arg constructor required for Jackson
+    public Appointment() {}
 
-    @PlanningVariable(valueRangeProviderRefs = {"personRange"})
-    private Person person;
-
-    // No-arg constructor required for OptaPlanner
-    public Injection() {
-    }
-
-    public Injection(Long id, VaccinationCenter vaccinationCenter, int lineIndex,
-            LocalDateTime dateTime, VaccineType vaccineType) {
-        this.id = id;
+    public Appointment(VaccinationCenter vaccinationCenter, String boothId, LocalDateTime dateTime, VaccineType vaccineType) {
         this.vaccinationCenter = vaccinationCenter;
-        this.lineIndex = lineIndex;
+        this.boothId = boothId;
         this.dateTime = dateTime;
         this.vaccineType = vaccineType;
-    }
-
-    public Injection(long id, VaccinationCenter vaccinationCenter, int lineIndex, LocalDateTime dateTime, VaccineType vaccineType, Person person) {
-        this.id = id;
-        this.vaccinationCenter = vaccinationCenter;
-        this.lineIndex = lineIndex;
-        this.dateTime = dateTime;
-        this.vaccineType = vaccineType;
-        this.person = person;
     }
 
     @Override
     public String toString() {
-        return dateTime + "@" + vaccinationCenter.getName() + "(" + id + ")";
+        return vaccinationCenter + "-" + boothId + "@" + dateTime;
     }
 
     // ************************************************************************
     // Getters and setters
     // ************************************************************************
 
-    public Long getId() {
-        return id;
-    }
-
     public VaccinationCenter getVaccinationCenter() {
         return vaccinationCenter;
     }
 
-    public int getLineIndex() {
-        return lineIndex;
+    public String getBoothId() {
+        return boothId;
     }
 
     public LocalDateTime getDateTime() {
@@ -92,14 +62,6 @@ public class Injection {
 
     public VaccineType getVaccineType() {
         return vaccineType;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
     }
 
 }

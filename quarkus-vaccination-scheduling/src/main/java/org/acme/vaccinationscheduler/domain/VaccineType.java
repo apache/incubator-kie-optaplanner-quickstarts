@@ -25,27 +25,26 @@ public class VaccineType {
 
     private String name;
 
-    // For example 19 days for Pfizer
-    private int secondDoseReadyDays;
-    // For example 21 days for Pfizer
-    private int secondDoseIdealDays;
-
-    // For example 55 for AstraZeneca
+    // Inclusive: a 55 year old can get a minimumAge=55 vaccine
+    private Integer minimumAge;
+    // Inclusive: a 55 year old can get a maximumAge=55 vaccine
     private Integer maximumAge;
 
-    public VaccineType(String name, int secondDoseReadyDays, int secondDoseIdealDays) {
-        this(name, secondDoseReadyDays, secondDoseIdealDays, null);
+    // No-arg constructor required for Jackson
+    public VaccineType() {}
+
+    public VaccineType(String name) {
+        this(name, null, null);
     }
 
-    public VaccineType(String name, int secondDoseReadyDays, int secondDoseIdealDays, Integer maximumAge) {
+    public VaccineType(String name, Integer minimumAge, Integer maximumAge) {
         this.name = name;
-        this.secondDoseReadyDays = secondDoseReadyDays;
-        this.secondDoseIdealDays = secondDoseIdealDays;
+        this.minimumAge = minimumAge;
         this.maximumAge = maximumAge;
-    }
-
-    public boolean isOkForMaximumAge(int age) {
-        return maximumAge == null || age <= maximumAge;
+        if (minimumAge != null && maximumAge != null && minimumAge > maximumAge) {
+            throw new IllegalArgumentException("The minimumAge (" + minimumAge
+                    + ") cannot be higher than the maximumAge (" + maximumAge + ").");
+        }
     }
 
     @Override
@@ -61,12 +60,8 @@ public class VaccineType {
         return name;
     }
 
-    public int getSecondDoseReadyDays() {
-        return secondDoseReadyDays;
-    }
-
-    public int getSecondDoseIdealDays() {
-        return secondDoseIdealDays;
+    public Integer getMinimumAge() {
+        return minimumAge;
     }
 
     public Integer getMaximumAge() {
