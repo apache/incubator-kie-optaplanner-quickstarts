@@ -58,15 +58,6 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../quarkus-factorio-layout</directory>
-      <outputDirectory>sources/quarkus-factorio-layout</outputDirectory>
-      <excludes>
-        <exclude>**/target/**</exclude>
-        <exclude>.gitignore</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../quarkus-facility-location</directory>
       <outputDirectory>sources/quarkus-facility-location</outputDirectory>
       <excludes>
