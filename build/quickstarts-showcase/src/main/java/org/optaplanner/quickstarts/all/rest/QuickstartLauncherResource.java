@@ -71,8 +71,7 @@ public class QuickstartLauncherResource {
                 new QuickstartMeta("quarkus-school-timetabling"),
                 new QuickstartMeta("quarkus-facility-location"),
                 new QuickstartMeta("quarkus-maintenance-scheduling"),
-                new QuickstartMeta("quarkus-vaccination-scheduling"),
-                new QuickstartMeta("quarkus-factorio-layout"));
+                new QuickstartMeta("quarkus-vaccination-scheduling"));
         File workingDirectory;
         try {
             workingDirectory = new File(".").getCanonicalFile();

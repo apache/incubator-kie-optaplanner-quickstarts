@@ -20,7 +20,6 @@
     <module>quarkus-facility-location</module>
     <module>quarkus-maintenance-scheduling</module>
     <module>quarkus-vaccination-scheduling</module>
-    <module>quarkus-factorio-layout</module>
     <module>spring-boot-school-timetabling</module>
     <module>kotlin-quarkus-school-timetabling</module>
     <module>activemq-quarkus-school-timetabling</module>

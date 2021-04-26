@@ -63,13 +63,6 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../quarkus-factorio-layout/target</directory>
-      <outputDirectory>binaries/quarkus-factorio-layout</outputDirectory>
-      <includes>
-        <include>quarkus-app/**</include>
-      </includes>
-    </fileSet>
-    <fileSet>
       <directory>../../quarkus-maintenance-scheduling/target</directory>
       <outputDirectory>binaries/quarkus-maintenance-scheduling</outputDirectory>
       <includes>

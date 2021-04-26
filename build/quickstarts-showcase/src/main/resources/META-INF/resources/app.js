@@ -155,9 +155,6 @@ $(document).ready(function () {
   $("#quarkus-vaccination-scheduling-launch").click(function () {
     launchQuickstart("quarkus-vaccination-scheduling");
   });
-  $("#quarkus-factorio-layout-launch").click(function () {
-    launchQuickstart("quarkus-factorio-layout");
-  });
   $("#exit").click(function () {
     exit();
   });

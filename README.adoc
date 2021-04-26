@@ -24,7 +24,6 @@ https://adoptopenjdk.net[Download OpenJDK.]
 * <<facility-location, Facility location problem>>
 * <<maintenance-scheduling, Maintenance scheduling>>
 * <<vaccination-scheduling, Vaccination Scheduling>>
-* <<factorio-layout, Factorio layout>>
 * <<optaweb-vehicle-routing, OptaWeb Vehicle Routing>>
 * <<optaweb-employee-rostering, OptaWeb Employee Rostering>>
 * <<optaplanner-examples, OptaPlanner examples (desktop)>>
@@ -69,15 +68,6 @@ to end a pandemic sooner.
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-vaccination-scheduling-screenshot.png[]
 
 * link:quarkus-vaccination-scheduling/README.adoc[Run quarkus-vaccination-scheduling] (Java, Maven, Quarkus)
-
-[[factorio-layout]]
-=== Factorio layout
-
-Assign machines to assembly line locations to design the best factory layout.
-
-image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-factorio-layout-screenshot.png[]
-
-* link:quarkus-factorio-layout/README.adoc[Run quarkus-factorio-layout] (Java, Maven, Quarkus)
 
 [[optaweb-vehicle-routing]]
 === OptaWeb Vehicle Routing
