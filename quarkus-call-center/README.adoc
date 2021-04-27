@@ -1,4 +1,4 @@
-= Call center realtime scheduling (Java, Quarkus, Maven)
+= Call center real-time scheduling (Java, Quarkus, Maven)
 
 == Run the application with live coding
 
