@@ -96,12 +96,12 @@ public class PersonAssignment {
     public long getRegretDistanceTo(VaccinationCenter vaccinationCenter) {
         long distance = getDistanceTo(vaccinationCenter);
         VaccinationCenter requiredVaccinationCenter = getRequiredVaccinationCenter();
-        if (requiredVaccinationCenter != null) {
-            return (requiredVaccinationCenter == vaccinationCenter) ? 0L : distance;
+        if (requiredVaccinationCenter != null && requiredVaccinationCenter == vaccinationCenter) {
+            return 0L;
         }
         VaccinationCenter preferedVaccinationCenter = getPreferredVaccinationCenter();
-        if (preferedVaccinationCenter != null) {
-            return (preferedVaccinationCenter == vaccinationCenter) ? 0L : distance;
+        if (preferedVaccinationCenter != null && preferedVaccinationCenter == vaccinationCenter) {
+            return 0L;
         }
         return distance - nearestVaccinationCenterDistance;
     }

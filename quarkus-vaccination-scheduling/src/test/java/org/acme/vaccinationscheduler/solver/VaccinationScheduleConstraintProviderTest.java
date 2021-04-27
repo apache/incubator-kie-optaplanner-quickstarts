@@ -354,7 +354,14 @@ class VaccinationScheduleConstraintProviderTest {
                         new PersonAssignment("1", "Ann", new Location(1, 0), Map.of(
                                 VACCINATION_CENTER_1, 100L, VACCINATION_CENTER_2, 120L
                         ), null, 0, 1, null, null, VACCINATION_CENTER_2, null, null, null, null, AZ_SLOT))
-                .penalizesBy(100L * 100L);
+                .penalizesBy(0L);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::regretDistance)
+                .given(
+                        VACCINATION_CENTER_1, VACCINATION_CENTER_2,
+                        new PersonAssignment("1", "Ann", new Location(1, 0), Map.of(
+                                VACCINATION_CENTER_1, 130L, VACCINATION_CENTER_2, 100L
+                        ), null, 0, 1, null, null, VACCINATION_CENTER_2, null, null, null, null, AZ_SLOT))
+                .penalizesBy(30L * 30L);
         // If the preferredVaccinationCenter is non-null, that has 0 regret distance and others have non-regret distance
         constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::regretDistance)
                 .given(
@@ -369,7 +376,14 @@ class VaccinationScheduleConstraintProviderTest {
                         new PersonAssignment("1", "Ann", new Location(1, 0), Map.of(
                                 VACCINATION_CENTER_1, 100L, VACCINATION_CENTER_2, 120L
                         ), null, 0, 1, null, null, null, VACCINATION_CENTER_2, null, null, null, AZ_SLOT))
-                .penalizesBy(100L * 100L);
+                .penalizesBy(0L);
+        constraintVerifier.verifyThat(VaccinationScheduleConstraintProvider::regretDistance)
+                .given(
+                        VACCINATION_CENTER_1, VACCINATION_CENTER_2,
+                        new PersonAssignment("1", "Ann", new Location(1, 0), Map.of(
+                                VACCINATION_CENTER_1, 130L, VACCINATION_CENTER_2, 100L
+                        ), null, 0, 1, null, null, null, VACCINATION_CENTER_2, null, null, null, AZ_SLOT))
+                .penalizesBy(30L * 30L);
     }
 
     @Test
