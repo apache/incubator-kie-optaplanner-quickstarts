@@ -78,16 +78,16 @@ public class Call extends PreviousCallOrAgent {
 
     @Override
     public Duration getDurationTillPickUp() {
-        Duration endTime;
+        Duration durationTillPickUp;
         if (estimatedWaiting == null) {
             return null;
         } else {
-            endTime = estimatedWaiting.plus(getDuration());
+            durationTillPickUp = estimatedWaiting.plus(getDuration());
             if (pickUpTime != null) {
-                endTime = endTime.minus(Duration.between(pickUpTime, LocalTime.now()));
+                durationTillPickUp = durationTillPickUp.minus(Duration.between(pickUpTime, LocalTime.now()));
             }
         }
-        return endTime;
+        return durationTillPickUp;
     }
 
     public String getPhoneNumber() {
