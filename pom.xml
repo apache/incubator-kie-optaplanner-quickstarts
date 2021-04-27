@@ -23,6 +23,7 @@
     <module>spring-boot-school-timetabling</module>
     <module>kotlin-quarkus-school-timetabling</module>
     <module>activemq-quarkus-school-timetabling</module>
+    <module>quarkus-call-center</module>
     <module>build/quickstarts-showcase</module>
   </modules>
 
