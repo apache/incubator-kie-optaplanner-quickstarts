@@ -16,6 +16,7 @@
 
 package org.acme.vaccinationscheduler.solver.optional;
 
+import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.YEARS;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -93,7 +94,9 @@ public class VaccinationCustomConstructionHeuristic implements CustomPhaseComman
         }
     }
 
-    private VaccinationSlot findAvailableVaccinationSlot(ScoreDirector<VaccinationSolution> scoreDirector, Map<VaccinationCenter, Map<VaccineType, Map<LocalDate, Map<VaccinationSlot, Integer>>>> vaccinationCenterToSlotMap, PersonAssignment person) {
+    private VaccinationSlot findAvailableVaccinationSlot(ScoreDirector<VaccinationSolution> scoreDirector,
+            Map<VaccinationCenter, Map<VaccineType, Map<LocalDate, Map<VaccinationSlot, Integer>>>> vaccinationCenterToSlotMap,
+            PersonAssignment person) {
         // Iterate the nearest VaccinationCenters to the person first.
         List<VaccinationCenter> vaccinationCenterList = vaccinationCenterToSlotMap.keySet().stream()
                 .sorted(Comparator
@@ -116,28 +119,30 @@ public class VaccinationCustomConstructionHeuristic implements CustomPhaseComman
                     continue;
                 }
                 Map<LocalDate, Map<VaccinationSlot, Integer>> dateToSlotMap = vaccineTypeEntry.getValue();
-                // TODO Ideal date first
-                for (Map.Entry<LocalDate, Map<VaccinationSlot, Integer>> dateEntry : dateToSlotMap.entrySet()) {
-                    LocalDate date = dateEntry.getKey();
-                    // Skip all slots with an invalid date
-                    long age = YEARS.between(person.getBirthdate(), date);
-                    if (vaccineType.getMinimumAge() != null) {
-                        if (age < vaccineType.getMinimumAge()) {
-                            continue;
-                        }
-                    }
-                    if (vaccineType.getMaximumAge() != null) {
-                        if (age > vaccineType.getMaximumAge()) {
-                            continue;
-                        }
-                    }
-                    if (person.getReadyDate() != null && date.compareTo(person.getReadyDate()) < 0) {
-                        continue;
-                    }
-                    if (person.getDueDate() != null && date.compareTo(person.getDueDate()) > 0) {
-                        continue;
-                    }
-                    Map<VaccinationSlot, Integer> slotToAvailabilityMap = dateEntry.getValue();
+                List<LocalDate> dateList = dateToSlotMap.keySet().stream()
+                        .filter(date -> {
+                            // Skip all slots with an invalid date
+                            long age = YEARS.between(person.getBirthdate(), date);
+                            if (vaccineType.getMinimumAge() != null && age < vaccineType.getMinimumAge()) {
+                                return false;
+                            }
+                            if (vaccineType.getMaximumAge() != null && age > vaccineType.getMaximumAge()) {
+                                return false;
+                            }
+                            if (person.getReadyDate() != null && date.compareTo(person.getReadyDate()) < 0) {
+                                return false;
+                            }
+                            if (person.getDueDate() != null && date.compareTo(person.getDueDate()) > 0) {
+                                return false;
+                            }
+                            return true;
+                        })
+                        .sorted(person.getIdealDate() == null ? Comparator.naturalOrder()
+                                : Comparator.<LocalDate, Long>comparing(date ->
+                                Math.abs(DAYS.between(person.getIdealDate(), date))))
+                        .collect(Collectors.toList());
+                for (LocalDate date : dateList) {
+                    Map<VaccinationSlot, Integer> slotToAvailabilityMap = dateToSlotMap.get(date);
                     for (Map.Entry<VaccinationSlot, Integer> slotEntry : slotToAvailabilityMap.entrySet()) {
                         VaccinationSlot vaccinationSlot = slotEntry.getKey();
                         int availability = slotEntry.getValue();
