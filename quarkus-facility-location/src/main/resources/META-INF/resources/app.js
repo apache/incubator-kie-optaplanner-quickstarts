@@ -196,7 +196,7 @@ const showProblem = ({solution, scoreExplanation, isSolving}) => {
     marker.setIcon(icon);
     marker.setPopupContent(facilityPopupContent(facility, longCostFormat.format(facility.setupCost), color));
     facilitiesTable.append(`<tr class="${used ? 'table-active' : 'text-muted'}">
-<td><i class="fa fa-crosshairs" id="crosshairs-${id}"
+<td><i class="fas fa-crosshairs" id="crosshairs-${id}"
 style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
 </i></td><td>Facility ${id}</td>
 <td><div class="progress">
