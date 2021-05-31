@@ -83,6 +83,15 @@
         <exclude>.gitignore</exclude>
       </excludes>
     </fileSet>
+    <fileSet>
+      <useDefaultExcludes>false</useDefaultExcludes>
+      <directory>../../activemq-quarkus-school-timetabling</directory>
+      <outputDirectory>sources/activemq-quarkus-school-timetabling</outputDirectory>
+      <excludes>
+        <exclude>**/target/**</exclude>
+        <exclude>.gitignore</exclude>
+      </excludes>
+    </fileSet>
   </fileSets>
 
 </component>

@@ -83,6 +83,28 @@
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>../../activemq-quarkus-school-timetabling</directory>
+      <outputDirectory>binaries/activemq-quarkus-school-timetabling</outputDirectory>
+      <includes>
+        <include>broker-*.xml</include>
+        <include>docker-compose.yml</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-client/target</directory>
+      <outputDirectory>binaries/activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-client</outputDirectory>
+      <includes>
+        <include>quarkus-app/**</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>../../activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-solver/target</directory>
+      <outputDirectory>binaries/activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-solver</outputDirectory>
+      <includes>
+        <include>quarkus-app/**</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
 </assembly>
