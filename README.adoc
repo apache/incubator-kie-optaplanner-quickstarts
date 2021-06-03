@@ -2,23 +2,20 @@
 
 == Get started
 
-To get started with https://www.optaplanner.org/[OptaPlanner],
-clone this repository to build and run these Quickstarts from source:
+Run the https://www.optaplanner.org/[OptaPlanner] quickstarts now:
 
+. https://adoptopenjdk.net[Install JDK 11 or later] with `JAVA_HOME` configured appropriately.
+
+. Clone this repository to build and run the quickstarts:
++
 [source, shell]
 ----
-$ git clone git@github.com:kiegroup/optaplanner-quickstarts.git
-...
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
 $ cd optaplanner-quickstarts
 $ ./runQuickstartsFromSource.sh
 ----
 
-Requirements:
-
-* JDK 11+ installed with `JAVA_HOME` configured appropriately.
-https://adoptopenjdk.net[Download OpenJDK.]
-
-== Overview
+== Use cases
 
 * <<school-timetabling, School timetabling>>
 * <<facility-location, Facility location problem>>
@@ -98,4 +95,4 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 
 == More information
 
-Visit https://www.optaplanner.org/[www.optaplanner.org].
+Learn more on https://www.optaplanner.org/[www.optaplanner.org].
