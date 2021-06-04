@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <version.org.optaplanner>8.7.0-SNAPSHOT</version.org.optaplanner>
+    <version.org.optaplanner>8.7.0.Final</version.org.optaplanner>
     <version.io.quarkus>1.13.3.Final</version.io.quarkus>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
