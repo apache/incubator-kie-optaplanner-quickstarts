@@ -35,6 +35,7 @@ dependencies {
         exclude group: "org.junit.vintage", module: "junit-vintage-engine"
     }
     testImplementation("org.optaplanner:optaplanner-test:${optaplannerVersion}")
+    testImplementation("org.optaplanner:optaplanner-benchmark:${optaplannerVersion}")
 }
 
 test {
