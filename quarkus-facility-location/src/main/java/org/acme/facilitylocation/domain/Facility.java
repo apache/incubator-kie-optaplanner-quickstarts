@@ -53,10 +53,6 @@ public class Facility {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public Location getLocation() {
         return location;
     }

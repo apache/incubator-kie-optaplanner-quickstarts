@@ -16,9 +16,6 @@
 
 package org.acme.facilitylocation.domain;
 
-import static java.lang.Math.ceil;
-import static java.lang.Math.sqrt;
-
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
@@ -69,10 +66,6 @@ public class Consumer {
 
     public long getId() {
         return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public Location getLocation() {

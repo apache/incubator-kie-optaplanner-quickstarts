@@ -21,7 +21,6 @@ import java.time.LocalTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import org.optaplanner.core.api.domain.lookup.PlanningId;
@@ -64,11 +63,6 @@ public class Timeslot {
 
     public Long getId() {
         return id;
-    }
-
-    // Setter is workaround for native build issue https://github.com/quarkusio/quarkus/issues/12458
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public DayOfWeek getDayOfWeek() {

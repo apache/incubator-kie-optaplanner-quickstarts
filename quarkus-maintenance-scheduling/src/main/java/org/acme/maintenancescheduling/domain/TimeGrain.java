@@ -16,11 +16,11 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import org.optaplanner.core.api.domain.lookup.PlanningId;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 @Entity
 public class TimeGrain {
@@ -53,10 +53,6 @@ public class TimeGrain {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public int getGrainIndex() {
