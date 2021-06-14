@@ -36,10 +36,6 @@ public class QuickstartMeta {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public List<Integer> getPorts() {
         return ports;
     }
