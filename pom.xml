@@ -16,6 +16,7 @@
   <name>OptaPlanner Quickstarts</name>
 
   <modules>
+    <module>hello-world-school-timetabling</module>
     <module>quarkus-school-timetabling</module>
     <module>quarkus-facility-location</module>
     <module>quarkus-maintenance-scheduling</module>
