@@ -7,9 +7,7 @@ import org.optaplanner.benchmark.api.PlannerBenchmarkFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest(properties = {
-        "optaplanner.benchmark.solver.termination.spent-limit=10s",
-})
+@SpringBootTest
 public class TimeTableBenchmarkTest {
 
     @Autowired
