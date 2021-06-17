@@ -25,6 +25,7 @@ dependencies {
     implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
     implementation "org.optaplanner:optaplanner-quarkus:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-quarkus-jackson:${optaplannerVersion}"
+    implementation "org.optaplanner:optaplanner-quarkus-benchmark:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-test:${optaplannerVersion}"
     implementation 'io.quarkus:quarkus-resteasy'
     implementation 'io.quarkus:quarkus-resteasy-jackson'
