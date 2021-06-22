@@ -16,6 +16,7 @@
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.surefire.plugin>2.22.2</version.surefire.plugin>
+    <version.exec.plugin>3.0.0</version.exec.plugin>
   </properties>
 
   <dependencyManagement>
@@ -43,6 +44,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
     <!-- Testing -->
@@ -62,6 +64,14 @@
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${version.surefire.plugin}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>${version.exec.plugin}</version>
+        <configuration>
+          <mainClass>org.acme.schooltimetabling.TimeTableApp</mainClass>
+        </configuration>
       </plugin>
     </plugins>
   </build>

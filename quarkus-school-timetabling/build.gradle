@@ -27,20 +27,20 @@ dependencies {
     implementation "org.optaplanner:optaplanner-quarkus-jackson:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-quarkus-benchmark:${optaplannerVersion}"
     implementation "org.optaplanner:optaplanner-test:${optaplannerVersion}"
-    implementation 'io.quarkus:quarkus-resteasy'
-    implementation 'io.quarkus:quarkus-resteasy-jackson'
-    implementation 'io.quarkus:quarkus-hibernate-orm-panache'
-    implementation 'io.quarkus:quarkus-jdbc-h2'
-    implementation 'io.quarkus:quarkus-hibernate-orm-rest-data-panache'
-    implementation 'io.quarkus:quarkus-webjars-locator'
+    implementation "io.quarkus:quarkus-resteasy"
+    implementation "io.quarkus:quarkus-resteasy-jackson"
+    implementation "io.quarkus:quarkus-hibernate-orm-panache"
+    implementation "io.quarkus:quarkus-jdbc-h2"
+    implementation "io.quarkus:quarkus-hibernate-orm-rest-data-panache"
+    implementation "io.quarkus:quarkus-webjars-locator"
     runtimeOnly "org.webjars:bootstrap:4.3.1"
     runtimeOnly "org.webjars:jquery:3.4.1"
     runtimeOnly "org.webjars:font-awesome:5.11.2"
     runtimeOnly "org.webjars:momentjs:2.24.0"
 
-    testImplementation 'io.quarkus:quarkus-junit5'
-    testImplementation 'io.quarkus:quarkus-test-h2'
-    testImplementation 'io.rest-assured:rest-assured'
+    testImplementation "io.quarkus:quarkus-junit5"
+    testImplementation "io.quarkus:quarkus-test-h2"
+    testImplementation "io.rest-assured:rest-assured"
 }
 
 java {
@@ -49,19 +49,19 @@ java {
 }
 
 compileJava {
-    options.encoding = 'UTF-8'
-    options.compilerArgs << '-parameters'
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-parameters"
 }
 
 compileTestJava {
-    options.encoding = 'UTF-8'
+    options.encoding = "UTF-8"
 }
 
 test {
     systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
     // Gradle needs native tests in src/native-test/java, but maven needs them in src/test/java instead.
     // Maven first, so we skip them in Gradle unfortunately.
-    exclude '**/**IT.class'
+    exclude "**/**IT.class"
     // Log the test execution results.
     testLogging {
         events "passed", "skipped", "failed"

@@ -13,19 +13,10 @@ or with Gradle:
 +
 [source, shell]
 ----
-$ gradle quarkusDev
+$ gradle run
 ----
 
-. Visit http://localhost:8080 in your browser.
-
-. Click on the *Solve* button.
-
-Then try _live coding_:
-
-. Make some changes in the source code.
-. Refresh your browser (F5).
-
-Notice that those changes are immediately in effect.
+Look for the planning solution in the console log.
 
 == More information
 
