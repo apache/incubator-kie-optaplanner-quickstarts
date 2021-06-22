@@ -1,0 +1,53 @@
+plugins {
+    id "java"
+    id "application"
+}
+
+def optaplannerVersion = "8.9.0-SNAPSHOT"
+def logbackVersion = "1.2.3"
+
+group = "org.acme"
+version = "0.1.0-SNAPSHOT"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        url "https://repository.jboss.org/nexus/content/groups/public/"
+        mavenContent {
+            snapshotsOnly()
+        }
+    }
+}
+
+dependencies {
+    implementation "org.optaplanner:optaplanner-core:${optaplannerVersion}"
+    runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    testImplementation "org.optaplanner:optaplanner-test:${optaplannerVersion}"
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+compileJava {
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-parameters"
+}
+
+compileTestJava {
+    options.encoding = "UTF-8"
+}
+
+application {
+    mainClass = "org.acme.schooltimetabling.TimeTableApp"
+}
+
+test {
+    // Log the test execution results.
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}

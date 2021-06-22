@@ -1,0 +1,23 @@
+= School Timetabling (Java, Maven or Gradle)
+
+== Run the application
+
+. Start the application with Maven:
++
+[source, shell]
+----
+$ mvn exec:java
+----
++
+or with Gradle:
++
+[source, shell]
+----
+$ gradle run
+----
+
+Look for the planning solution in the console log.
+
+== More information
+
+Visit https://www.optaplanner.org/[www.optaplanner.org].
