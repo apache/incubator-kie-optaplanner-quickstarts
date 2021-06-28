@@ -1,5 +1,7 @@
 @ECHO OFF
 setLocal enableExtensions enableDelayedExpansion
 
+cd build
 mvnw verify -DskipTests && ^
-mvnw -f build\quickstarts-showcase quarkus:dev -Dstartup-open-browser=true
+mvnw -f quickstarts-showcase quarkus:dev -Dstartup-open-browser=true
+cd ..
