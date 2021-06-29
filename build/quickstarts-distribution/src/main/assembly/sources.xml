@@ -6,8 +6,8 @@
   <fileSets>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../hello-world-school-timetabling</directory>
-      <outputDirectory>sources/hello-world-school-timetabling</outputDirectory>
+      <directory>../../hello-world</directory>
+      <outputDirectory>sources/hello-world</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>build/**</exclude>
@@ -17,8 +17,8 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../quarkus-school-timetabling</directory>
-      <outputDirectory>sources/quarkus-school-timetabling</outputDirectory>
+      <directory>../../use-cases/school-timetabling</directory>
+      <outputDirectory>sources/use-cases/school-timetabling</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>build/**</exclude>
@@ -28,8 +28,8 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../quarkus-maintenance-scheduling</directory>
-      <outputDirectory>sources/quarkus-maintenance-scheduling</outputDirectory>
+      <directory>../../use-cases/facility-location</directory>
+      <outputDirectory>sources/use-cases/facility-location</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -37,8 +37,8 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../quarkus-facility-location</directory>
-      <outputDirectory>sources/quarkus-facility-location</outputDirectory>
+      <directory>../../use-cases/maintenance-scheduling</directory>
+      <outputDirectory>sources/use-cases/maintenance-scheduling</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -46,8 +46,8 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../quarkus-vaccination-scheduling</directory>
-      <outputDirectory>sources/quarkus-vaccination-scheduling</outputDirectory>
+      <directory>../../use-cases/call-center</directory>
+      <outputDirectory>sources/use-cases/call-center</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -55,8 +55,8 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../quarkus-call-center</directory>
-      <outputDirectory>sources/quarkus-call-center</outputDirectory>
+      <directory>../../use-cases/vaccination-scheduling</directory>
+      <outputDirectory>sources/use-cases/vaccination-scheduling</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -64,8 +64,13 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../spring-boot-school-timetabling</directory>
-      <outputDirectory>sources/spring-boot-school-timetabling</outputDirectory>
+      <directory>../../technology/java-quarkus</directory>
+      <outputDirectory>sources/technology/java-quarkus</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <useDefaultExcludes>false</useDefaultExcludes>
+      <directory>../../technology/java-spring-boot</directory>
+      <outputDirectory>sources/technology/java-spring-boot</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>build/**</exclude>
@@ -75,20 +80,20 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../kotlin-quarkus-school-timetabling</directory>
-      <outputDirectory>sources/kotlin-quarkus-school-timetabling</outputDirectory>
-      <excludes>
-        <exclude>target/**</exclude>
-        <exclude>.gitignore</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>../../activemq-quarkus-school-timetabling</directory>
-      <outputDirectory>sources/activemq-quarkus-school-timetabling</outputDirectory>
+      <directory>../../technology/java-activemq-quarkus</directory>
+      <outputDirectory>sources/technology/java-activemq-quarkus</outputDirectory>
       <excludes>
         <exclude>**/target/**</exclude>
         <exclude>**/.gitignore</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <useDefaultExcludes>false</useDefaultExcludes>
+      <directory>../../technology/kotlin-quarkus</directory>
+      <outputDirectory>sources/technology/kotlin-quarkus</outputDirectory>
+      <excludes>
+        <exclude>target/**</exclude>
+        <exclude>.gitignore</exclude>
       </excludes>
     </fileSet>
   </fileSets>

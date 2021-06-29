@@ -49,58 +49,36 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../quarkus-school-timetabling/target</directory>
-      <outputDirectory>binaries/quarkus-school-timetabling</outputDirectory>
+      <directory>../../use-cases/school-timetabling/target</directory>
+      <outputDirectory>binaries/use-cases/school-timetabling</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../quarkus-facility-location/target</directory>
-      <outputDirectory>binaries/quarkus-facility-location</outputDirectory>
+      <directory>../../use-cases/facility-location/target</directory>
+      <outputDirectory>binaries/use-cases/facility-location</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../quarkus-maintenance-scheduling/target</directory>
-      <outputDirectory>binaries/quarkus-maintenance-scheduling</outputDirectory>
+      <directory>../../use-cases/maintenance-scheduling/target</directory>
+      <outputDirectory>binaries/use-cases/maintenance-scheduling</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../quarkus-vaccination-scheduling/target</directory>
-      <outputDirectory>binaries/quarkus-vaccination-scheduling</outputDirectory>
+      <directory>../../use-cases/vaccination-scheduling/target</directory>
+      <outputDirectory>binaries/use-cases/vaccination-scheduling</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>../../quarkus-call-center/target</directory>
-      <outputDirectory>binaries/quarkus-call-center</outputDirectory>
-      <includes>
-        <include>quarkus-app/**</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>../../activemq-quarkus-school-timetabling</directory>
-      <outputDirectory>binaries/activemq-quarkus-school-timetabling</outputDirectory>
-      <includes>
-        <include>broker-*.xml</include>
-        <include>docker-compose.yml</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>../../activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-client/target</directory>
-      <outputDirectory>binaries/activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-client</outputDirectory>
-      <includes>
-        <include>quarkus-app/**</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <directory>../../activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-solver/target</directory>
-      <outputDirectory>binaries/activemq-quarkus-school-timetabling/activemq-quarkus-school-timetabling-solver</outputDirectory>
+      <directory>../../use-cases/call-center/target</directory>
+      <outputDirectory>binaries/use-cases/call-center</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>

@@ -16,15 +16,15 @@
   <name>OptaPlanner Quickstarts</name>
 
   <modules>
-    <module>hello-world-school-timetabling</module>
-    <module>quarkus-school-timetabling</module>
-    <module>quarkus-facility-location</module>
-    <module>quarkus-maintenance-scheduling</module>
-    <module>quarkus-vaccination-scheduling</module>
-    <module>spring-boot-school-timetabling</module>
-    <module>kotlin-quarkus-school-timetabling</module>
-    <module>activemq-quarkus-school-timetabling</module>
-    <module>quarkus-call-center</module>
+    <module>hello-world</module>
+    <module>technology/java-spring-boot</module>
+    <module>technology/java-activemq-quarkus</module>
+    <module>technology/kotlin-quarkus</module>
+    <module>use-cases/school-timetabling</module>
+    <module>use-cases/facility-location</module>
+    <module>use-cases/maintenance-scheduling</module>
+    <module>use-cases/call-center</module>
+    <module>use-cases/vaccination-scheduling</module>
     <module>build/quickstarts-showcase</module>
   </modules>
 

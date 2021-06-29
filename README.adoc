@@ -1,12 +1,35 @@
 = OptaPlanner Quickstarts
 
+== Overview of all Quickstarts
+
+[cols="1,1"]
+|===
+|*Use case quickstarts*
+|*Technology quickstarts*
+
+a|* <<school-timetabling, School timetabling>>
+* <<facility-location, Facility location problem>>
+* <<maintenance-scheduling, Maintenance scheduling>>
+* <<call-center, Call center>>
+* <<vaccination-scheduling, Vaccination Scheduling>>
+
+a|* link:use-cases/school-timetabling/README.adoc[Quarkus] (Java, Maven or Gradle, Quarkus, H2)
+* link:technology/java-spring-boot/README.adoc[Spring Boot] (Java, Maven or Gradle, Spring Boot, H2)
+* link:technology/java-activemq-quarkus/README.adoc[ActiveMQ] (Java, ActiveMQ, Maven, Quarkus)
+* link:technology/kotlin-quarkus/README.adoc[Kotlin] (Kotlin, Maven, Quarkus, H2)
+
+2+a|* <<optaweb-vehicle-routing, OptaWeb Vehicle Routing>>
+* <<optaweb-employee-rostering, OptaWeb Employee Rostering>>
+* <<optaplanner-examples, OptaPlanner examples (desktop)>>
+|===
+
 == Get started
 
 Run the https://www.optaplanner.org/[OptaPlanner] quickstarts now:
 
 . https://adoptopenjdk.net[Install JDK 11 or later] with `JAVA_HOME` configured appropriately.
 
-. Clone this repository to build and run the quickstarts:
+. Clone this repository to build and run the quickstarts showcase:
 +
 [source, shell]
 ----
@@ -17,14 +40,6 @@ $ ./runQuickstartsFromSource.sh
 
 == Use cases
 
-* <<school-timetabling, School timetabling>>
-* <<facility-location, Facility location problem>>
-* <<maintenance-scheduling, Maintenance scheduling>>
-* <<vaccination-scheduling, Vaccination Scheduling>>
-* <<optaweb-vehicle-routing, OptaWeb Vehicle Routing>>
-* <<optaweb-employee-rostering, OptaWeb Employee Rostering>>
-* <<optaplanner-examples, OptaPlanner examples (desktop)>>
-
 [[school-timetabling]]
 === School timetabling
 
@@ -32,14 +47,14 @@ Assign lessons to timeslots and rooms to produce a better schedule for teachers 
 
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-school-timetabling-screenshot.png[]
 
-* link:quarkus-school-timetabling/README.adoc[Run quarkus-school-timetabling] (Java, Maven or Gradle, Quarkus, H2)
-* link:spring-boot-school-timetabling/README.adoc[Run spring-boot-school-timetabling] (Java, Maven or Gradle, Spring Boot, H2)
-* link:kotlin-quarkus-school-timetabling/README.adoc[Run kotlin-quarkus-school-timetabling] (Kotlin, Maven, Quarkus, H2)
-* link:activemq-quarkus-school-timetabling/README.adoc[Run activemq-quarkus-school-timetabling] (ActiveMQ, Maven, Quarkus)
+* link:use-cases/school-timetabling/README.adoc[Run quarkus-school-timetabling] (Java, Maven or Gradle, Quarkus, H2)
+* link:technology/java-spring-boot/README.adoc[Run spring-boot-school-timetabling] (Java, Maven or Gradle, Spring Boot, H2)
+* link:technology/java-activemq-quarkus/README.adoc[Run activemq-quarkus-school-timetabling] (Java, ActiveMQ, Maven, Quarkus)
+* link:technology/kotlin-quarkus/README.adoc[Run kotlin-quarkus-school-timetabling] (Kotlin, Maven, Quarkus, H2)
 
 Without a UI:
 
-* link:hello-world-school-timetabling/README.adoc[Run hello-world-school-timetabling] (Java, Maven or Gradle)
+* link:hello-world/README.adoc[Run hello-world-school-timetabling] (Java, Maven or Gradle)
 
 [[facility-location]]
 === Facility location problem
@@ -48,7 +63,7 @@ Pick the best geographical locations for new stores, distribution centers, covid
 
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-facility-location-screenshot.png[]
 
-* link:quarkus-facility-location/README.adoc[Run quarkus-facility-location] (Java, Maven, Quarkus)
+* link:use-cases/facility-location/README.adoc[Run quarkus-facility-location] (Java, Maven, Quarkus)
 
 [[maintenance-scheduling]]
 === Maintenance scheduling
@@ -58,7 +73,16 @@ to reduce both premature and overdue maintenance.
 
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-maintenance-scheduling-screenshot.png[]
 
-* link:quarkus-maintenance-scheduling/README.adoc[Run quarkus-maintenance-scheduling] (Java, Maven, Quarkus)
+* link:use-cases/maintenance-scheduling/README.adoc[Run quarkus-maintenance-scheduling] (Java, Maven, Quarkus)
+
+[[call-center]]
+=== Call center
+
+Schedule incoming calls to employees matching skills and availability.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-call-center-screenshot.png[]
+
+* link:use-cases/call-center/README.adoc[Run quarkus-call-center] (Java, Maven, Quarkus)
 
 [[vaccination-scheduling]]
 === Vaccination scheduling
@@ -68,7 +92,7 @@ to end a pandemic sooner.
 
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-vaccination-scheduling-screenshot.png[]
 
-* link:quarkus-vaccination-scheduling/README.adoc[Run quarkus-vaccination-scheduling] (Java, Maven, Quarkus)
+* link:use-cases/vaccination-scheduling/README.adoc[Run quarkus-vaccination-scheduling] (Java, Maven, Quarkus)
 
 [[optaweb-vehicle-routing]]
 === OptaWeb Vehicle Routing

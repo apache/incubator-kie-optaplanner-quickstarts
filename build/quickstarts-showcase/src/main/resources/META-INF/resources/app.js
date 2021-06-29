@@ -143,20 +143,20 @@ $(document).ready(function () {
       });
     };
   });
-  $("#quarkus-school-timetabling-launch").click(function () {
-    launchQuickstart("quarkus-school-timetabling");
+  $("#school-timetabling-launch").click(function () {
+    launchQuickstart("school-timetabling");
   });
-  $("#quarkus-facility-location-launch").click(function () {
-    launchQuickstart("quarkus-facility-location");
+  $("#facility-location-launch").click(function () {
+    launchQuickstart("facility-location");
   });
-  $("#quarkus-maintenance-scheduling-launch").click(function () {
-    launchQuickstart("quarkus-maintenance-scheduling");
+  $("#maintenance-scheduling-launch").click(function () {
+    launchQuickstart("maintenance-scheduling");
   });
-  $("#quarkus-vaccination-scheduling-launch").click(function () {
-    launchQuickstart("quarkus-vaccination-scheduling");
+  $("#call-center-launch").click(function () {
+      launchQuickstart("call-center");
   });
-  $("#quarkus-call-center-launch").click(function () {
-      launchQuickstart("quarkus-call-center");
+  $("#vaccination-scheduling-launch").click(function () {
+    launchQuickstart("vaccination-scheduling");
   });
   $("#exit").click(function () {
     exit();
