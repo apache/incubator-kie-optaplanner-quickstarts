@@ -3,5 +3,7 @@
 # Change directory to the directory of the script
 cd "$(dirname $0)" || exit
 
-./mvnw verify -DskipTests &&
-  ./mvnw -f build/quickstarts-showcase quarkus:dev -Dstartup-open-browser=true
+cd build
+./mvnw -f .. verify -DskipTests &&
+  ./mvnw -f quickstarts-showcase quarkus:dev -Dstartup-open-browser=true
+cd ..

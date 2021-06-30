@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix: {
-        quickstartDir: ['hello-world-school-timetabling', 'quarkus-school-timetabling', 'spring-boot-school-timetabling']
+        quickstartDir: ['hello-world', 'use-cases/school-timetabling', 'technology/java-spring-boot']
       }
     steps:
       - uses: actions/checkout@v2

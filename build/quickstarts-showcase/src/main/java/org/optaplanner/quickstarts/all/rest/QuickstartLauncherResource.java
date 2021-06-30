@@ -68,11 +68,11 @@ public class QuickstartLauncherResource {
 
     public void setup(@Observes StartupEvent startupEvent) {
         quickstartMetaList = Arrays.asList(
-                new QuickstartMeta("quarkus-school-timetabling"),
-                new QuickstartMeta("quarkus-facility-location"),
-                new QuickstartMeta("quarkus-maintenance-scheduling"),
-                new QuickstartMeta("quarkus-vaccination-scheduling"),
-                new QuickstartMeta("quarkus-call-center"));
+                new QuickstartMeta("school-timetabling"),
+                new QuickstartMeta("facility-location"),
+                new QuickstartMeta("maintenance-scheduling"),
+                new QuickstartMeta("vaccination-scheduling"),
+                new QuickstartMeta("call-center"));
         File workingDirectory;
         try {
             workingDirectory = new File(".").getCanonicalFile();
@@ -133,7 +133,7 @@ public class QuickstartLauncherResource {
             processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
                     getQuickstartRunnerJar(quickstartId).getAbsolutePath());
         }
-        processBuilder.directory(new File(baseDirectory, quickstartId));
+        processBuilder.directory(new File(new File(baseDirectory, "use-cases"), quickstartId));
         processBuilder.inheritIO();
         Process process;
         try {
@@ -149,7 +149,8 @@ public class QuickstartLauncherResource {
     }
 
     private File getQuickstartRunnerJar(String quickstartId) {
-        File quickstartRunnerJar = FileSystems.getDefault().getPath(baseDirectory.getAbsolutePath(), quickstartId,
+        File quickstartRunnerJar = FileSystems.getDefault().getPath(baseDirectory.getAbsolutePath(),
+                "use-cases", quickstartId,
                 "quarkus-app", "quarkus-run.jar").toFile();
         if (!quickstartRunnerJar.exists()) {
             throw new IllegalStateException(
@@ -167,7 +168,7 @@ public class QuickstartLauncherResource {
         if (!maybeMavenHome.isPresent()) {
             LOGGER.warn("Cannot find Maven home. Falling back to Maven Wrapper."
                     + " Maybe define environment variable M3_HOME instead.");
-            String scriptFileName = System.getProperty("os.name").startsWith("Windows") ? "mvnw.cmd" : "mvnw";
+            String scriptFileName = System.getProperty("os.name").startsWith("Windows") ? "build/mvnw.cmd" : "build/mvnw";
             return new File(baseDirectory, scriptFileName).getAbsolutePath();
         }
         String mavenHome = maybeMavenHome.get().replaceFirst("^~", System.getProperty("user.home"));

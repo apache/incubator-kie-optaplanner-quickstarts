@@ -1,0 +1,5 @@
+= School Timetabling (Java, Quarkus, Maven or Gradle)
+
+All quickstarts in the `use-cases` directory use Quarkus.
+
+link:../../use-cases/school-timetabling/[Take a look at the Quarkus School Timetabling quickstart.]
