@@ -26,8 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import javax.enterprise.event.Observes;
 import javax.ws.rs.Consumes;
@@ -79,6 +77,7 @@ public class QuickstartLauncherResource {
         } catch (IOException e) {
             throw new IllegalStateException("Could not determine the workingDirectory.", e);
         }
+        // Quarkus uses the target dir as working directory
         if (workingDirectory.getName().equals("target")) {
             baseDirectory = new File(workingDirectory, "../../..");
             development = true;
@@ -127,20 +126,22 @@ public class QuickstartLauncherResource {
         String corsArg = "-Dquarkus.http.cors=true";
         this.nextPort++;
         if (development) {
-            String mvnCommand = findMvnCommand(baseDirectory);
-            processBuilder = new ProcessBuilder(mvnCommand, "quarkus:dev", portArg, corsArg, "-Ddebug=false");
+            String mvnCommand = System.getProperty("os.name").startsWith("Windows") ? "mvnw.cmd" : "./mvnw";
+            processBuilder = new ProcessBuilder(mvnCommand, "-f", "../use-cases/" + quickstartId, "quarkus:dev", portArg,
+                    corsArg, "-Ddebug=false");
+            processBuilder.directory(new File(baseDirectory, "build"));
         } else {
             processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
                     getQuickstartRunnerJar(quickstartId).getAbsolutePath());
+            processBuilder.directory(new File(new File(baseDirectory, "use-cases"), quickstartId));
         }
-        processBuilder.directory(new File(new File(baseDirectory, "use-cases"), quickstartId));
         processBuilder.inheritIO();
         Process process;
         try {
             process = processBuilder.start();
         } catch (IOException e) {
             throw new IllegalStateException("Failed starting the subprocess for quickstart (" + quickstartId + ").\n"
-                    + (development ? "Maybe define environment variable M3_HOME and check if \"mvn --version\" works."
+                    + (development ? "Maybe check if \"build/mvnw\" and \"build\\mvnw.cmd\" exist."
                             : "Maybe install Java and check if \"java --version\" works."),
                     e);
         }
@@ -158,28 +159,6 @@ public class QuickstartLauncherResource {
                             + quickstartRunnerJar.getAbsolutePath() + ").");
         }
         return quickstartRunnerJar;
-    }
-
-    private String findMvnCommand(File baseDirectory) {
-        Optional<String> maybeMavenHome = Stream.of("M3_HOME", "M2_HOME", "MAVEN_HOME")
-                .map(System::getenv)
-                .filter(s -> s != null)
-                .findFirst();
-        if (!maybeMavenHome.isPresent()) {
-            LOGGER.warn("Cannot find Maven home. Falling back to Maven Wrapper."
-                    + " Maybe define environment variable M3_HOME instead.");
-            String scriptFileName = System.getProperty("os.name").startsWith("Windows") ? "build/mvnw.cmd" : "build/mvnw";
-            return new File(baseDirectory, scriptFileName).getAbsolutePath();
-        }
-        String mavenHome = maybeMavenHome.get().replaceFirst("^~", System.getProperty("user.home"));
-        File mvnFile = new File(mavenHome, "bin/mvn");
-        try {
-            mvnFile = mvnFile.getCanonicalFile();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not canonicalize mvnFile (" + mvnFile + ").\n"
-                    + "Maybe check your environment variable M3_HOME/M2_HOME/MAVEN_HOME (" + mavenHome + ").", e);
-        }
-        return mvnFile.getAbsolutePath();
     }
 
     @Path("{quickstartId}/stop/{port}")
