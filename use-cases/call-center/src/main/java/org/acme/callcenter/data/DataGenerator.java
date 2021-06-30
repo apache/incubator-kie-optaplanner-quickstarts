@@ -35,7 +35,7 @@ public class DataGenerator {
 
     private static final AtomicLong NEXT_ID = new AtomicLong(0L);
 
-    private static final Random RANDOM = new Random(37);
+    private final Random RANDOM = new Random(37);
 
     private static final Agent[] AGENTS = new Agent[] {
             new Agent(nextId(), "Ann", buildSkillSet(Skill.ENGLISH, Skill.LIFE_INSURANCE)),
