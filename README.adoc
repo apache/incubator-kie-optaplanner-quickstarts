@@ -2,10 +2,8 @@
 
 == Overview of all Quickstarts
 
-[cols="1,1"]
 |===
-|*Use case quickstarts*
-|*Technology quickstarts*
+|Use case quickstarts |Technology quickstarts
 
 a|* <<school-timetabling, School timetabling>>
 * <<facility-location, Facility location problem>>
