@@ -1,4 +1,4 @@
-= School Timetabling (Kotlin, Quarkus, Maven or Gradle)
+= School Timetabling (Kotlin, Quarkus, Maven)
 
 == Run the application with live coding
 
