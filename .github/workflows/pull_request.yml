@@ -37,6 +37,6 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Build Chain ${{ matrix.java-version }}
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v2.5.8
+        uses: kiegroup/github-action-build-chain@v2.6.5
         with:
-          definition-file: https://raw.githubusercontent.com/${GROUP}/optaplanner-quickstarts/${BRANCH}/.ci/pull-request-config.yaml        
+          definition-file: https://raw.githubusercontent.com/kiegroup/kogito-pipelines/master/.ci/pull-request-config.yaml
