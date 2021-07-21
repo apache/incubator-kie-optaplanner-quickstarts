@@ -8,7 +8,7 @@ Please provide all relevant information as outlined below. Feel free to delete
 a section if that type of information is not available.
 
 Any changes to school-timetabling must be synced across its quarkus, kotlin-quarkus, and spring-boot variants, 
-and also the external https://github.com/quarkusio/quarkus-quickstarts/tree/master/optaplanner-quickstart.
+and also the external https://github.com/quarkusio/quarkus-quickstarts/tree/main/optaplanner-quickstart.
 -->
 
 ### JIRA
