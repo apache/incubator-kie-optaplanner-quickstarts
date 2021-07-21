@@ -13,6 +13,10 @@
   <name>OptaPlanner Quickstarts Showcase</name>
 
   <properties>
+    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+    <quarkus.platform.version>${version.io.quarkus}</quarkus.platform.version>
+
     <java.module.name>org.optaplanner.quickstarts.showcase</java.module.name>
     <!-- Workaround for https://github.com/quarkusio/quarkus/issues/15817. -->
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
@@ -21,9 +25,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bom</artifactId>
-        <version>${version.io.quarkus}</version>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>${quarkus.platform.artifact-id}</artifactId>
+        <version>${quarkus.platform.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
