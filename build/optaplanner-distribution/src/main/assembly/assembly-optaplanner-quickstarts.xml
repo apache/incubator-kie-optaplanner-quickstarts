@@ -95,6 +95,13 @@
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>../../use-cases/order-picking/target</directory>
+      <outputDirectory>quickstarts/binaries/use-cases/order-picking</outputDirectory>
+      <includes>
+        <include>quarkus-app/**</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
   <dependencySets>

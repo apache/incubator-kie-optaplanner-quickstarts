@@ -161,6 +161,9 @@ $(document).ready(function () {
   $("#vehicle-routing-launch").click(function () {
     launchQuickstart("vehicle-routing");
   });
+  $("#order-picking-launch").click(function () {
+    launchQuickstart("order-picking");
+  });
   $("#exit").click(function () {
     exit();
   });

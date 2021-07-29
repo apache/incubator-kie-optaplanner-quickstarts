@@ -10,6 +10,7 @@ a|* <<school-timetabling, School timetabling>>
 * <<maintenance-scheduling, Maintenance scheduling>>
 * <<call-center, Call center>>
 * <<vaccination-scheduling, Vaccination scheduling>>
+* <<order-picking, Order Picking>>
 * <<quarkus-vehicle-routing, Vehicle Routing>>
 
 a|* link:use-cases/school-timetabling/README.adoc[Quarkus] (Java, Maven or Gradle, Quarkus, H2)
@@ -92,6 +93,15 @@ Assign people to vaccination injection appointments over time at vaccination cen
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-vaccination-scheduling-screenshot.png[]
 
 * link:use-cases/vaccination-scheduling/README.adoc[Run quarkus-vaccination-scheduling] (Java, Maven, Quarkus)
+
+[[order-picking]]
+=== Order Picking
+
+Generate an optimal picking plan for completing a set of orders.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-order-picking-screenshot.png[]
+
+* link:use-cases/order-picking/README.adoc[Run quarkus-order-picking] (Java, Maven, Quarkus)
 
 [[quarkus-vehicle-routing]]
 === Quarkus Vehicle Routing
