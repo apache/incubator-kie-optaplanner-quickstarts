@@ -1,0 +1,117 @@
+<!--
+  ~ Copyright 2021 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Order Picking - OptaPlanner Quarkus</title>
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/webjars/font-awesome/css/all.css"/>
+    <link rel="stylesheet" href="/style.css"/>
+</head>
+<body>
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="https://www.optaplanner.org">
+            <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
+        </a>
+    </nav>
+    <div class="sticky-top d-flex justify-content-center align-items-center" aria-live="polite" aria-atomic="true">
+        <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
+    </div>
+    <h1>Order Picking</h1>
+    <p>Generate an optimal picking plan for completing a set of orders.</p>
+
+    <div style="margin-bottom: .5rem">
+        <button id="refreshButton" type="button" class="btn btn-success">
+            <span class="fas fa-sync"></span> Refresh
+        </button>
+        <button id="solveButton" type="button" class="btn btn-success">
+            <span class="fas fa-play"></span> Solve
+        </button>
+        <button id="stopSolvingButton" type="button" class="btn btn-danger" style="display: none">
+            <span class="fas fa-stop"></span> Stop solving
+        </button>
+        <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span>
+
+        <div class="float-right">
+            <ul class="nav nav-pills" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="solutionTab" data-toggle="tab" href="#solutionTabDiv" role="tab" aria-controls="solutionPanel" aria-selected="true">Picking plan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="mapTab" data-toggle="tab" href="#mapTabDiv" role="tab" aria-controls="mapPanel" aria-selected="false">Map</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="unassignedEntitiesTab" data-toggle="tab" href="#unassignedEntitiesTabDiv" role="tab" aria-controls="unassignedEntitiesPanel" aria-selected="false">Unassigned</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="solutionTabDiv" role="tabpanel" aria-labelledby="solutionTab">
+            <div class="container text-center" id="welcomeMessageContainer" style="display: none">
+                <div class="row" style="padding-top: 140px;">
+                    <div class="col-md-12">
+                        <h4><strong>It looks like the Order Picking quickstart has not been started...</strong></h4>
+                    </div>
+                </div>
+                <div class="row" style="padding-top: 10px;">
+                    <div class="col-md-12">
+                        <span>To see the initial data set before staring the Solver you can use the <a href="javascript:doClickOnUnassignedEntities()">Unassigned</a> entities tab.</span>
+                    </div>
+                </div>
+            </div>
+
+            <table class="table table-borderless table-striped" id="solutionTable">
+                <!-- Filled in by app.js -->
+            </table>
+        </div>
+
+        <div class="tab-pane fade" id="mapTabDiv" role="tabpanel" aria-labelledby="mapTab">
+            <div id="mapContainer" style="padding-top: 10px;">
+                <div id="mapActionsContainer">
+                    <!-- Filled in by app.js -->
+                </div>
+                <div id="mapCanvasContainer" style="padding-top: 20px; padding-left: 15px;">
+                    <!-- Canvas drawing by app.js -->
+                    <canvas height="1100px;" width="1200px;" id="warehouseCanvas"></canvas>
+                </div>
+                <div>
+                    *Shelving dimension is of 2 meters width x 10 meters height.
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="unassignedEntitiesTabDiv" role="tabpanel" aria-labelledby="unassignedEntitiesTab">
+            <div id="unassignedEntitiesContainer">
+                <!-- Filled by the app.js -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script src="/webjars/js-joda/dist/js-joda.min.js"></script>
+<script src="/warehouse-api.js"></script>
+<script src="/tango-color.js"></script>
+<script src="/app.js"></script>
+
+</body>
+</html>
