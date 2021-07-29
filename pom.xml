@@ -25,6 +25,7 @@
     <module>use-cases/maintenance-scheduling</module>
     <module>use-cases/call-center</module>
     <module>use-cases/vaccination-scheduling</module>
+    <module>use-cases/order-picking</module>
     <module>build/quickstarts-showcase</module>
   </modules>
 
