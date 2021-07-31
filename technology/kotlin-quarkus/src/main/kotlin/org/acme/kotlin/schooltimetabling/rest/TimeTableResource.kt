@@ -28,17 +28,12 @@ import org.optaplanner.core.api.solver.SolverManager
 import org.optaplanner.core.api.solver.SolverStatus
 import javax.inject.Inject
 import javax.transaction.Transactional
-import javax.ws.rs.Consumes
 import javax.ws.rs.GET
 import javax.ws.rs.POST
 import javax.ws.rs.Path
-import javax.ws.rs.Produces
-import javax.ws.rs.core.MediaType
 
 
 @Path("timeTable")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 class TimeTableResource {
 
     val SINGLETON_TIME_TABLE_ID = 1L

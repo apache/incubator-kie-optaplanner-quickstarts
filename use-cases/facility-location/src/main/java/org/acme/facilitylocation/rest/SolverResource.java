@@ -19,7 +19,6 @@ package org.acme.facilitylocation.rest;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -33,8 +32,6 @@ import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.solver.SolverManager;
 
 @Path("/flp")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class SolverResource {
 
     private static final long PROBLEM_ID = 0L;

@@ -18,12 +18,9 @@ package org.acme.maintenancescheduling.rest;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
@@ -40,8 +37,6 @@ import org.optaplanner.core.api.solver.SolverStatus;
 import io.quarkus.panache.common.Sort;
 
 @Path("/schedule")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class MaintenanceScheduleResource {
 
     public static final Long SINGLETON_SCHEDULE_ID = 1L;

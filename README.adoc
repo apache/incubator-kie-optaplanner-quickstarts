@@ -9,7 +9,7 @@ a|* <<school-timetabling, School timetabling>>
 * <<facility-location, Facility location problem>>
 * <<maintenance-scheduling, Maintenance scheduling>>
 * <<call-center, Call center>>
-* <<vaccination-scheduling, Vaccination Scheduling>>
+* <<vaccination-scheduling, Vaccination scheduling>>
 
 a|* link:use-cases/school-timetabling/README.adoc[Quarkus] (Java, Maven or Gradle, Quarkus, H2)
 * link:technology/java-spring-boot/README.adoc[Spring Boot] (Java, Maven or Gradle, Spring Boot, H2)
