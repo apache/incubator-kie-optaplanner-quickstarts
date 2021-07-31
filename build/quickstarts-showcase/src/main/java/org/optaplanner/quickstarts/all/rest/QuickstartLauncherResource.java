@@ -28,14 +28,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.enterprise.event.Observes;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.optaplanner.quickstarts.all.domain.QuickstartMeta;
@@ -46,8 +43,6 @@ import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 
 @Path("quickstart")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class QuickstartLauncherResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuickstartLauncherResource.class);

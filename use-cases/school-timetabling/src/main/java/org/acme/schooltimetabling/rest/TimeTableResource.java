@@ -18,12 +18,9 @@ package org.acme.schooltimetabling.rest;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.acme.schooltimetabling.domain.Lesson;
 import org.acme.schooltimetabling.domain.TimeTable;
@@ -38,8 +35,6 @@ import org.optaplanner.core.api.solver.SolverStatus;
 import io.quarkus.panache.common.Sort;
 
 @Path("timeTable")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
 public class TimeTableResource {
 
     public static final Long SINGLETON_TIME_TABLE_ID = 1L;
