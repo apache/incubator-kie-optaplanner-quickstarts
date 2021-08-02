@@ -10,7 +10,6 @@ on:
       - '**.md'
       - '**.adoc'
       - '*.txt'
-      - 'build/**'
 
 jobs:
   build-chain:
