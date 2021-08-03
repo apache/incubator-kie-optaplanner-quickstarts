@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <version.org.optaplanner>8.10.0-SNAPSHOT</version.org.optaplanner>
+    <version.org.optaplanner>8.11.0-SNAPSHOT</version.org.optaplanner>
     <!-- TODO: Upgrade after https://issues.redhat.com/browse/PLANNER-2489 gets fixed. -->
     <version.io.quarkus>2.0.1.Final</version.io.quarkus>
 
