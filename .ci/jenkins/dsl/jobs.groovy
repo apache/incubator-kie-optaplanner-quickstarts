@@ -7,7 +7,7 @@ JENKINS_PATH = '.ci/jenkins'
 BUILD_CHAIN_JENKINS_PATH = "${JENKINS_PATH}/Jenkinsfile.buildchain"
 PR_REPO_URL = 'https://github.com/kiegroup/optaplanner'
 
-def getDefaultJobParams(String repoName = 'optaplanner') {
+def getDefaultJobParams(String repoName = 'optaplanner-quickstarts') {
     return KogitoJobTemplate.getDefaultJobParams(this, repoName)
 }
 
