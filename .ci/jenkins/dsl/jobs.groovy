@@ -98,40 +98,6 @@ setupMultijobPrLTSChecks()
 // Methods
 /////////////////////////////////////////////////////////////////
 
-// TODO remove method once 8.5.x is no more supported
-void setupOptaplannerPrJob() {
-    def jobParams = getDefaultJobParams()
-    jobParams.pr.run_only_for_branches = ['8.5.x']
-    KogitoJobTemplate.createPRJob(this, jobParams)
-}
-
-// TODO remove method once 8.5.x is no more supported
-void setupOptaplannerQuarkusLTSPrJob() {
-    def jobParams = getDefaultJobParams()
-    jobParams.pr.run_only_for_branches = ['8.5.x']
-    KogitoJobTemplate.createQuarkusLTSPRJob(this, jobParams)
-}
-
-// TODO remove method once 8.5.x is no more supported
-void setupOptaplannerNativePrJob() {
-    def jobParams = getDefaultJobParams()
-    jobParams.pr.run_only_for_branches = ['8.5.x']
-    KogitoJobTemplate.createNativePRJob(this, jobParams)
-}
-
-void setupOptawebEmployeeRosteringPrJob() {
-    def jobParams = getDefaultJobParams('optaweb-employee-rostering')
-    jobParams.pr.run_only_for_branches = ['master']
-    jobParams.jenkinsfile = BUILD_CHAIN_JENKINS_PATH
-    KogitoJobTemplate.createPRJob(this, jobParams)
-}
-
-void setupOptawebVehicleRoutingPrJob() {
-    def jobParams = getDefaultJobParams('optaweb-vehicle-routing')
-    jobParams.pr.run_only_for_branches = ['master']
-    jobParams.jenkinsfile = BUILD_CHAIN_JENKINS_PATH
-    KogitoJobTemplate.createPRJob(this, jobParams)
-}
 
 void setupMultijobPrDefaultChecks() {
     KogitoJobTemplate.createMultijobPRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
