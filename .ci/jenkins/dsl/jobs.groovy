@@ -87,26 +87,6 @@ def getJobParams(String jobName, String jobFolder, String jenkinsfileName, Strin
     return jobParams
 }
 
-def bddRuntimesPrFolder = "${KogitoConstants.KOGITO_DSL_PULLREQUEST_FOLDER}/${KogitoConstants.KOGITO_DSL_RUNTIMES_BDD_FOLDER}"
-def nightlyBranchFolder = "${KogitoConstants.KOGITO_DSL_NIGHTLY_FOLDER}/${JOB_BRANCH_FOLDER}"
-def releaseBranchFolder = "${KogitoConstants.KOGITO_DSL_RELEASE_FOLDER}/${JOB_BRANCH_FOLDER}"
-
-if (Utils.isMainBranch(this)) {
-    // Old PR checks.
-    // To be removed once 8.5.x release branch is no more maintained.
-    // TODO remove method calls once 8.5.x is no more supported
-    setupOptaplannerPrJob()
-    setupOptaplannerQuarkusLTSPrJob()
-    setupOptaplannerNativePrJob()
-    // End of old PR checks
-
-    // Optaweb PR checks
-    setupOptawebEmployeeRosteringPrJob()
-    setupOptawebVehicleRoutingPrJob()
-
-    // For BDD runtimes PR job
-    setupDeployJob(bddRuntimesPrFolder, KogitoJobType.PR)
-}
 
 // Optaplanner PR checks
 setupMultijobPrDefaultChecks()
