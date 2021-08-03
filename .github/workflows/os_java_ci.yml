@@ -6,9 +6,26 @@ on:
   push:
     branches:
       - development
+    paths-ignore:
+      - 'LICENSE*'
+      - '.gitignore'
+      - '.gitattributes'
+      - '**.md'
+      - '**.adoc'
+      - '*.txt'
+      - '.ci/**'      
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - development
+    paths-ignore:
+      - 'LICENSE*'
+      - '.gitignore'
+      - '.gitattributes'
+      - '**.md'
+      - '**.adoc'
+      - '*.txt'
+      - '.ci/**'
 
 env:
   # To prevent build failures due to "Connection reset" during artifact download.
