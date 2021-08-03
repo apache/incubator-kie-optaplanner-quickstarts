@@ -113,20 +113,6 @@ setupMultijobPrDefaultChecks()
 setupMultijobPrNativeChecks()
 setupMultijobPrLTSChecks()
 
-// Nightly jobs
-setupDeployJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
-setupPromoteJob(nightlyBranchFolder, KogitoJobType.NIGHTLY)
-
-// No release directly on main branch
-if (!Utils.isMainBranch(this)) {
-    setupDeployJob(releaseBranchFolder, KogitoJobType.RELEASE)
-    setupPromoteJob(releaseBranchFolder, KogitoJobType.RELEASE)
-}
-
-def otherFolder = KogitoConstants.KOGITO_DSL_OTHER_FOLDER
-if (Utils.isMainBranch(this)) {
-    setupOptaPlannerTurtleTestsJob(otherFolder)
-}
 
 /////////////////////////////////////////////////////////////////
 // Methods
