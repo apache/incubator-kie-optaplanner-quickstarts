@@ -8,7 +8,7 @@
 
     <name>0.0.0.0</name>
 
-    <persistence-enabled>true</persistence-enabled>
+    <persistence-enabled>false</persistence-enabled>
     <journal-type>NIO</journal-type>
     <paging-directory>target/data/paging</paging-directory>
     <bindings-directory>target/data/bindings</bindings-directory>
