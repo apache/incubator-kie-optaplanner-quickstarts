@@ -30,7 +30,8 @@ import com.example.schooltimetabling.domain.Lesson;
 import com.example.schooltimetabling.domain.TimeTable;
 
 @SpringBootTest(properties = {
-        "optaplanner.solver.termination.spent-limit=1h", // Effectively disable this termination in favor of the best-score-limit
+        // Effectively disable spent-time termination in favor of the best-score-limit
+        "optaplanner.solver.termination.spent-limit=1h",
         "optaplanner.solver.termination.best-score-limit=0hard/*soft"})
 public class TimeTableControllerTest {
 
