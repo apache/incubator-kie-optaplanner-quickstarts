@@ -10,6 +10,7 @@ a|* <<school-timetabling, School timetabling>>
 * <<maintenance-scheduling, Maintenance scheduling>>
 * <<call-center, Call center>>
 * <<vaccination-scheduling, Vaccination scheduling>>
+* <<quarkus-vehicle-routing, Vehicle Routing>>
 
 a|* link:use-cases/school-timetabling/README.adoc[Quarkus] (Java, Maven or Gradle, Quarkus, H2)
 * link:technology/java-spring-boot/README.adoc[Spring Boot] (Java, Maven or Gradle, Spring Boot, H2)
@@ -49,6 +50,7 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 * link:technology/java-spring-boot/README.adoc[Run spring-boot-school-timetabling] (Java, Maven or Gradle, Spring Boot, H2)
 * link:technology/java-activemq-quarkus/README.adoc[Run activemq-quarkus-school-timetabling] (Java, ActiveMQ, Maven, Quarkus)
 * link:technology/kotlin-quarkus/README.adoc[Run kotlin-quarkus-school-timetabling] (Kotlin, Maven, Quarkus, H2)
+* link:use-cases/vehicle-routing/README.adoc[Run quarkus-vehicle-routing] (Java, Maven or Gradle, Quarkus)
 
 Without a UI:
 
