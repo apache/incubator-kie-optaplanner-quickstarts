@@ -26,7 +26,7 @@
       <directory>src/main/assembly/scripts</directory>
       <lineEnding>unix</lineEnding>
       <filtered>true</filtered>
-      <outputDirectory/>
+      <outputDirectory>Quickstarts</outputDirectory>
       <includes>
         <include>**/*.sh</include>
       </includes>
@@ -36,49 +36,49 @@
       <directory>src/main/assembly/scripts</directory>
       <lineEnding>dos</lineEnding>
       <filtered>true</filtered>
-      <outputDirectory/>
+      <outputDirectory>Quickstarts</outputDirectory>
       <includes>
         <include>**/*.bat</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../quickstarts-showcase/target</directory>
-      <outputDirectory>binaries</outputDirectory>
+      <outputDirectory>Quickstarts/binaries</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../use-cases/school-timetabling/target</directory>
-      <outputDirectory>binaries/use-cases/school-timetabling</outputDirectory>
+      <outputDirectory>Quickstarts/binaries/use-cases/school-timetabling</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../use-cases/facility-location/target</directory>
-      <outputDirectory>binaries/use-cases/facility-location</outputDirectory>
+      <outputDirectory>Quickstarts/binaries/use-cases/facility-location</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../use-cases/maintenance-scheduling/target</directory>
-      <outputDirectory>binaries/use-cases/maintenance-scheduling</outputDirectory>
+      <outputDirectory>Quickstarts/binaries/use-cases/maintenance-scheduling</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../use-cases/vaccination-scheduling/target</directory>
-      <outputDirectory>binaries/use-cases/vaccination-scheduling</outputDirectory>
+      <outputDirectory>Quickstarts/binaries/use-cases/vaccination-scheduling</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
     <fileSet>
       <directory>../../use-cases/call-center/target</directory>
-      <outputDirectory>binaries/use-cases/call-center</outputDirectory>
+      <outputDirectory>Quickstarts/binaries/use-cases/call-center</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>

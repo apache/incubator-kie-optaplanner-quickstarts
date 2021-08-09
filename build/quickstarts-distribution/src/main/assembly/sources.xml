@@ -7,7 +7,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../hello-world</directory>
-      <outputDirectory>sources/hello-world</outputDirectory>
+      <outputDirectory>Quickstarts/sources/hello-world</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>build/**</exclude>
@@ -18,7 +18,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../use-cases/school-timetabling</directory>
-      <outputDirectory>sources/use-cases/school-timetabling</outputDirectory>
+      <outputDirectory>Quickstarts/sources/use-cases/school-timetabling</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>build/**</exclude>
@@ -29,7 +29,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../use-cases/facility-location</directory>
-      <outputDirectory>sources/use-cases/facility-location</outputDirectory>
+      <outputDirectory>Quickstarts/sources/use-cases/facility-location</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -38,7 +38,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../use-cases/maintenance-scheduling</directory>
-      <outputDirectory>sources/use-cases/maintenance-scheduling</outputDirectory>
+      <outputDirectory>Quickstarts/sources/use-cases/maintenance-scheduling</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -47,7 +47,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../use-cases/call-center</directory>
-      <outputDirectory>sources/use-cases/call-center</outputDirectory>
+      <outputDirectory>Quickstarts/sources/use-cases/call-center</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -56,7 +56,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../use-cases/vaccination-scheduling</directory>
-      <outputDirectory>sources/use-cases/vaccination-scheduling</outputDirectory>
+      <outputDirectory>Quickstarts/sources/use-cases/vaccination-scheduling</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
@@ -65,12 +65,12 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../technology/java-quarkus</directory>
-      <outputDirectory>sources/technology/java-quarkus</outputDirectory>
+      <outputDirectory>Quickstarts/sources/technology/java-quarkus</outputDirectory>
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../technology/java-spring-boot</directory>
-      <outputDirectory>sources/technology/java-spring-boot</outputDirectory>
+      <outputDirectory>Quickstarts/sources/technology/java-spring-boot</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>build/**</exclude>
@@ -81,7 +81,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../technology/java-activemq-quarkus</directory>
-      <outputDirectory>sources/technology/java-activemq-quarkus</outputDirectory>
+      <outputDirectory>Quickstarts/sources/technology/java-activemq-quarkus</outputDirectory>
       <excludes>
         <exclude>**/target/**</exclude>
         <exclude>**/.gitignore</exclude>
@@ -90,7 +90,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../technology/kotlin-quarkus</directory>
-      <outputDirectory>sources/technology/kotlin-quarkus</outputDirectory>
+      <outputDirectory>Quickstarts/sources/technology/kotlin-quarkus</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
