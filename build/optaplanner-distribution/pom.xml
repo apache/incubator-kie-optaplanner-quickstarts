@@ -11,7 +11,8 @@
 
   <artifactId>optaplanner-distribution</artifactId>
   <packaging>pom</packaging>
-  <name>OptaPlanner Quickstarts Distribution</name>
+  <name>OptaPlanner Distribution</name>
+  <description>This module builds the download zip.</description>
 
   <build>
     <plugins>
