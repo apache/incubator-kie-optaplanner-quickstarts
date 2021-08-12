@@ -36,4 +36,12 @@
     </plugins>
   </build>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.optaplanner</groupId>
+      <artifactId>optaplanner-distribution-internal</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
 </project>
