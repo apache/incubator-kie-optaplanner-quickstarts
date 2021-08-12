@@ -9,7 +9,7 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>optaplanner-quickstarts-distribution</artifactId>
+  <artifactId>optaplanner-distribution</artifactId>
   <packaging>pom</packaging>
   <name>OptaPlanner Quickstarts Distribution</name>
 

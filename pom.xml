@@ -37,7 +37,7 @@
         </property>
       </activation>
       <modules>
-        <module>build/quickstarts-distribution</module>
+        <module>build/optaplanner-distribution</module>
       </modules>
     </profile>
   </profiles>

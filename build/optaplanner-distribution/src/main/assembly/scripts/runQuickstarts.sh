@@ -4,7 +4,7 @@
 cd "$(dirname $0)" || exit
 
 jvmOptions="-Xms128m -Xmx512m -Dstartup-open-browser=true"
-mainJar="binaries/quarkus-app/quarkus-run.jar"
+mainJar="quickstarts/binaries/quarkus-app/quarkus-run.jar"
 
 echo "Usage: ./runQuickstarts.sh"
 echo "Notes:"
