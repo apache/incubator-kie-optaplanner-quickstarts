@@ -10,7 +10,7 @@ Map getMultijobPRConfig() {
         buildchain: true,
         jobs : [
             [
-                id: 'quickstarts',
+                id: 'optaplanner-quickstarts',
                 primary: true,
             ]
         ],
