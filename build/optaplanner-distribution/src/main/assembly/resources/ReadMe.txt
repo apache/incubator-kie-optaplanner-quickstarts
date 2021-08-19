@@ -1,6 +1,19 @@
 Welcome to OptaPlanner
 ======================
 
+Run the quickstarts
+-------------------
+
+On Linux, Mac or Cygwin:
+  runQuickstarts.sh
+On Windows:
+  runQuickstarts.bat
+
+Run the quickstarts in IDE
+----------------------------
+
+Please refer to https://github.com/kiegroup/optaplanner-quickstarts/blob/stable/README.adoc.
+
 Run the examples
 ----------------
 
