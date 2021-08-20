@@ -12,6 +12,13 @@ Map getMultijobPRConfig() {
             [
                 id: 'optaplanner-quickstarts',
                 primary: true,
+                env : [
+                    // Sonarcloud analysis only on main branch
+                    // As we have only Community edition
+                    // Currently disabled
+                    DISABLE_SONARCLOUD: true,
+                    // DISABLE_SONARCLOUD: !Utils.isMainBranch(this),
+                ]
             ]
         ],
     ]
