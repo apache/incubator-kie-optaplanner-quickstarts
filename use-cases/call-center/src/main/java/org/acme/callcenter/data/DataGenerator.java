@@ -38,13 +38,13 @@ public class DataGenerator {
     private final Random RANDOM = new Random(37);
 
     private static final Agent[] AGENTS = new Agent[] {
-            new Agent(nextId(), "Ann", buildSkillSet(Skill.ENGLISH, Skill.LIFE_INSURANCE)),
-            new Agent(nextId(), "Beth", buildSkillSet(Skill.ENGLISH, Skill.CAR_INSURANCE)),
+            new Agent(nextId(), "Ann", buildSkillSet(Skill.ENGLISH, Skill.LIFE_INSURANCE, Skill.PROPERTY_INSURANCE)),
+            new Agent(nextId(), "Beth", buildSkillSet(Skill.ENGLISH, Skill.SPANISH, Skill.CAR_INSURANCE)),
             new Agent(nextId(), "Carl", buildSkillSet(Skill.ENGLISH, Skill.PROPERTY_INSURANCE)),
             new Agent(nextId(), "Dennis", buildSkillSet(Skill.SPANISH, Skill.LIFE_INSURANCE)),
-            new Agent(nextId(), "Elsa", buildSkillSet(Skill.SPANISH, Skill.CAR_INSURANCE)),
+            new Agent(nextId(), "Elsa", buildSkillSet(Skill.SPANISH, Skill.CAR_INSURANCE, Skill.PROPERTY_INSURANCE)),
             new Agent(nextId(), "Francis", buildSkillSet(Skill.SPANISH, Skill.PROPERTY_INSURANCE)),
-            new Agent(nextId(), "Gus", buildSkillSet(Skill.GERMAN, Skill.LIFE_INSURANCE)),
+            new Agent(nextId(), "Gus", buildSkillSet(Skill.GERMAN, Skill.ENGLISH, Skill.LIFE_INSURANCE)),
             new Agent(nextId(), "Hugo", buildSkillSet(Skill.GERMAN, Skill.CAR_INSURANCE, Skill.PROPERTY_INSURANCE))
     };
 
