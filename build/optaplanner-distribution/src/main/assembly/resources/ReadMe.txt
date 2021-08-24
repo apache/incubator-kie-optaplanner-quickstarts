@@ -5,7 +5,7 @@ Run the quickstarts
 -------------------
 
 On Linux, Mac or Cygwin:
-  runQuickstarts.sh
+  ./runQuickstarts.sh
 On Windows:
   runQuickstarts.bat
 
