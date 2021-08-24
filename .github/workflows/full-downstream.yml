@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - main
+      - development
       - 8.*
     paths-ignore:
       - 'LICENSE*'
