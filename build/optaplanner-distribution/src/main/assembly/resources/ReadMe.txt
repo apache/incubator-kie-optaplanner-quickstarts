@@ -19,7 +19,7 @@ Run the examples
 
 It's easy to run the examples:
 On Linux, Mac or Cygwin:
-  runExamples.sh
+  ./runExamples.sh
 On Windows:
   runExamples.bat
 
