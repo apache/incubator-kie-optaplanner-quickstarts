@@ -18,7 +18,7 @@ Run the examples
 ----------------
 
 It's easy to run the examples:
-On Linux, Mac or Cygwin:
+On Linux, macOS or Cygwin:
   ./runExamples.sh
 On Windows:
   runExamples.bat
