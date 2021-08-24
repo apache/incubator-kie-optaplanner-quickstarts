@@ -99,11 +99,6 @@
       <outputDirectory/>
       <useStrictFiltering>true</useStrictFiltering>
       <unpack>true</unpack>
-      <!--<unpackOptions>
-        <includes>
-          <include>examples/**</include>
-        </includes>
-      </unpackOptions>-->
     </dependencySet>
   </dependencySets>
 
