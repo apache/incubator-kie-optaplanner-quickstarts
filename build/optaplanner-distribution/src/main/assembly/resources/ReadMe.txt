@@ -4,7 +4,7 @@ Welcome to OptaPlanner
 Run the quickstarts
 -------------------
 
-On Linux, Mac or Cygwin:
+On Linux, macOS or Cygwin:
   ./runQuickstarts.sh
 On Windows:
   runQuickstarts.bat
