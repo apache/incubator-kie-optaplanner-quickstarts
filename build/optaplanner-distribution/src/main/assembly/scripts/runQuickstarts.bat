@@ -2,7 +2,7 @@
 setLocal enableExtensions enableDelayedExpansion
 
 set "jvmOptions=-Xms128m -Xmx512m -Dstartup-open-browser=true"
-set "mainJar=binaries\quarkus-app\quarkus-run.jar"
+set "mainJar=quickstarts\binaries\quarkus-app\quarkus-run.jar"
 
 echo Usage: runQuickstarts.bat
 echo Notes:

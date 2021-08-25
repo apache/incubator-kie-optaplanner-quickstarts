@@ -9,9 +9,10 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
-  <artifactId>optaplanner-quickstarts-distribution</artifactId>
+  <artifactId>optaplanner-distribution</artifactId>
   <packaging>pom</packaging>
-  <name>OptaPlanner Quickstarts Distribution</name>
+  <name>OptaPlanner Distribution</name>
+  <description>This module builds the download zip.</description>
 
   <build>
     <plugins>
@@ -35,5 +36,13 @@
       </plugin>
     </plugins>
   </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.optaplanner</groupId>
+      <artifactId>optaplanner-distribution-internal</artifactId>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
 
 </project>
