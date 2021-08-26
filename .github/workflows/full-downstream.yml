@@ -10,10 +10,10 @@ on:
     paths-ignore:
       - 'LICENSE*'
       - '.gitignore'
-      - '.gitattributes'
       - '**.md'
       - '**.adoc'
       - '*.txt'
+      - '.ci/**'
 
 jobs:
   concurrency:
@@ -22,15 +22,21 @@ jobs:
   build-chain:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        java-version: [11]
-      fail-fast: true
+        os: [ubuntu-latest]
+        java-version: [8, 11]
+      fail-fast: false
     runs-on: ${{ matrix.os }}
     name: Maven Build
     steps:
-      - name: Support longpaths
-        if: ${{ matrix.os == 'windows-latest' }}
-        run: git config --system core.longpaths true
+      - name: Free disk space
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        shell: bash
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          docker rmi $(docker image ls -aq)
+          df -h    
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
