@@ -15,8 +15,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
-    <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-    <quarkus.platform.version>2.1.2.Final</quarkus.platform.version>
+    <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+    <quarkus.platform.version>2.2.0.Final</quarkus.platform.version>
+
+    <version.org.optaplanner>8.11.0-SNAPSHOT</version.org.optaplanner>
 
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
   </properties>
@@ -30,9 +32,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>${quarkus.platform.group-id}</groupId>
-        <artifactId>quarkus-optaplanner-bom</artifactId>
-        <version>${quarkus.platform.version}</version>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-bom</artifactId>
+        <version>${version.org.optaplanner}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
