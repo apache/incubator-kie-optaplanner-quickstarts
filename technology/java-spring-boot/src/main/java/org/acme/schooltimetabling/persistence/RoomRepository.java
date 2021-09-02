@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling.persistence;
+package org.acme.schooltimetabling.persistence;
 
 import java.util.List;
 
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.example.schooltimetabling.domain.Lesson;
+import org.acme.schooltimetabling.domain.Room;
 
-public interface LessonRepository extends PagingAndSortingRepository<Lesson, Long> {
+public interface RoomRepository extends PagingAndSortingRepository<Room, Long> {
 
     @Override
-    List<Lesson> findAll();
+    List<Room> findAll();
 
 }

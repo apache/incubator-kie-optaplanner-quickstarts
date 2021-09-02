@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling;
+package org.acme.schooltimetabling;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
+import org.acme.schooltimetabling.domain.Lesson;
+import org.acme.schooltimetabling.domain.Room;
+import org.acme.schooltimetabling.domain.Timeslot;
+import org.acme.schooltimetabling.persistence.LessonRepository;
+import org.acme.schooltimetabling.persistence.RoomRepository;
+import org.acme.schooltimetabling.persistence.TimeslotRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Sort;
-
-import com.example.schooltimetabling.domain.Lesson;
-import com.example.schooltimetabling.domain.Room;
-import com.example.schooltimetabling.domain.Timeslot;
-import com.example.schooltimetabling.persistence.LessonRepository;
-import com.example.schooltimetabling.persistence.RoomRepository;
-import com.example.schooltimetabling.persistence.TimeslotRepository;
 
 @SpringBootApplication
 public class TimeTableSpringBootApp {
