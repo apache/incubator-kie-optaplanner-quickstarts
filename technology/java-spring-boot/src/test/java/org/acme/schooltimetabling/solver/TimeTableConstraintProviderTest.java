@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling.solver;
+package org.acme.schooltimetabling.solver;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
+import org.acme.schooltimetabling.domain.Lesson;
+import org.acme.schooltimetabling.domain.Room;
+import org.acme.schooltimetabling.domain.TimeTable;
+import org.acme.schooltimetabling.domain.Timeslot;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import com.example.schooltimetabling.domain.Lesson;
-import com.example.schooltimetabling.domain.Room;
-import com.example.schooltimetabling.domain.TimeTable;
-import com.example.schooltimetabling.domain.Timeslot;
 
 @SpringBootTest
 class TimeTableConstraintProviderTest {

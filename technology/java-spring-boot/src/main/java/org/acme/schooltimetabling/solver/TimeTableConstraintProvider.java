@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling.solver;
+package org.acme.schooltimetabling.solver;
 
 import java.time.Duration;
 
@@ -24,7 +24,7 @@ import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
 import org.optaplanner.core.api.score.stream.Joiners;
 
-import com.example.schooltimetabling.domain.Lesson;
+import org.acme.schooltimetabling.domain.Lesson;
 
 public class TimeTableConstraintProvider implements ConstraintProvider {
 

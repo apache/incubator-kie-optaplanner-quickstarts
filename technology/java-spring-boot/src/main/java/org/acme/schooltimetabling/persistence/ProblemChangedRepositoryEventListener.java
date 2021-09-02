@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling.persistence;
+package org.acme.schooltimetabling.persistence;
 
 import org.optaplanner.core.api.solver.SolverStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +24,10 @@ import org.springframework.data.rest.core.annotation.HandleBeforeSave;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 
-import com.example.schooltimetabling.domain.Lesson;
-import com.example.schooltimetabling.domain.Room;
-import com.example.schooltimetabling.domain.Timeslot;
-import com.example.schooltimetabling.rest.TimeTableController;
+import org.acme.schooltimetabling.domain.Lesson;
+import org.acme.schooltimetabling.domain.Room;
+import org.acme.schooltimetabling.domain.Timeslot;
+import org.acme.schooltimetabling.rest.TimeTableController;
 
 /**
  * This class ensures that during solving, no CRUD operations are allowed.

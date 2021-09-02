@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.example.schooltimetabling.rest;
+package org.acme.schooltimetabling.rest;
 
+import org.acme.schooltimetabling.domain.TimeTable;
+import org.acme.schooltimetabling.persistence.TimeTableRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -25,9 +27,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.schooltimetabling.domain.TimeTable;
-import com.example.schooltimetabling.persistence.TimeTableRepository;
 
 @RestController
 @RequestMapping("/timeTable")
