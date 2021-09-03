@@ -16,8 +16,6 @@
 
 package org.acme.schooltimetabling;
 
-import static java.util.stream.Collectors.groupingBy;
-
 import java.time.DayOfWeek;
 import java.time.Duration;
 import java.time.LocalTime;
@@ -47,7 +45,9 @@ public class TimeTableApp {
                 .withSolutionClass(TimeTable.class)
                 .withEntityClasses(Lesson.class)
                 .withConstraintProviderClass(TimeTableConstraintProvider.class)
-                .withTerminationSpentLimit(Duration.ofSeconds(10)));
+                // The solver runs only for 5 seconds on this small dataset.
+                // It's recommended to run for at least 5 minutes ("5m") otherwise.
+                .withTerminationSpentLimit(Duration.ofSeconds(5)));
 
         // Load the problem
         TimeTable problem = generateDemoData();
@@ -112,7 +112,7 @@ public class TimeTableApp {
         List<Lesson> lessonList = timeTable.getLessonList();
         Map<Timeslot, Map<Room, List<Lesson>>> lessonMap = lessonList.stream()
                 .filter(lesson -> lesson.getTimeslot() != null && lesson.getRoom() != null)
-                .collect(groupingBy(Lesson::getTimeslot, groupingBy(Lesson::getRoom)));
+                .collect(Collectors.groupingBy(Lesson::getTimeslot, Collectors.groupingBy(Lesson::getRoom)));
         LOGGER.info("|            | " + roomList.stream()
                 .map(room -> String.format("%-10s", room.getName())).collect(Collectors.joining(" | ")) + " |");
         LOGGER.info("|" + "------------|".repeat(roomList.size() + 1));
