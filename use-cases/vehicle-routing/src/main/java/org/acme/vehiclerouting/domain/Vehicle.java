@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import org.acme.vehiclerouting.domain.location.Location;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,7 +108,7 @@ public class Vehicle implements Standstill {
 
         List<Location> route = new ArrayList<Location>();
 
-         // add list of customer location
+        // add list of customer location
         Customer customer = getNextCustomer();
         while (customer != null) {
             route.add(customer.getLocation());
@@ -117,6 +116,32 @@ public class Vehicle implements Standstill {
         }
 
         return route;
+    }
+
+    public Long getTotalDistance() {
+
+        Long totalDistance = getDistanceTo(this);
+        // add list of ride location
+        Customer ride = getNextCustomer();
+        Customer lastRide = getNextCustomer();
+        while (ride != null) {
+            totalDistance += ride.getDistanceFromPreviousStandstill();
+            lastRide = ride;
+            ride = ride.getNextCustomer();
+        }
+
+        if (lastRide != null) {
+            totalDistance += lastRide.getDistanceTo(this);
+        }
+        return totalDistance;
+    }
+
+    public String getTotalDistanceKm() {
+
+        long totalDistance = getTotalDistance();
+        long km = totalDistance / 10L;
+        long meter = totalDistance % 10L;
+        return km + "km " + meter + "m";
     }
 
     @Override

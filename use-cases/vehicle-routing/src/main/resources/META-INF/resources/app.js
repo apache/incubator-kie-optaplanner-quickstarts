@@ -200,7 +200,7 @@ const showProblem = ({solution, scoreExplanation, isSolving}) => {
   // Vehicles
   vehiclesTable.children().remove();
   solution.vehicleList.forEach((vehicle) => {
-    const {id} = vehicle;
+    const {id,totalDistanceKm} = vehicle;
     const totalCustomers = solution.customerList.length;
     const vehicleCustomers = vehicle.route.length;
     const percentage = vehicle.route.length / solution.customerList.length * 100;
@@ -212,6 +212,7 @@ const showProblem = ({solution, scoreExplanation, isSolving}) => {
       </i></td><td>Vehicle ${id}</td>
       <td><div class="progress">
       <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${vehicleCustomers}/${totalCustomers}</div>
+      <td>${totalDistanceKm}</td>
       </div></td>
       </tr>`);
   });
