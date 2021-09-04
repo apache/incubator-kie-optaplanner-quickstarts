@@ -78,7 +78,7 @@ public class QuickstartLauncherResource {
             baseDirectory = new File(workingDirectory, "../../..");
             development = true;
         } else {
-            baseDirectory = new File(workingDirectory, "binaries");
+            baseDirectory = new File(workingDirectory, "quickstarts/binaries");
             development = false;
         }
         portToProcessMap = new HashMap<>(quickstartMetaList.size());

@@ -48,8 +48,8 @@ public class SimulationService {
     private final AtomicBoolean running = new AtomicBoolean(false);
 
     // Initial simulation values that are overridden by a client.
-    private int durationSeconds = 10;
-    private int frequencyPerMinute = 10;
+    private int durationSeconds = 30;
+    private int frequencyPerMinute = 25;
 
     private ScheduledFuture<?> addNewCallScheduledFuture;
 

@@ -90,9 +90,9 @@ function stopQuickstart(quickstartId, port) {
 
 function exit() {
   $.post("/exit", function () {
-    const content = $("#content");
-    content.children().remove();
-    content.append($(`<p>This application has been shutdown.</p>`));
+    $("#content").hide();
+    $("#exit-alert").removeClass("d-none");
+    $("#exit").attr("disabled", "");
   }).fail(function (xhr, ajaxOptions, thrownError) {
     showError("Exit failed.", xhr);
   });
