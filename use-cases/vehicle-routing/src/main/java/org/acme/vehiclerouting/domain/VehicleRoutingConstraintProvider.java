@@ -18,7 +18,6 @@ package org.acme.vehiclerouting.domain;
 
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 
-import org.acme.vehiclerouting.domain.timewindowed.TimeWindowedCustomer;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -29,7 +28,7 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
         @Override
         public Constraint[] defineConstraints(ConstraintFactory factory) {
                 return new Constraint[] { vehicleCapacity(factory), distanceToPreviousStandstill(factory),
-                                distanceFromLastCustomerToDepot(factory), arrivalAfterDueTime(factory) };
+                                distanceFromLastCustomerToDepot(factory) };
         }
 
         // ************************************************************************
@@ -57,16 +56,4 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
                                 "distanceFromLastCustomerToDepot", HardSoftLongScore.ONE_SOFT,
                                 customer -> customer.getDistanceTo(customer.getVehicle()));
         }
-
-        // ************************************************************************
-        // TimeWindowed: additional hard constraints
-        // ************************************************************************
-
-        protected Constraint arrivalAfterDueTime(ConstraintFactory factory) {
-                return factory.from(TimeWindowedCustomer.class)
-                                .filter(customer -> customer.getArrivalTime() > customer.getDueTime())
-                                .penalizeLong("arrivalAfterDueTime", HardSoftLongScore.ONE_HARD,
-                                                customer -> customer.getArrivalTime() - customer.getDueTime());
-        }
-
 }
