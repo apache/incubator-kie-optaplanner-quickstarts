@@ -120,17 +120,16 @@ public class Vehicle implements Standstill {
 
     public long getTotalDistanceMeters() {
         long totalDistance = 0L;
-        // add list of ride location
-        Customer ride = getNextCustomer();
-        Customer lastRide = getNextCustomer();
-        while (ride != null) {
-            totalDistance += ride.getDistanceFromPreviousStandstill();
-            lastRide = ride;
-            ride = ride.getNextCustomer();
+        Customer customer = getNextCustomer();
+        Customer lastCustomer = null;
+        while (customer != null) {
+            totalDistance += customer.getDistanceFromPreviousStandstill();
+            lastCustomer = customer;
+            customer = customer.getNextCustomer();
         }
 
-        if (lastRide != null) {
-            totalDistance += lastRide.getDistanceToDepot();
+        if (lastCustomer != null) {
+            totalDistance += lastCustomer.getDistanceToDepot();
         }
         return totalDistance;
     }
