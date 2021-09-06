@@ -24,12 +24,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({ "nextCustomer" })
 public class Vehicle implements Standstill {
 
-    protected Long id;
-    protected int capacity;
-    protected Depot depot;
+    private long id;
+    private int capacity;
+    private Depot depot;
 
     // Shadow variable
-    protected Customer nextCustomer;
+    private Customer nextCustomer;
 
     public Vehicle() {
     }
@@ -40,11 +40,11 @@ public class Vehicle implements Standstill {
         this.depot = depot;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -99,8 +99,8 @@ public class Vehicle implements Standstill {
         return route;
     }
 
-    public Long getTotalDistanceMeters() {
-        Long totalDistance = 0L;
+    public long getTotalDistanceMeters() {
+        long totalDistance = 0L;
         // add list of ride location
         Customer ride = getNextCustomer();
         Customer lastRide = getNextCustomer();

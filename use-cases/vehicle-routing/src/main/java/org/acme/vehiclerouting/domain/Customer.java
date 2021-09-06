@@ -28,19 +28,19 @@ import org.optaplanner.core.api.domain.variable.PlanningVariableGraphType;
 @PlanningEntity(difficultyWeightFactoryClass = DepotAngleCustomerDifficultyWeightFactory.class)
 public class Customer implements Standstill {
 
-    protected Long id;
-    protected Location location;
-    protected int demand;
+    private long id;
+    private Location location;
+    private int demand;
 
     // Planning variable: changes during planning, between score calculations.
     @PlanningVariable(
             valueRangeProviderRefs = { "vehicleRange", "customerRange" },
             graphType = PlanningVariableGraphType.CHAINED)
-    protected Standstill previousStandstill;
+    private Standstill previousStandstill;
 
     // Shadow variables
-    protected Customer nextCustomer;
-    protected Vehicle vehicle;
+    private Customer nextCustomer;
+    private Vehicle vehicle;
 
     public Customer() {
     }
@@ -51,11 +51,11 @@ public class Customer implements Standstill {
         this.demand = demand;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

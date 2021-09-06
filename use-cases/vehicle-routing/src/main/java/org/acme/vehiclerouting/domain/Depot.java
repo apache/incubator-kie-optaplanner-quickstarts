@@ -18,30 +18,19 @@ package org.acme.vehiclerouting.domain;
 
 public class Depot {
 
-    protected Long id;
-    protected Location location;
-
-    public Depot() {
-    }
+    private final long id;
+    private final Location location;
 
     public Depot(long id, Location location) {
         this.id = id;
         this.location = location;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Location getLocation() {
         return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 }

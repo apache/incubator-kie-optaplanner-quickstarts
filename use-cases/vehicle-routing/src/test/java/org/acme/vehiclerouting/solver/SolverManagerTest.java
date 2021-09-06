@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.optaplanner.core.api.solver.SolverManager;
 
 @QuarkusTest
-public class SolverManagerTest {
+class SolverManagerTest {
 
     @Inject
     SolverManager<VehicleRoutingSolution, Long> solverManager;

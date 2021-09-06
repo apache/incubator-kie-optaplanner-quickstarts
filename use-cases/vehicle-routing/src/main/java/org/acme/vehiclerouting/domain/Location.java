@@ -25,13 +25,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({ "id", "name" })
 public class Location {
 
-    private Long id = null;
-    private double latitude;
-    private double longitude;
+    private final long id;
+    private final double latitude;
+    private final double longitude;
     private Map<Long, Long> distanceMap;
-
-    public Location() {
-    }
 
     public Location(long id, double latitude, double longitude) {
         this.id = id;
@@ -39,28 +36,16 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public double getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getLongitude() {
         return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
     }
 
     public void setDistanceMap(Map<Long, Long> distanceMap) {

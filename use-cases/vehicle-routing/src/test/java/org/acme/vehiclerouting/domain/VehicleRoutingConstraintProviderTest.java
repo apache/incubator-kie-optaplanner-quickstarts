@@ -41,7 +41,7 @@ class VehicleRoutingConstraintProviderTest {
     }
 
     @Test
-    public void vehicleCapacityUnpenalized() {
+    void vehicleCapacityUnpenalized() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -54,7 +54,7 @@ class VehicleRoutingConstraintProviderTest {
     }
 
     @Test
-    public void vehicleCapacityPenalized() {
+    void vehicleCapacityPenalized() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -71,7 +71,7 @@ class VehicleRoutingConstraintProviderTest {
     }
 
     @Test
-    public void distanceToPreviousStandstill() {
+    void distanceToPreviousStandstill() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -88,7 +88,7 @@ class VehicleRoutingConstraintProviderTest {
     }
 
     @Test
-    public void distanceFromLastCustomerToDepot() {
+    void distanceFromLastCustomerToDepot() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);

@@ -30,28 +30,28 @@ import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 @PlanningSolution
 public class VehicleRoutingSolution {
 
-    protected String name;
-    protected String distanceUnitOfMeasurement;
+    private String name;
+    private String distanceUnitOfMeasurement;
 
     @ProblemFactCollectionProperty
-    protected List<Location> locationList;
+    private List<Location> locationList;
 
     @ProblemFactCollectionProperty
-    protected List<Depot> depotList;
+    private List<Depot> depotList;
 
     @PlanningEntityCollectionProperty
     @ValueRangeProvider(id = "vehicleRange")
-    protected List<Vehicle> vehicleList;
+    private List<Vehicle> vehicleList;
 
     @PlanningEntityCollectionProperty
     @ValueRangeProvider(id = "customerRange")
-    protected List<Customer> customerList;
+    private List<Customer> customerList;
 
     @PlanningScore
-    protected HardSoftLongScore score;
+    private HardSoftLongScore score;
 
-    protected Location southWestCorner;
-    protected Location northEastCorner;
+    private Location southWestCorner;
+    private Location northEastCorner;
 
     public VehicleRoutingSolution() {
     }
