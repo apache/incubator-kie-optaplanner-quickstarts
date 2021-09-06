@@ -116,7 +116,7 @@ public class Vehicle implements Standstill {
     }
 
     public Long getTotalDistance() {
-        Long totalDistance = getDistanceTo(this);
+        Long totalDistance = 0L;
         // add list of ride location
         Customer ride = getNextCustomer();
         Customer lastRide = getNextCustomer();
@@ -127,7 +127,7 @@ public class Vehicle implements Standstill {
         }
 
         if (lastRide != null) {
-            totalDistance += lastRide.getDistanceTo(this);
+            totalDistance += lastRide.getDistanceToDepot();
         }
         return totalDistance;
     }

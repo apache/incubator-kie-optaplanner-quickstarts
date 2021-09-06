@@ -16,6 +16,7 @@
 
 package org.acme.vehiclerouting.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.acme.vehiclerouting.domain.solver.DepotAngleCustomerDifficultyWeightFactory;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
@@ -31,7 +32,7 @@ public class Customer implements Standstill {
     protected Location location;
     protected int demand;
 
-    // Planning variables: changes during planning, between score calculations.
+    // Planning variable: changes during planning, between score calculations.
     @PlanningVariable(
             valueRangeProviderRefs = { "vehicleRange", "customerRange" },
             graphType = PlanningVariableGraphType.CHAINED)
@@ -119,25 +120,16 @@ public class Customer implements Standstill {
 
             return Long.MAX_VALUE;
         }
-        return getDistanceFrom(previousStandstill);
+        return previousStandstill.getLocation().getDistanceTo(location);
     }
 
     /**
-     * @param standstill never null
      * @return a positive number, the distance multiplied by 1000 to avoid floating
      *         point arithmetic rounding errors
      */
-    public long getDistanceFrom(Standstill standstill) {
-        return standstill.getLocation().getDistanceTo(location);
-    }
-
-    /**
-     * @param standstill never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
-     */
-    public long getDistanceTo(Standstill standstill) {
-        return location.getDistanceTo(standstill.getLocation());
+    @JsonIgnore
+    public long getDistanceToDepot() {
+        return location.getDistanceTo(vehicle.getLocation());
     }
 
     @Override
