@@ -49,16 +49,6 @@ const fetchHeaders = {
   },
 };
 
-const createCostFormat = (notation) => new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 1,
-  minimumFractionDigits: 1,
-  notation,
-});
-const shortCostFormat = createCostFormat('compact');
-const longCostFormat = createCostFormat('standard');
-
 const formatDistance = (distanceInMeters) => `${Math.floor(distanceInMeters / 1000)}km ${distanceInMeters % 1000}m`;
 
 const getStatus = () => {
