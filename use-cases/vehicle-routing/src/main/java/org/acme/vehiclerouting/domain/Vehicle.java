@@ -28,7 +28,7 @@ public class Vehicle implements Standstill {
     protected int capacity;
     protected Depot depot;
 
-    // Shadow variables
+    // Shadow variable
     protected Customer nextCustomer;
 
     public Vehicle() {
@@ -74,14 +74,14 @@ public class Vehicle implements Standstill {
         this.nextCustomer = nextCustomer;
     }
 
-    // ************************************************************************
-    // Complex methods
-    // ************************************************************************
-
     @Override
     public Location getLocation() {
         return depot.getLocation();
     }
+
+    // ************************************************************************
+    // Complex methods
+    // ************************************************************************
 
     /**
      * @return route of the vehicle
@@ -99,7 +99,7 @@ public class Vehicle implements Standstill {
         return route;
     }
 
-    public Long getTotalDistance() {
+    public Long getTotalDistanceMeters() {
         Long totalDistance = 0L;
         // add list of ride location
         Customer ride = getNextCustomer();
@@ -114,12 +114,5 @@ public class Vehicle implements Standstill {
             totalDistance += lastRide.getDistanceToDepot();
         }
         return totalDistance;
-    }
-
-    public String getTotalDistanceKm() {
-        long totalDistance = getTotalDistance();
-        long km = totalDistance / 10L;
-        long meter = totalDistance % 10L;
-        return km + "km " + meter + "m";
     }
 }

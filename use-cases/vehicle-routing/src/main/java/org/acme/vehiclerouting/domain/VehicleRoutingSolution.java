@@ -144,14 +144,7 @@ public class VehicleRoutingSolution {
         return Arrays.asList(southWestCorner, northEastCorner);
     }
 
-    public String getDistanceKm() {
-        if (score == null) {
-            return null;
-        }
-        long distance = -score.getSoftScore();
-        long totalMeter = distance * 100;
-        long km = totalMeter / 1000L;
-        long meter = totalMeter % 1000L;
-        return km + "km " + meter + "m";
+    public long getDistanceMeters() {
+        return score == null ? 0 : -score.getSoftScore();
     }
 }

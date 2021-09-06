@@ -59,6 +59,8 @@ const createCostFormat = (notation) => new Intl.NumberFormat('en-US', {
 const shortCostFormat = createCostFormat('compact');
 const longCostFormat = createCostFormat('standard');
 
+const formatDistance = (distanceInMeters) => `${Math.floor(distanceInMeters / 1000)}km ${distanceInMeters % 1000}m`;
+
 const getStatus = () => {
   fetch('/vrp/status', fetchHeaders)
     .then((response) => {
@@ -200,7 +202,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
   // Vehicles
   vehiclesTable.children().remove();
   solution.vehicleList.forEach((vehicle) => {
-    const { id, totalDistanceKm } = vehicle;
+    const { id, totalDistanceMeters } = vehicle;
     const totalCustomers = solution.customerList.length;
     const vehicleCustomers = vehicle.route.length;
     const percentage = vehicle.route.length / solution.customerList.length * 100;
@@ -212,7 +214,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
       </i></td><td>Vehicle ${id}</td>
       <td><div class="progress">
       <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${vehicleCustomers}/${totalCustomers}</div>
-      <td>${totalDistanceKm}</td>
+      <td>${formatDistance(totalDistanceMeters)}</td>
       </div></td>
       </tr>`);
   });
@@ -258,7 +260,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
 
   // Summary
   $('#score').text(solution.score);
-  $('#distance').text(solution.distanceKm);
+  $('#distance').text(formatDistance(solution.distanceMeters));
   updateSolvingStatus(isSolving);
 };
 
