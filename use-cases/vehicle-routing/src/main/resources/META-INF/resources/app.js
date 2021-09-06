@@ -21,7 +21,7 @@ let autoRefreshIntervalId = null;
 
 let initialized = false;
 const depotByIdMap = new Map();
-const vehicleByIdMap = new Map();
+const customerByIdMap = new Map();
 
 const solveButton = $('#solveButton');
 const stopSolvingButton = $('#stopSolvingButton');
@@ -172,6 +172,9 @@ const depotPopupContent = (depot, color) => `<h5>Depot ${depot.id}</h5>
 </span> ${color}</li>
 </ul>`;
 
+const customerPopupContent = (customer) => `<h5>Customer ${customer.id}</h5>
+Demand: ${customer.demand}`;
+
 const getDepotMarker = ({ id, location }) => {
   let marker = depotByIdMap.get(id);
   if (marker) {
@@ -183,14 +186,14 @@ const getDepotMarker = ({ id, location }) => {
   return marker;
 };
 
-const getVehicleMarker = ({ id, location }) => {
-  let marker = vehicleByIdMap.get(id);
+const getCustomerMarker = ({ id, location }) => {
+  let marker = customerByIdMap.get(id);
   if (marker) {
     return marker;
   }
-  marker = L.marker(location);
-  marker.addTo(vehicleGroup).bindPopup();
-  vehicleByIdMap.set(id, marker);
+  marker = L.circleMarker(location);
+  marker.addTo(customerGroup).bindPopup();
+  customerByIdMap.set(id, marker);
   return marker;
 };
 
@@ -231,15 +234,12 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
       </i></td><td>Depot ${id}</td>
       </tr>`);
   });
-  // CustomerList
-  customerGroup.clearLayers();
+  // Customers
   solution.customerList.forEach((customer) => {
-    const color = colorByVehicle(customer.vehicle);
-    L.circleMarker(customer.location, color).addTo(customerGroup);
-    //L.polyline([customer.location, customer.vehicle.location], {color}).addTo(customerGroup);
+    getCustomerMarker(customer).setPopupContent(customerPopupContent(customer));
   });
-
-  //Route
+  // Route
+  routeGroup.clearLayers();
   solution.vehicleList.forEach((vehicle) => {
     const color = colorByVehicle(vehicle);
     from = vehicle.depot.location;
@@ -247,12 +247,12 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
     vehicle.route.forEach((route) => {
       isRouteValid = TextTrackCueList;
       to = route;
-      L.polyline([from, to], { color }).addTo(customerGroup);
+      L.polyline([from, to], { color }).addTo(routeGroup);
       from = to;
     });
 
     if (isRouteValid) {
-      L.polyline([from, vehicle.depot.location], { color }).addTo(customerGroup);
+      L.polyline([from, vehicle.depot.location], { color }).addTo(routeGroup);
     }
   });
 
@@ -271,12 +271,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
 }).addTo(map);
 
-const customerGroup = L.layerGroup();
-const vehicleGroup = L.layerGroup();
-const depotGroup = L.layerGroup();
-customerGroup.addTo(map);
-vehicleGroup.addTo(map);
-depotGroup.addTo(map);
+const customerGroup = L.layerGroup().addTo(map);
+const depotGroup = L.layerGroup().addTo(map);
+const routeGroup = L.layerGroup().addTo(map);
 
 solveButton.click(solve);
 stopSolvingButton.click(stopSolving);
