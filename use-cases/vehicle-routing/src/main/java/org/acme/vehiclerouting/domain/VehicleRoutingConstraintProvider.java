@@ -25,35 +25,46 @@ import org.optaplanner.core.api.score.stream.ConstraintProvider;
 
 public class VehicleRoutingConstraintProvider implements ConstraintProvider {
 
-        @Override
-        public Constraint[] defineConstraints(ConstraintFactory factory) {
-                return new Constraint[] { vehicleCapacity(factory), distanceToPreviousStandstill(factory),
-                                distanceFromLastCustomerToDepot(factory) };
-        }
+    @Override
+    public Constraint[] defineConstraints(ConstraintFactory factory) {
+        return new Constraint[] {
+                vehicleCapacity(factory),
+                distanceToPreviousStandstill(factory),
+                distanceFromLastCustomerToDepot(factory) };
+    }
 
-        // ************************************************************************
-        // Hard constraints
-        // ************************************************************************
+    // ************************************************************************
+    // Hard constraints
+    // ************************************************************************
 
-        protected Constraint vehicleCapacity(ConstraintFactory factory) {
-                return factory.from(Customer.class).groupBy(Customer::getVehicle, sum(Customer::getDemand))
-                                .filter((vehicle, demand) -> demand > vehicle.getCapacity())
-                                .penalizeLong("vehicleCapacity", HardSoftLongScore.ONE_HARD,
-                                                (vehicle, demand) -> demand - vehicle.getCapacity());
-        }
+    protected Constraint vehicleCapacity(ConstraintFactory factory) {
+        return factory.from(Customer.class)
+                .groupBy(Customer::getVehicle, sum(Customer::getDemand))
+                .filter((vehicle, demand) -> demand > vehicle.getCapacity())
+                .penalizeLong(
+                        "vehicleCapacity",
+                        HardSoftLongScore.ONE_HARD,
+                        (vehicle, demand) -> demand - vehicle.getCapacity());
+    }
 
-        // ************************************************************************
-        // Soft constraints
-        // ************************************************************************
+    // ************************************************************************
+    // Soft constraints
+    // ************************************************************************
 
-        protected Constraint distanceToPreviousStandstill(ConstraintFactory factory) {
-                return factory.from(Customer.class).penalizeLong("distanceToPreviousStandstill",
-                                HardSoftLongScore.ONE_SOFT, Customer::getDistanceFromPreviousStandstill);
-        }
+    protected Constraint distanceToPreviousStandstill(ConstraintFactory factory) {
+        return factory.from(Customer.class)
+                .penalizeLong(
+                        "distanceToPreviousStandstill",
+                        HardSoftLongScore.ONE_SOFT,
+                        Customer::getDistanceFromPreviousStandstill);
+    }
 
-        protected Constraint distanceFromLastCustomerToDepot(ConstraintFactory factory) {
-                return factory.from(Customer.class).filter(customer -> customer.getNextCustomer() == null).penalizeLong(
-                                "distanceFromLastCustomerToDepot", HardSoftLongScore.ONE_SOFT,
-                                customer -> customer.getDistanceTo(customer.getVehicle()));
-        }
+    protected Constraint distanceFromLastCustomerToDepot(ConstraintFactory factory) {
+        return factory.from(Customer.class)
+                .filter(customer -> customer.getNextCustomer() == null)
+                .penalizeLong(
+                        "distanceFromLastCustomerToDepot",
+                        HardSoftLongScore.ONE_SOFT,
+                        customer -> customer.getDistanceTo(customer.getVehicle()));
+    }
 }

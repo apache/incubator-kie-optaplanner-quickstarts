@@ -32,5 +32,4 @@ public class LocationTest {
 
         assertThat(distance).isEqualTo(4000);
     }
-
 }

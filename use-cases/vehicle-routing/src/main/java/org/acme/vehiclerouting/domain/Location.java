@@ -79,8 +79,7 @@ public class Location {
     public double getAirDistanceDoubleTo(Location location) {
         // Implementation specified by TSPLIB
         // http://www2.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/
-        // Euclidean distance (Pythagorean theorem) - not correct when the surface is a
-        // sphere
+        // Euclidean distance (Pythagorean theorem) - not correct when the surface is a sphere
         double latitudeDifference = location.latitude - latitude;
         double longitudeDifference = location.longitude - longitude;
         return Math.sqrt((latitudeDifference * latitudeDifference) + (longitudeDifference * longitudeDifference));
@@ -93,8 +92,7 @@ public class Location {
      * @return in Cartesian coordinates
      */
     public double getAngle(Location location) {
-        // Euclidean distance (Pythagorean theorem) - not correct when the surface is a
-        // sphere
+        // Euclidean distance (Pythagorean theorem) - not correct when the surface is a sphere
         double latitudeDifference = location.latitude - latitude;
         double longitudeDifference = location.longitude - longitude;
         return Math.atan2(latitudeDifference, longitudeDifference);
@@ -107,5 +105,4 @@ public class Location {
         }
         return name;
     }
-
 }

@@ -16,11 +16,11 @@
 
 package org.acme.vehiclerouting.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({ "nextCustomer" })
 public class Vehicle implements Standstill {
@@ -103,7 +103,6 @@ public class Vehicle implements Standstill {
      * @return route of the vehicle
      */
     public List<Location> getRoute() {
-
         List<Location> route = new ArrayList<Location>();
 
         // add list of customer location
@@ -117,7 +116,6 @@ public class Vehicle implements Standstill {
     }
 
     public Long getTotalDistance() {
-
         Long totalDistance = getDistanceTo(this);
         // add list of ride location
         Customer ride = getNextCustomer();
@@ -135,7 +133,6 @@ public class Vehicle implements Standstill {
     }
 
     public String getTotalDistanceKm() {
-
         long totalDistance = getTotalDistance();
         long km = totalDistance / 10L;
         long meter = totalDistance % 10L;
@@ -150,5 +147,4 @@ public class Vehicle implements Standstill {
         }
         return location.getName() + "/" + super.toString();
     }
-
 }

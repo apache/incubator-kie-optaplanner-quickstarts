@@ -47,15 +47,14 @@ public class DepotAngleCustomerDifficultyWeightFactory
 
         private static final Comparator<DepotAngleCustomerDifficultyWeight> COMPARATOR = comparingDouble(
                 (DepotAngleCustomerDifficultyWeight weight) -> weight.depotAngle)
-                        .thenComparingLong(weight -> weight.depotRoundTripDistance) // Ascending (further from the depot are more difficult)
-                        .thenComparing(weight -> weight.customer, comparingLong(Customer::getId));
+                .thenComparingLong(weight -> weight.depotRoundTripDistance) // Ascending (further from the depot are more difficult)
+                .thenComparing(weight -> weight.customer, comparingLong(Customer::getId));
 
         private final Customer customer;
         private final double depotAngle;
         private final long depotRoundTripDistance;
 
-        public DepotAngleCustomerDifficultyWeight(Customer customer,
-                double depotAngle, long depotRoundTripDistance) {
+        public DepotAngleCustomerDifficultyWeight(Customer customer, double depotAngle, long depotRoundTripDistance) {
             this.customer = customer;
             this.depotAngle = depotAngle;
             this.depotRoundTripDistance = depotRoundTripDistance;

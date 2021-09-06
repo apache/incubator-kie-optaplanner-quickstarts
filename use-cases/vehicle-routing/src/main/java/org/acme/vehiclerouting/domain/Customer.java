@@ -16,13 +16,12 @@
 
 package org.acme.vehiclerouting.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.acme.vehiclerouting.domain.solver.DepotAngleCustomerDifficultyWeightFactory;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.AnchorShadowVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariableGraphType;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({ "previousStandstill", "nextCustomer" })
 @PlanningEntity(difficultyWeightFactoryClass = DepotAngleCustomerDifficultyWeightFactory.class)
@@ -33,8 +32,9 @@ public class Customer implements Standstill {
     protected int demand;
 
     // Planning variables: changes during planning, between score calculations.
-    @PlanningVariable(valueRangeProviderRefs = { "vehicleRange",
-            "customerRange" }, graphType = PlanningVariableGraphType.CHAINED)
+    @PlanningVariable(
+            valueRangeProviderRefs = { "vehicleRange", "customerRange" },
+            graphType = PlanningVariableGraphType.CHAINED)
     protected Standstill previousStandstill;
 
     // Shadow variables
@@ -147,5 +147,4 @@ public class Customer implements Standstill {
         }
         return location.getName();
     }
-
 }

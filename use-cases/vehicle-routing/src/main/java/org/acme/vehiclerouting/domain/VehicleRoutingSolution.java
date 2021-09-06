@@ -71,7 +71,6 @@ public class VehicleRoutingSolution {
     }
 
     public static VehicleRoutingSolution empty() {
-
         VehicleRoutingSolution problem = DemoDataBuilder.builder().setMinDemand(1).setMaxDemand(2)
                 .setVehicleCapacity(77).setCustomerCount(77).setVehicleCount(7).setDepotCount(1)
                 .setSouthWestCorner(new Location(0L, 51.44, -0.16))
@@ -186,5 +185,4 @@ public class VehicleRoutingSolution {
         long meter = totalMeter % 1000L;
         return km + "km " + meter + "m";
     }
-
 }

@@ -16,20 +16,19 @@
 
 package org.acme.vehiclerouting.bootstrap;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
 import org.acme.vehiclerouting.domain.Location;
+import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
 import org.junit.jupiter.api.Test;
 
 class DemoDataBuilderTest {
 
     @Test
     void should_build_data() {
-
         Integer customerCount = 77;
         Integer vehicleCount = 6;
         Integer depotCount = 2;
@@ -77,7 +76,6 @@ class DemoDataBuilderTest {
         builder = correctBuilder().setMaxDemand(2);
         builder = correctBuilder().setMaxDemand(1);
         assertThrows(IllegalStateException.class, builder::build);
-
     }
 
     @Test
@@ -103,6 +101,5 @@ class DemoDataBuilderTest {
         return DemoDataBuilder.builder().setMinDemand(1).setMaxDemand(2).setVehicleCapacity(15).setCustomerCount(77)
                 .setVehicleCount(6).setDepotCount(2).setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
                 .setNorthEastCorner(new Location(0L, 43.809291, 11.290195));
-
     }
 }

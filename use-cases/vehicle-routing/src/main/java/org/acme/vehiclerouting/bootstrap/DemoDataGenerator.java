@@ -19,11 +19,10 @@ package org.acme.vehiclerouting.bootstrap;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
-import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
-import org.acme.vehiclerouting.domain.Location;
-import org.acme.vehiclerouting.persistence.VehicleRoutingSolutionRepository;
-
 import io.quarkus.runtime.StartupEvent;
+import org.acme.vehiclerouting.domain.Location;
+import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
+import org.acme.vehiclerouting.persistence.VehicleRoutingSolutionRepository;
 
 @ApplicationScoped
 public class DemoDataGenerator {
@@ -36,15 +35,15 @@ public class DemoDataGenerator {
 
     public void generateDemoData(@Observes StartupEvent startupEvent) {
         VehicleRoutingSolution problem = DemoDataBuilder.builder()
-        .setMinDemand(1)
-        .setMaxDemand(2)
-        .setVehicleCapacity(15)
-        .setCustomerCount(77)
-        .setVehicleCount(6)
-        .setDepotCount(2)
-        .setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
-        .setNorthEastCorner(new Location(0L, 43.809291, 11.290195))
-        .build();
+                .setMinDemand(1)
+                .setMaxDemand(2)
+                .setVehicleCapacity(15)
+                .setCustomerCount(77)
+                .setVehicleCount(6)
+                .setDepotCount(2)
+                .setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
+                .setNorthEastCorner(new Location(0L, 43.809291, 11.290195))
+                .build();
 
         repository.update(problem);
     }

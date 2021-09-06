@@ -20,6 +20,7 @@ import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
 import org.optaplanner.core.api.solver.SolverStatus;
 
 class Status {
+
     public final VehicleRoutingSolution solution;
     public final String scoreExplanation;
     public final boolean isSolving;

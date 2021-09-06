@@ -65,7 +65,7 @@ public class SolverResource {
             throw new RuntimeException("Solver failed", throwable);
         });
 
-        Optional<VehicleRoutingSolution> s1 = repository.solution() ;
+        Optional<VehicleRoutingSolution> s1 = repository.solution();
 
         VehicleRoutingSolution s = s1.orElse(VehicleRoutingSolution.empty());
         return statusFromSolution(s);

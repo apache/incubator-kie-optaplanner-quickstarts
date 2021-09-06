@@ -16,11 +16,11 @@
 
 package org.acme.vehiclerouting.domain;
 
+import javax.inject.Inject;
+
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
-
-import javax.inject.Inject;
 
 @QuarkusTest
 class VehicleRoutingConstraintProviderTest {

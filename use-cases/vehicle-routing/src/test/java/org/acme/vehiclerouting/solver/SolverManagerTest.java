@@ -16,15 +16,16 @@
 
 package org.acme.vehiclerouting.solver;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.acme.vehiclerouting.bootstrap.DemoDataBuilder;
-import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
-import org.acme.vehiclerouting.domain.Location;
-import org.junit.jupiter.api.Test;
-import org.optaplanner.core.api.solver.SolverManager;
+import java.util.concurrent.ExecutionException;
 
 import javax.inject.Inject;
-import java.util.concurrent.ExecutionException;
+
+import io.quarkus.test.junit.QuarkusTest;
+import org.acme.vehiclerouting.bootstrap.DemoDataBuilder;
+import org.acme.vehiclerouting.domain.Location;
+import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
+import org.junit.jupiter.api.Test;
+import org.optaplanner.core.api.solver.SolverManager;
 
 @QuarkusTest
 public class SolverManagerTest {

@@ -72,7 +72,7 @@ const getStatus = () => {
 };
 
 const solve = () => {
-  fetch('/vrp/solve', {...fetchHeaders, method: 'POST'})
+  fetch('/vrp/solve', { ...fetchHeaders, method: 'POST' })
     .then((response) => {
       if (!response.ok) {
         return handleErrorResponse('Start solving failed', response);
@@ -88,7 +88,7 @@ const solve = () => {
 };
 
 const stopSolving = () => {
-  fetch('/vrp/stopSolving', {...fetchHeaders, method: 'POST'})
+  fetch('/vrp/stopSolving', { ...fetchHeaders, method: 'POST' })
     .then((response) => {
       if (!response.ok) {
         return handleErrorResponse('Stop solving failed', response);
@@ -127,7 +127,7 @@ const handleClientError = (title, error) => {
 const showError = (message, stackTrace) => {
   const notification = $(`<div class="toast shadow rounded-lg" role="alert" style="min-width: 30rem"/>`)
     .append($(
-`<div class="toast-header bg-danger">
+      `<div class="toast-header bg-danger">
 <strong class="mr-auto text-dark">Error</strong>
 <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
 <span>&times;</span>
@@ -140,7 +140,7 @@ const showError = (message, stackTrace) => {
       ),
     );
   $('#notificationPanel').append(notification);
-  notification.toast({autohide: false});
+  notification.toast({ autohide: false });
   notification.toast('show');
 };
 
@@ -170,7 +170,7 @@ const depotPopupContent = (depot, color) => `<h5>Depot ${depot.id}</h5>
 </span> ${color}</li>
 </ul>`;
 
-const getDepotMarker = ({id, location}) => {
+const getDepotMarker = ({ id, location }) => {
   let marker = depotByIdMap.get(id);
   if (marker) {
     return marker;
@@ -181,7 +181,7 @@ const getDepotMarker = ({id, location}) => {
   return marker;
 };
 
-const getVehicleMarker = ({id, location}) => {
+const getVehicleMarker = ({ id, location }) => {
   let marker = vehicleByIdMap.get(id);
   if (marker) {
     return marker;
@@ -192,7 +192,7 @@ const getVehicleMarker = ({id, location}) => {
   return marker;
 };
 
-const showProblem = ({solution, scoreExplanation, isSolving}) => {
+const showProblem = ({ solution, scoreExplanation, isSolving }) => {
   if (!initialized) {
     initialized = true;
     map.fitBounds(solution.bounds);
@@ -200,7 +200,7 @@ const showProblem = ({solution, scoreExplanation, isSolving}) => {
   // Vehicles
   vehiclesTable.children().remove();
   solution.vehicleList.forEach((vehicle) => {
-    const {id,totalDistanceKm} = vehicle;
+    const { id, totalDistanceKm } = vehicle;
     const totalCustomers = solution.customerList.length;
     const vehicleCustomers = vehicle.route.length;
     const percentage = vehicle.route.length / solution.customerList.length * 100;
@@ -219,7 +219,7 @@ const showProblem = ({solution, scoreExplanation, isSolving}) => {
   // Depots
   depotsTable.children().remove();
   solution.depotList.forEach((depot) => {
-    const {id} = depot;
+    const { id } = depot;
     const color = colorByDepot(depot);
     const icon = defaultIcon;
     const marker = getDepotMarker(depot);
@@ -247,12 +247,12 @@ const showProblem = ({solution, scoreExplanation, isSolving}) => {
     vehicle.route.forEach((route) => {
       isRouteValid = TextTrackCueList;
       to = route;
-      L.polyline([from, to], {color}).addTo(customerGroup);
+      L.polyline([from, to], { color }).addTo(customerGroup);
       from = to;
     });
 
-    if (isRouteValid){
-      L.polyline([from, vehicle.depot.location], {color}).addTo(customerGroup);
+    if (isRouteValid) {
+      L.polyline([from, vehicle.depot.location], { color }).addTo(customerGroup);
     }
   });
 
@@ -262,7 +262,7 @@ const showProblem = ({solution, scoreExplanation, isSolving}) => {
   updateSolvingStatus(isSolving);
 };
 
-const map = L.map('map', {doubleClickZoom: false}).setView([51.505, -0.09], 13);
+const map = L.map('map', { doubleClickZoom: false }).setView([51.505, -0.09], 13);
 map.whenReady(getStatus);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

@@ -65,5 +65,4 @@ public class Depot {
         }
         return location.getName();
     }
-
 }
