@@ -202,10 +202,8 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
   // Vehicles
   vehiclesTable.children().remove();
   solution.vehicleList.forEach((vehicle) => {
-    const { id, totalDistanceMeters } = vehicle;
-    const totalCustomers = solution.customerList.length;
-    const vehicleCustomers = vehicle.route.length;
-    const percentage = vehicle.route.length / solution.customerList.length * 100;
+    const { id, capacity, totalDemand, totalDistanceMeters } = vehicle;
+    const percentage = totalDemand / capacity * 100;
     const color = colorByVehicle(vehicle);
     const colorIfUsed = color;
     vehiclesTable.append(`<tr class="table-active">
@@ -213,7 +211,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
       style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
       </i></td><td>Vehicle ${id}</td>
       <td><div class="progress">
-      <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${vehicleCustomers}/${totalCustomers}</div>
+      <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${totalDemand}/${capacity}</div>
       <td>${formatDistance(totalDistanceMeters)}</td>
       </div></td>
       </tr>`);

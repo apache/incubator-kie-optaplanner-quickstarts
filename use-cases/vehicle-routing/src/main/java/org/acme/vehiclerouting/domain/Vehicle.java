@@ -99,6 +99,16 @@ public class Vehicle implements Standstill {
         return route;
     }
 
+    public int getTotalDemand() {
+        int totalDemand = 0;
+        Customer customer = getNextCustomer();
+        while (customer != null) {
+            totalDemand += customer.getDemand();
+            customer = customer.getNextCustomer();
+        }
+        return totalDemand;
+    }
+
     public long getTotalDistanceMeters() {
         long totalDistance = 0L;
         // add list of ride location
