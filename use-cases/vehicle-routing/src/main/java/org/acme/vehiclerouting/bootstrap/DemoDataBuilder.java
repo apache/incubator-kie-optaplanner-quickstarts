@@ -16,7 +16,6 @@
 
 package org.acme.vehiclerouting.bootstrap;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.PrimitiveIterator;
 import java.util.Random;
@@ -168,14 +167,10 @@ public class DemoDataBuilder {
                 .limit(customerCount)
                 .collect(Collectors.toList());
 
-        List<Location> locationList = new ArrayList<Location>();
-        for (Customer customer : customerList) {
-            locationList.add(customer.getLocation());
-        }
-
-        for (Depot depot : depotList) {
-            locationList.add(depot.getLocation());
-        }
+        List<Location> locationList = Stream.concat(
+                        customerList.stream().map(Customer::getLocation),
+                        depotList.stream().map(Depot::getLocation))
+                .collect(Collectors.toList());
 
         return new VehicleRoutingSolution(name, distanceUnitOfMeasurement, locationList,
                 depotList, vehicleList, customerList, southWestCorner, northEastCorner);
