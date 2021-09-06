@@ -94,7 +94,6 @@ public class Customer implements Standstill {
         this.nextCustomer = nextCustomer;
     }
 
-    @Override
     @AnchorShadowVariable(sourceVariableName = "previousStandstill")
     public Vehicle getVehicle() {
         return vehicle;

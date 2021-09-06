@@ -30,11 +30,6 @@ public interface Standstill {
     /**
      * @return sometimes null
      */
-    Vehicle getVehicle();
-
-    /**
-     * @return sometimes null
-     */
     @InverseRelationShadowVariable(sourceVariableName = "previousStandstill")
     Customer getNextCustomer();
 

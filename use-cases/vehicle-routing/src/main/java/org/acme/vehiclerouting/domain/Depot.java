@@ -44,17 +44,4 @@ public class Depot {
     public void setLocation(Location location) {
         this.location = location;
     }
-
-    // ************************************************************************
-    // Complex methods
-    // ************************************************************************
-
-    /**
-     * @param standstill never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
-     */
-    public long getDistanceTo(Standstill standstill) {
-        return location.getDistanceTo(standstill.getLocation());
-    }
 }

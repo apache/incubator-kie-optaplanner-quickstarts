@@ -16,7 +16,6 @@
 
 package org.acme.vehiclerouting.domain;
 
-import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -143,36 +142,6 @@ public class VehicleRoutingSolution {
 
     public List<Location> getBounds() {
         return Arrays.asList(southWestCorner, northEastCorner);
-    }
-
-    public String getDistanceString(NumberFormat numberFormat) {
-        if (score == null) {
-            return null;
-        }
-        long distance = -score.getSoftScore();
-        if (distanceUnitOfMeasurement == null) {
-            return numberFormat.format(((double) distance) / 1000.0);
-        }
-        switch (distanceUnitOfMeasurement) {
-            case "sec": // TODO why are the values 1000 larger?
-                long hours = distance / 3600000L;
-                long minutes = distance % 3600000L / 60000L;
-                long seconds = distance % 60000L / 1000L;
-                long milliseconds = distance % 1000L;
-                return hours + "h " + minutes + "m " + seconds + "s " + milliseconds + "ms";
-            case "km": { // TODO why are the values 1000 larger?
-                long km = distance / 1000L;
-                long meter = distance % 1000L;
-                return km + "km " + meter + "m";
-            }
-            case "meter": {
-                long km = distance / 1000L;
-                long meter = distance % 1000L;
-                return km + "km " + meter + "m";
-            }
-            default:
-                return numberFormat.format(((double) distance) / 1000.0) + " " + distanceUnitOfMeasurement;
-        }
     }
 
     public String getDistanceKm() {

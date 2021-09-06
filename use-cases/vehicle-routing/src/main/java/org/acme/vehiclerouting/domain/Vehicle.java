@@ -19,7 +19,6 @@ package org.acme.vehiclerouting.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({ "nextCustomer" })
@@ -80,23 +79,8 @@ public class Vehicle implements Standstill {
     // ************************************************************************
 
     @Override
-    @JsonBackReference
-    public Vehicle getVehicle() {
-        return this;
-    }
-
-    @Override
     public Location getLocation() {
         return depot.getLocation();
-    }
-
-    /**
-     * @param standstill never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
-     */
-    public long getDistanceTo(Standstill standstill) {
-        return depot.getDistanceTo(standstill);
     }
 
     /**
