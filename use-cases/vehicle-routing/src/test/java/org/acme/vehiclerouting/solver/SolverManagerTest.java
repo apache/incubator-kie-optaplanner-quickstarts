@@ -19,7 +19,7 @@ package org.acme.vehiclerouting.solver;
 import io.quarkus.test.junit.QuarkusTest;
 import org.acme.vehiclerouting.bootstrap.DemoDataBuilder;
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
-import org.acme.vehiclerouting.domain.location.AirLocation;
+import org.acme.vehiclerouting.domain.Location;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.core.api.solver.SolverManager;
 
@@ -36,8 +36,8 @@ public class SolverManagerTest {
     void solve() throws ExecutionException, InterruptedException {
         VehicleRoutingSolution problem = DemoDataBuilder.builder().setMinDemand(1).setMaxDemand(2)
                 .setVehicleCapacity(15).setCustomerCount(77).setVehicleCount(6).setDepotCount(2)
-                .setSouthWestCorner(new AirLocation(0L, 43.751466, 11.177210))
-                .setNorthEastCorner(new AirLocation(0L, 43.809291, 11.290195)).build();
+                .setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
+                .setNorthEastCorner(new Location(0L, 43.809291, 11.290195)).build();
         solverManager.solve(0L, id -> problem, SolverManagerTest::printSolution).getFinalBestSolution();
     }
 

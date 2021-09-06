@@ -20,8 +20,7 @@ import org.acme.vehiclerouting.domain.Customer;
 import org.acme.vehiclerouting.domain.Depot;
 import org.acme.vehiclerouting.domain.Vehicle;
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
-import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.Location;
+import org.acme.vehiclerouting.domain.Location;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -147,7 +146,7 @@ public class DemoDataBuilder {
 
                 PrimitiveIterator.OfInt depotRandom = random.ints(0, depotCount).iterator();
 
-                Supplier<Depot> depotSupplier = () -> new Depot(sequence.incrementAndGet(), new AirLocation(
+                Supplier<Depot> depotSupplier = () -> new Depot(sequence.incrementAndGet(), new Location(
                                 sequence.incrementAndGet(), latitudes.nextDouble(), longitudes.nextDouble()));
 
                 List<Depot> depotList = Stream.generate(depotSupplier).limit(depotCount).collect(Collectors.toList());
@@ -159,7 +158,7 @@ public class DemoDataBuilder {
                                 .collect(Collectors.toList());
 
                 Supplier<Customer> customerSupplier = () -> new Customer(sequence.incrementAndGet(),
-                                new AirLocation(sequence.incrementAndGet(), latitudes.nextDouble(),
+                                new Location(sequence.incrementAndGet(), latitudes.nextDouble(),
                                                 longitudes.nextDouble()),
                                 demand.nextInt());
 

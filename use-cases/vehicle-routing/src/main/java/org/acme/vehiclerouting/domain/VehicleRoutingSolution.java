@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.acme.vehiclerouting.bootstrap.DemoDataBuilder;
-import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.Location;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
@@ -76,8 +74,8 @@ public class VehicleRoutingSolution {
 
         VehicleRoutingSolution problem = DemoDataBuilder.builder().setMinDemand(1).setMaxDemand(2)
                 .setVehicleCapacity(77).setCustomerCount(77).setVehicleCount(7).setDepotCount(1)
-                .setSouthWestCorner(new AirLocation(0L, 51.44, -0.16))
-                .setNorthEastCorner(new AirLocation(0L, 51.56, -0.01)).build();
+                .setSouthWestCorner(new Location(0L, 51.44, -0.16))
+                .setNorthEastCorner(new Location(0L, 51.56, -0.01)).build();
 
         problem.setScore(HardSoftLongScore.ZERO);
 

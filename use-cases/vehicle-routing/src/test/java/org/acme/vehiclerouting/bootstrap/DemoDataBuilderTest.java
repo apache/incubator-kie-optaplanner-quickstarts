@@ -22,8 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
-import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.Location;
+import org.acme.vehiclerouting.domain.Location;
 import org.junit.jupiter.api.Test;
 
 class DemoDataBuilderTest {
@@ -39,8 +38,8 @@ class DemoDataBuilderTest {
 
         VehicleRoutingSolution problem = DemoDataBuilder.builder().setMinDemand(minDemand).setMaxDemand(maxDemand)
                 .setVehicleCapacity(15).setCustomerCount(customerCount).setVehicleCount(vehicleCount)
-                .setDepotCount(depotCount).setSouthWestCorner(new AirLocation(0L, 43.751466, 11.177210))
-                .setNorthEastCorner(new AirLocation(0L, 43.809291, 11.290195)).build();
+                .setDepotCount(depotCount).setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
+                .setNorthEastCorner(new Location(0L, 43.809291, 11.290195)).build();
 
         problem.getCustomerList().forEach(
                 customer -> assertTrue((minDemand <= customer.getDemand()) && (maxDemand >= customer.getDemand())));
@@ -83,27 +82,27 @@ class DemoDataBuilderTest {
 
     @Test
     void map_corner_test() {
-        DemoDataBuilder builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 2, 1));
-        builder.setNorthEastCorner(new AirLocation(0L, 1, 2));
+        DemoDataBuilder builder = correctBuilder().setSouthWestCorner(new Location(0L, 2, 1));
+        builder.setNorthEastCorner(new Location(0L, 1, 2));
         assertThrows(IllegalStateException.class, builder::build);
 
-        builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 1, 1));
-        builder.setNorthEastCorner(new AirLocation(0L, 1, 2));
+        builder = correctBuilder().setSouthWestCorner(new Location(0L, 1, 1));
+        builder.setNorthEastCorner(new Location(0L, 1, 2));
         assertThrows(IllegalStateException.class, builder::build);
 
-        builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 1, 1));
-        builder.setNorthEastCorner(new AirLocation(0L, 2, 1));
+        builder = correctBuilder().setSouthWestCorner(new Location(0L, 1, 1));
+        builder.setNorthEastCorner(new Location(0L, 2, 1));
         assertThrows(IllegalStateException.class, builder::build);
 
-        builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 1, 2));
-        builder.setNorthEastCorner(new AirLocation(0L, 2, 1));
+        builder = correctBuilder().setSouthWestCorner(new Location(0L, 1, 2));
+        builder.setNorthEastCorner(new Location(0L, 2, 1));
         assertThrows(IllegalStateException.class, builder::build);
     }
 
     static DemoDataBuilder correctBuilder() {
         return DemoDataBuilder.builder().setMinDemand(1).setMaxDemand(2).setVehicleCapacity(15).setCustomerCount(77)
-                .setVehicleCount(6).setDepotCount(2).setSouthWestCorner(new AirLocation(0L, 43.751466, 11.177210))
-                .setNorthEastCorner(new AirLocation(0L, 43.809291, 11.290195));
+                .setVehicleCount(6).setDepotCount(2).setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
+                .setNorthEastCorner(new Location(0L, 43.809291, 11.290195));
 
     }
 }

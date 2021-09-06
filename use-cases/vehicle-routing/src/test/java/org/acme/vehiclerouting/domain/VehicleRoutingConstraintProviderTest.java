@@ -17,8 +17,6 @@
 package org.acme.vehiclerouting.domain;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.Location;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
@@ -29,9 +27,9 @@ class VehicleRoutingConstraintProviderTest {
 
     @Inject
     ConstraintVerifier<VehicleRoutingConstraintProvider, VehicleRoutingSolution> constraintVerifier;
-    private final Location location1 = new AirLocation(1L, 0.0, 0.0);
-    private final Location location2 = new AirLocation(2L, 0.0, 4.0);
-    private final Location location3 = new AirLocation(3L, 3.0, 0.0);
+    private final Location location1 = new Location(1L, 0.0, 0.0);
+    private final Location location2 = new Location(2L, 0.0, 4.0);
+    private final Location location3 = new Location(3L, 3.0, 0.0);
 
     @Test
     public void vehicleCapacityUnpenalized() {

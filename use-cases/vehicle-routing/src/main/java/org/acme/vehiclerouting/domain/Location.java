@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.acme.vehiclerouting.domain.location;
+package org.acme.vehiclerouting.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 @JsonIgnoreProperties({ "id", "name" })
-public abstract class Location {
+public class Location {
 
     protected Long id = null;
     protected String name = null;
@@ -70,7 +70,11 @@ public abstract class Location {
      * @return a positive number, the distance multiplied by 1000 to avoid floating
      *         point arithmetic rounding errors
      */
-    public abstract long getDistanceTo(Location location);
+    public long getDistanceTo(Location location) {
+        double distance = getAirDistanceDoubleTo(location);
+        // Multiplied by 1000 to avoid floating point arithmetic rounding errors
+        return (long) (distance * 1000.0 + 0.5);
+    }
 
     public double getAirDistanceDoubleTo(Location location) {
         // Implementation specified by TSPLIB

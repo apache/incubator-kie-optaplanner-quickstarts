@@ -16,8 +16,6 @@
 
 package org.acme.vehiclerouting.domain;
 
-import org.acme.vehiclerouting.domain.location.Location;
-
 public class Depot {
 
     protected Long id;

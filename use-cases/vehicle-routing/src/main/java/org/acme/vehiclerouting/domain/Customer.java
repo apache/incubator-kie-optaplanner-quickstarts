@@ -16,7 +16,6 @@
 
 package org.acme.vehiclerouting.domain;
 
-import org.acme.vehiclerouting.domain.location.Location;
 import org.acme.vehiclerouting.domain.solver.DepotAngleCustomerDifficultyWeightFactory;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.AnchorShadowVariable;

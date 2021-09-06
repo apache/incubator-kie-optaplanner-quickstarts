@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package org.acme.vehiclerouting.domain.location.segmented;
+package org.acme.vehiclerouting.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.acme.vehiclerouting.domain.location.AirLocation;
 import org.junit.jupiter.api.Test;
 
-public class AirLocationTest {
+public class LocationTest {
 
     @Test
     public void getDistance() {
         long id = 0;
-        AirLocation a = new AirLocation(id++, 0.0, 0.0);
-        AirLocation b = new AirLocation(id++, 0.0, 4.0);
+        Location a = new Location(id++, 0.0, 0.0);
+        Location b = new Location(id++, 0.0, 4.0);
 
         long distance = a.getDistanceTo(b);
 

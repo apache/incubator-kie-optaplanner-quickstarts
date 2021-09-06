@@ -20,7 +20,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
-import org.acme.vehiclerouting.domain.location.AirLocation;
+import org.acme.vehiclerouting.domain.Location;
 import org.acme.vehiclerouting.persistence.VehicleRoutingSolutionRepository;
 
 import io.quarkus.runtime.StartupEvent;
@@ -42,8 +42,8 @@ public class DemoDataGenerator {
         .setCustomerCount(77)
         .setVehicleCount(6)
         .setDepotCount(2)
-        .setSouthWestCorner(new AirLocation(0L, 43.751466, 11.177210))
-        .setNorthEastCorner(new AirLocation(0L, 43.809291, 11.290195))
+        .setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
+        .setNorthEastCorner(new Location(0L, 43.809291, 11.290195))
         .build();
 
         repository.update(problem);

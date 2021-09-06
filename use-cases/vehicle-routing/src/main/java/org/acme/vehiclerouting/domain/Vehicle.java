@@ -19,8 +19,6 @@ package org.acme.vehiclerouting.domain;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import org.acme.vehiclerouting.domain.location.Location;
-
 import java.util.ArrayList;
 import java.util.List;
 
