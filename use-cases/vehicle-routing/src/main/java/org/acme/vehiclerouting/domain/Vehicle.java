@@ -17,6 +17,7 @@
 package org.acme.vehiclerouting.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -87,7 +88,13 @@ public class Vehicle implements Standstill {
      * @return route of the vehicle
      */
     public List<Location> getRoute() {
+        if (getNextCustomer() == null) {
+            return Collections.emptyList();
+        }
+
         List<Location> route = new ArrayList<Location>();
+
+        route.add(depot.getLocation());
 
         // add list of customer location
         Customer customer = getNextCustomer();
@@ -95,6 +102,8 @@ public class Vehicle implements Standstill {
             route.add(customer.getLocation());
             customer = customer.getNextCustomer();
         }
+
+        route.add(depot.getLocation());
 
         return route;
     }

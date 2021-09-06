@@ -241,19 +241,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
   // Route
   routeGroup.clearLayers();
   solution.vehicleList.forEach((vehicle) => {
-    const color = colorByVehicle(vehicle);
-    from = vehicle.depot.location;
-    isRouteValid = false;
-    vehicle.route.forEach((route) => {
-      isRouteValid = TextTrackCueList;
-      to = route;
-      L.polyline([from, to], { color }).addTo(routeGroup);
-      from = to;
-    });
-
-    if (isRouteValid) {
-      L.polyline([from, vehicle.depot.location], { color }).addTo(routeGroup);
-    }
+    L.polyline(vehicle.route, { color: colorByVehicle(vehicle) }).addTo(routeGroup);
   });
 
   // Summary
