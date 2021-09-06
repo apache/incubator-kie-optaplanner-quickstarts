@@ -18,7 +18,7 @@ package org.acme.vehiclerouting.domain.location;
 
 /**
  * The cost between 2 locations is a straight line: the euclidean distance
- * between their GPS coordinates. Used with {@link DistanceType#AIR_DISTANCE}.
+ * between their GPS coordinates.
  */
 
 public class AirLocation extends Location {

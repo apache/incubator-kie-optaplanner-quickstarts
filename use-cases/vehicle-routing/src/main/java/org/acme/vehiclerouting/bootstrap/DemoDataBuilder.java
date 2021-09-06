@@ -21,7 +21,6 @@ import org.acme.vehiclerouting.domain.Depot;
 import org.acme.vehiclerouting.domain.Vehicle;
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
 import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.DistanceType;
 import org.acme.vehiclerouting.domain.location.Location;
 
 import java.util.ArrayList;
@@ -136,7 +135,6 @@ public class DemoDataBuilder {
                 }
 
                 String name = "demo";
-                DistanceType distanceType = DistanceType.AIR_DISTANCE;
                 String distanceUnitOfMeasurement = "km";
 
                 Random random = new Random(0);
@@ -178,7 +176,7 @@ public class DemoDataBuilder {
                         locationList.add(depot.getLocation());
                 }
 
-                return new VehicleRoutingSolution(name, distanceType, distanceUnitOfMeasurement, locationList,
+                return new VehicleRoutingSolution(name, distanceUnitOfMeasurement, locationList,
                                 depotList, vehicleList, customerList, southWestCorner, northEastCorner);
         }
 

@@ -20,11 +20,8 @@ import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-
 import org.acme.vehiclerouting.bootstrap.DemoDataBuilder;
 import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.DistanceType;
 import org.acme.vehiclerouting.domain.location.Location;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
@@ -37,7 +34,6 @@ import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 public class VehicleRoutingSolution {
 
     protected String name;
-    protected DistanceType distanceType;
     protected String distanceUnitOfMeasurement;
 
     @ProblemFactCollectionProperty
@@ -63,11 +59,10 @@ public class VehicleRoutingSolution {
     public VehicleRoutingSolution() {
     }
 
-    public VehicleRoutingSolution(String name, DistanceType distanceType, String distanceUnitOfMeasurement,
+    public VehicleRoutingSolution(String name, String distanceUnitOfMeasurement,
             List<Location> locationList, List<Depot> depotList, List<Vehicle> vehicleList, List<Customer> customerList,
             Location southWestCorner, Location northEastCorner) {
         this.name = name;
-        this.distanceType = distanceType;
         this.distanceUnitOfMeasurement = distanceUnitOfMeasurement;
         this.locationList = locationList;
         this.depotList = depotList;
@@ -95,14 +90,6 @@ public class VehicleRoutingSolution {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public DistanceType getDistanceType() {
-        return distanceType;
-    }
-
-    public void setDistanceType(DistanceType distanceType) {
-        this.distanceType = distanceType;
     }
 
     public String getDistanceUnitOfMeasurement() {
