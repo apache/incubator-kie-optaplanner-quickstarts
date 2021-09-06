@@ -115,4 +115,11 @@ public class Vehicle implements Standstill {
         }
         return totalDistance;
     }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "id=" + id +
+                '}';
+    }
 }
