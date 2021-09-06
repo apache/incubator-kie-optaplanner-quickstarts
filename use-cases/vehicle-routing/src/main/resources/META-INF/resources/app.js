@@ -260,6 +260,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
 
   // Summary
   $('#score').text(solution.score);
+  $('#scoreInfo').text(scoreExplanation);
   $('#distance').text(formatDistance(solution.distanceMeters));
   updateSolvingStatus(isSolving);
 };
