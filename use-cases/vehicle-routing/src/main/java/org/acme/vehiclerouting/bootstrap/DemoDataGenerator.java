@@ -37,7 +37,7 @@ public class DemoDataGenerator {
         VehicleRoutingSolution problem = DemoDataBuilder.builder()
                 .setMinDemand(1)
                 .setMaxDemand(2)
-                .setVehicleCapacity(15)
+                .setVehicleCapacity(25)
                 .setCustomerCount(77)
                 .setVehicleCount(6)
                 .setDepotCount(2)

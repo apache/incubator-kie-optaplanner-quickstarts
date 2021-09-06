@@ -141,7 +141,7 @@ public class DemoDataBuilder {
         PrimitiveIterator.OfDouble longitudes = random
                 .doubles(southWestCorner.getLongitude(), northEastCorner.getLongitude()).iterator();
 
-        PrimitiveIterator.OfInt demand = random.ints(minDemand, maxDemand).iterator();
+        PrimitiveIterator.OfInt demand = random.ints(minDemand, maxDemand + 1).iterator();
 
         PrimitiveIterator.OfInt depotRandom = random.ints(0, depotCount).iterator();
 
