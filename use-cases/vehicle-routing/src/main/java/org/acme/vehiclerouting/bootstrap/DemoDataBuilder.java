@@ -29,10 +29,14 @@ import org.acme.vehiclerouting.domain.Depot;
 import org.acme.vehiclerouting.domain.Location;
 import org.acme.vehiclerouting.domain.Vehicle;
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
+import org.acme.vehiclerouting.domain.geo.DistanceCalculator;
+import org.acme.vehiclerouting.domain.geo.EuclideanDistanceCalculator;
 
 public class DemoDataBuilder {
 
     private static final AtomicLong sequence = new AtomicLong();
+
+    private final DistanceCalculator distanceCalculator = new EuclideanDistanceCalculator();
 
     private Location southWestCorner;
     private Location northEastCorner;
@@ -171,6 +175,8 @@ public class DemoDataBuilder {
                         customerList.stream().map(Customer::getLocation),
                         depotList.stream().map(Depot::getLocation))
                 .collect(Collectors.toList());
+
+        distanceCalculator.initDistanceMaps(locationList);
 
         return new VehicleRoutingSolution(name, distanceUnitOfMeasurement, locationList,
                 depotList, vehicleList, customerList, southWestCorner, northEastCorner);

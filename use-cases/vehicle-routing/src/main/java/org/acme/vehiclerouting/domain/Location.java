@@ -16,6 +16,8 @@
 
 package org.acme.vehiclerouting.domain;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -23,10 +25,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({ "id", "name" })
 public class Location {
 
-    protected Long id = null;
-    protected String name = null;
-    protected double latitude;
-    protected double longitude;
+    private Long id = null;
+    private double latitude;
+    private double longitude;
+    private Map<Long, Long> distanceMap;
 
     public Location() {
     }
@@ -37,12 +39,12 @@ public class Location {
         this.longitude = longitude;
     }
 
-    public String getName() {
-        return name;
+    public Long getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public double getLatitude() {
@@ -61,29 +63,17 @@ public class Location {
         this.longitude = longitude;
     }
 
+    public void setDistanceMap(Map<Long, Long> distanceMap) {
+        this.distanceMap = distanceMap;
+    }
+
+    public long getDistanceTo(Location location) {
+        return distanceMap.get(location.id);
+    }
+
     // ************************************************************************
     // Complex methods
     // ************************************************************************
-
-    /**
-     * @param location never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
-     */
-    public long getDistanceTo(Location location) {
-        double distance = getAirDistanceDoubleTo(location);
-        // Multiplied by 1000 to avoid floating point arithmetic rounding errors
-        return (long) (distance * 1000.0 + 0.5);
-    }
-
-    public double getAirDistanceDoubleTo(Location location) {
-        // Implementation specified by TSPLIB
-        // http://www2.iwr.uni-heidelberg.de/groups/comopt/software/TSPLIB95/
-        // Euclidean distance (Pythagorean theorem) - not correct when the surface is a sphere
-        double latitudeDifference = location.latitude - latitude;
-        double longitudeDifference = location.longitude - longitude;
-        return Math.sqrt((latitudeDifference * latitudeDifference) + (longitudeDifference * longitudeDifference));
-    }
 
     /**
      * The angle relative to the direction EAST.
@@ -96,13 +86,5 @@ public class Location {
         double latitudeDifference = location.latitude - latitude;
         double longitudeDifference = location.longitude - longitude;
         return Math.atan2(latitudeDifference, longitudeDifference);
-    }
-
-    @Override
-    public String toString() {
-        if (name == null) {
-            return super.toString();
-        }
-        return name;
     }
 }

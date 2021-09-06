@@ -131,12 +131,4 @@ public class Customer implements Standstill {
     public long getDistanceToDepot() {
         return location.getDistanceTo(vehicle.getLocation());
     }
-
-    @Override
-    public String toString() {
-        if (location.getName() == null) {
-            return super.toString();
-        }
-        return location.getName();
-    }
 }

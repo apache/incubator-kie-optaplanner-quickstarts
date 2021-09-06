@@ -16,9 +16,13 @@
 
 package org.acme.vehiclerouting.domain;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.acme.vehiclerouting.domain.geo.EuclideanDistanceCalculator;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
@@ -27,9 +31,14 @@ class VehicleRoutingConstraintProviderTest {
 
     @Inject
     ConstraintVerifier<VehicleRoutingConstraintProvider, VehicleRoutingSolution> constraintVerifier;
-    private final Location location1 = new Location(1L, 0.0, 0.0);
-    private final Location location2 = new Location(2L, 0.0, 4.0);
-    private final Location location3 = new Location(3L, 3.0, 0.0);
+    private static final Location location1 = new Location(1L, 0.0, 0.0);
+    private static final Location location2 = new Location(2L, 0.0, 4.0);
+    private static final Location location3 = new Location(3L, 3.0, 0.0);
+
+    @BeforeAll
+    static void initDistanceMaps() {
+        new EuclideanDistanceCalculator().initDistanceMaps(Arrays.asList(location1, location2, location3));
+    }
 
     @Test
     public void vehicleCapacityUnpenalized() {
@@ -75,7 +84,7 @@ class VehicleRoutingConstraintProviderTest {
 
         constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::distanceToPreviousStandstill)
                 .given(vehicleA, customer1, customer2)
-                .penalizesBy(9000L);
+                .penalizesBy((4 + 5) * EuclideanDistanceCalculator.METERS_PER_DEGREE);
     }
 
     @Test
@@ -92,6 +101,6 @@ class VehicleRoutingConstraintProviderTest {
 
         constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::distanceFromLastCustomerToDepot)
                 .given(vehicleA, customer1, customer2)
-                .penalizesBy(3000L);
+                .penalizesBy(3 * EuclideanDistanceCalculator.METERS_PER_DEGREE);
     }
 }

@@ -138,13 +138,4 @@ public class Vehicle implements Standstill {
         long meter = totalDistance % 10L;
         return km + "km " + meter + "m";
     }
-
-    @Override
-    public String toString() {
-        Location location = getLocation();
-        if (location.getName() == null) {
-            return super.toString();
-        }
-        return location.getName() + "/" + super.toString();
-    }
 }

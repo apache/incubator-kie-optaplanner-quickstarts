@@ -57,12 +57,4 @@ public class Depot {
     public long getDistanceTo(Standstill standstill) {
         return location.getDistanceTo(standstill.getLocation());
     }
-
-    @Override
-    public String toString() {
-        if (location.getName() == null) {
-            return super.toString();
-        }
-        return location.getName();
-    }
 }
