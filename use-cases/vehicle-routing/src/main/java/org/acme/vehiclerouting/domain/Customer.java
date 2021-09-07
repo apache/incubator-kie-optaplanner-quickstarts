@@ -40,6 +40,7 @@ public class Customer implements Standstill {
 
     // Shadow variables
     private Customer nextCustomer;
+    @AnchorShadowVariable(sourceVariableName = "previousStandstill")
     private Vehicle vehicle;
 
     public Customer() {
@@ -94,7 +95,6 @@ public class Customer implements Standstill {
         this.nextCustomer = nextCustomer;
     }
 
-    @AnchorShadowVariable(sourceVariableName = "previousStandstill")
     public Vehicle getVehicle() {
         return vehicle;
     }
