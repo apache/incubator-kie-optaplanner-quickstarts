@@ -16,9 +16,9 @@
 
 package org.acme.vehiclerouting.bootstrap;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.acme.vehiclerouting.domain.Location;
@@ -56,45 +56,53 @@ class DemoDataBuilderTest {
     @Test
     void capacity_greater_than_zero() {
         DemoDataBuilder builder = correctBuilder().setVehicleCapacity(0);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(builder::build);
         builder.setVehicleCapacity(-1);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(builder::build);
     }
 
     @Test
     void demand_test() {
         DemoDataBuilder builder = correctBuilder().setMinDemand(0);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(builder::build);
         builder.setMinDemand(-1);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(builder::build);
 
         builder = correctBuilder().setMaxDemand(0);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(builder::build);
         builder.setMaxDemand(-1);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(builder::build);
 
         builder = correctBuilder().setMaxDemand(2);
         builder = correctBuilder().setMaxDemand(1);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(builder::build);
     }
 
     @Test
     void map_corner_test() {
-        DemoDataBuilder builder = correctBuilder().setSouthWestCorner(new Location(0L, 2, 1));
-        builder.setNorthEastCorner(new Location(0L, 1, 2));
-        assertThrows(IllegalStateException.class, builder::build);
+        DemoDataBuilder builder = correctBuilder()
+                .setSouthWestCorner(new Location(0L, 2, 1))
+                .setNorthEastCorner(new Location(0L, 1, 2));
+        assertThatIllegalStateException().isThrownBy(builder::build)
+                .withMessageMatching(".*northEast.*Latitude.*must be greater than southWest.*Latitude.*");
 
-        builder = correctBuilder().setSouthWestCorner(new Location(0L, 1, 1));
-        builder.setNorthEastCorner(new Location(0L, 1, 2));
-        assertThrows(IllegalStateException.class, builder::build);
+        builder = correctBuilder()
+                .setSouthWestCorner(new Location(0L, 1, 1))
+                .setNorthEastCorner(new Location(0L, 1, 2));
+        assertThatIllegalStateException().isThrownBy(builder::build)
+                .withMessageMatching(".*northEast.*Latitude.*must be greater than southWest.*Latitude.*");
 
-        builder = correctBuilder().setSouthWestCorner(new Location(0L, 1, 1));
-        builder.setNorthEastCorner(new Location(0L, 2, 1));
-        assertThrows(IllegalStateException.class, builder::build);
+        builder = correctBuilder()
+                .setSouthWestCorner(new Location(0L, 1, 1))
+                .setNorthEastCorner(new Location(0L, 2, 1));
+        assertThatIllegalStateException().isThrownBy(builder::build)
+                .withMessageMatching(".*northEast.*Longitude.*must be greater than southWest.*Longitude.*");
 
-        builder = correctBuilder().setSouthWestCorner(new Location(0L, 1, 2));
-        builder.setNorthEastCorner(new Location(0L, 2, 1));
-        assertThrows(IllegalStateException.class, builder::build);
+        builder = correctBuilder()
+                .setSouthWestCorner(new Location(0L, 1, 2))
+                .setNorthEastCorner(new Location(0L, 2, 1));
+        assertThatIllegalStateException().isThrownBy(builder::build)
+                .withMessageMatching(".*northEast.*Longitude.*must be greater than southWest.*Longitude.*");
     }
 
     static DemoDataBuilder correctBuilder() {

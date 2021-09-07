@@ -123,12 +123,12 @@ public class DemoDataBuilder {
         }
 
         if (northEastCorner.getLatitude() <= southWestCorner.getLatitude()) {
-            throw new IllegalStateException("southWestCorner.getLatitude (" + southWestCorner.getLatitude()
+            throw new IllegalStateException("northEastCorner.getLatitude (" + northEastCorner.getLatitude()
                     + ") must be greater than southWestCorner.getLatitude(" + southWestCorner.getLatitude() + ").");
         }
 
         if (northEastCorner.getLongitude() <= southWestCorner.getLongitude()) {
-            throw new IllegalStateException("southWestCorner.getLongitude (" + southWestCorner.getLongitude()
+            throw new IllegalStateException("northEastCorner.getLongitude (" + northEastCorner.getLongitude()
                     + ") must be greater than southWestCorner.getLongitude(" + southWestCorner.getLongitude() + ").");
         }
 
