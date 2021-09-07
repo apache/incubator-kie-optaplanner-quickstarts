@@ -16,10 +16,10 @@ on:
       - '.ci/**'
 
 jobs:
-  concurrency:
-    group: pull_request-${{ github.head_ref }}
-    cancel-in-progress: true
   build-chain:
+    concurrency:
+      group: pull_request-${{ github.head_ref }}
+      cancel-in-progress: true
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -36,7 +36,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           docker rmi $(docker image ls -aq)
-          df -h    
+          df -h
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
