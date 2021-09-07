@@ -111,13 +111,11 @@ public class Customer implements Standstill {
      * @return a positive number, the distance multiplied by 1000 to avoid floating
      *         point arithmetic rounding errors
      */
+    @JsonIgnore
     public long getDistanceFromPreviousStandstill() {
         if (previousStandstill == null) {
-            // throw new IllegalStateException("This method must not be called when the
-            // previousStandstill ("
-            // + previousStandstill + ") is not initialized yet.");
-
-            return Long.MAX_VALUE;
+            throw new IllegalStateException("This method must not be called when the previousStandstill ("
+                    + previousStandstill + ") is not initialized yet.");
         }
         return previousStandstill.getLocation().getDistanceTo(location);
     }
