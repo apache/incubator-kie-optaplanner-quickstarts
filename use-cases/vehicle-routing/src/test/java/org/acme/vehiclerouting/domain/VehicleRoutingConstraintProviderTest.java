@@ -71,7 +71,7 @@ class VehicleRoutingConstraintProviderTest {
     }
 
     @Test
-    void distanceToPreviousStandstill() {
+    void distanceFromPreviousStandstill() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -82,7 +82,7 @@ class VehicleRoutingConstraintProviderTest {
         customer2.setVehicle(vehicleA);
         customer1.setNextCustomer(customer2);
 
-        constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::distanceToPreviousStandstill)
+        constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::distanceFromPreviousStandstill)
                 .given(vehicleA, customer1, customer2)
                 .penalizesBy((4 + 5) * EuclideanDistanceCalculator.METERS_PER_DEGREE);
     }

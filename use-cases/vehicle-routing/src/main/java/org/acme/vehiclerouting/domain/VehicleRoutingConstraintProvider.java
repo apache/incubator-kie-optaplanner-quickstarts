@@ -29,7 +29,7 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     public Constraint[] defineConstraints(ConstraintFactory factory) {
         return new Constraint[] {
                 vehicleCapacity(factory),
-                distanceToPreviousStandstill(factory),
+                distanceFromPreviousStandstill(factory),
                 distanceFromLastCustomerToDepot(factory) };
     }
 
@@ -51,10 +51,10 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     // Soft constraints
     // ************************************************************************
 
-    protected Constraint distanceToPreviousStandstill(ConstraintFactory factory) {
+    protected Constraint distanceFromPreviousStandstill(ConstraintFactory factory) {
         return factory.from(Customer.class)
                 .penalizeLong(
-                        "distanceToPreviousStandstill",
+                        "distanceFromPreviousStandstill",
                         HardSoftLongScore.ONE_SOFT,
                         Customer::getDistanceFromPreviousStandstill);
     }
