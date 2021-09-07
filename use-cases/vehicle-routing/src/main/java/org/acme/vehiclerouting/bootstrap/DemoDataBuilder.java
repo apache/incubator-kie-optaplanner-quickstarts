@@ -133,7 +133,6 @@ public class DemoDataBuilder {
         }
 
         String name = "demo";
-        String distanceUnitOfMeasurement = "km";
 
         Random random = new Random(0);
         PrimitiveIterator.OfDouble latitudes = random
@@ -178,7 +177,7 @@ public class DemoDataBuilder {
 
         distanceCalculator.initDistanceMaps(locationList);
 
-        return new VehicleRoutingSolution(name, distanceUnitOfMeasurement, locationList,
+        return new VehicleRoutingSolution(name, locationList,
                 depotList, vehicleList, customerList, southWestCorner, northEastCorner);
     }
 }

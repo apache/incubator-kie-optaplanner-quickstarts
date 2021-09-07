@@ -31,7 +31,6 @@ import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 public class VehicleRoutingSolution {
 
     private String name;
-    private String distanceUnitOfMeasurement;
 
     @ProblemFactCollectionProperty
     private List<Location> locationList;
@@ -56,11 +55,10 @@ public class VehicleRoutingSolution {
     public VehicleRoutingSolution() {
     }
 
-    public VehicleRoutingSolution(String name, String distanceUnitOfMeasurement,
+    public VehicleRoutingSolution(String name,
             List<Location> locationList, List<Depot> depotList, List<Vehicle> vehicleList, List<Customer> customerList,
             Location southWestCorner, Location northEastCorner) {
         this.name = name;
-        this.distanceUnitOfMeasurement = distanceUnitOfMeasurement;
         this.locationList = locationList;
         this.depotList = depotList;
         this.vehicleList = vehicleList;
@@ -86,14 +84,6 @@ public class VehicleRoutingSolution {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDistanceUnitOfMeasurement() {
-        return distanceUnitOfMeasurement;
-    }
-
-    public void setDistanceUnitOfMeasurement(String distanceUnitOfMeasurement) {
-        this.distanceUnitOfMeasurement = distanceUnitOfMeasurement;
     }
 
     public List<Location> getLocationList() {
