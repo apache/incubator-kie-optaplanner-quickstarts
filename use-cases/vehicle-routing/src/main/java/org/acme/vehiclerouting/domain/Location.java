@@ -48,10 +48,21 @@ public class Location {
         return longitude;
     }
 
+    /**
+     * Set the distance map. Distances are in meters.
+     *
+     * @param distanceMap a map containing distances from here to other locations
+     */
     public void setDistanceMap(Map<Long, Long> distanceMap) {
         this.distanceMap = distanceMap;
     }
 
+    /**
+     * Distance to the given location in meters.
+     *
+     * @param location other location
+     * @return distance in meters
+     */
     public long getDistanceTo(Location location) {
         return distanceMap.get(location.id);
     }

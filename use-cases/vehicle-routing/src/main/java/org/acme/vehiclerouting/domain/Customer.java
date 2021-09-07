@@ -108,8 +108,9 @@ public class Customer implements Standstill {
     // ************************************************************************
 
     /**
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
+     * Distance from the previous standstill (a vehicle's depot or a customer).
+     *
+     * @return distance from the previous standstill
      */
     @JsonIgnore
     public long getDistanceFromPreviousStandstill() {
@@ -121,8 +122,9 @@ public class Customer implements Standstill {
     }
 
     /**
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
+     * Distance to the depot where the vehicle visiting this customer started.
+     *
+     * @return distance to the depot
      */
     @JsonIgnore
     public long getDistanceToDepot() {

@@ -24,6 +24,13 @@ import org.acme.vehiclerouting.domain.Location;
 
 public interface DistanceCalculator {
 
+    /**
+     * Calculate the distance between {@code from} and {@code to} in meters.
+     *
+     * @param from starting location
+     * @param to   target location
+     * @return distance in meters
+     */
     long calculateDistance(Location from, Location to);
 
     /**
@@ -46,6 +53,11 @@ public interface DistanceCalculator {
         ));
     }
 
+    /**
+     * Calculate distance matrix for the given list of locations and assign distance maps accordingly.
+     *
+     * @param locationList
+     */
     default void initDistanceMaps(Collection<Location> locationList) {
         Map<Long, Map<Long, Long>> distanceMatrix = calculateBulkDistance(locationList, locationList);
         locationList.forEach(location -> location.setDistanceMap(distanceMatrix.get(location.getId())));
