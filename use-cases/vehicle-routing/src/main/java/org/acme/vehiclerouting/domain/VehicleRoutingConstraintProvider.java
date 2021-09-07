@@ -61,10 +61,10 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
 
     protected Constraint distanceFromLastCustomerToDepot(ConstraintFactory factory) {
         return factory.from(Customer.class)
-                .filter(customer -> customer.getNextCustomer() == null)
+                .filter(Customer::isLast)
                 .penalizeLong(
                         "distanceFromLastCustomerToDepot",
                         HardSoftLongScore.ONE_SOFT,
-                        customer -> customer.getDistanceToDepot());
+                        Customer::getDistanceToDepot);
     }
 }

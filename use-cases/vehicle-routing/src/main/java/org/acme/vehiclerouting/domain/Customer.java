@@ -131,6 +131,15 @@ public class Customer implements Standstill {
         return location.getDistanceTo(vehicle.getLocation());
     }
 
+    /**
+     * Whether this customer is the last in a chain.
+     *
+     * @return true, if this customer has no next customer
+     */
+    public boolean isLast() {
+        return nextCustomer == null;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
