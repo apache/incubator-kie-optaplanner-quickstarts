@@ -29,7 +29,7 @@ public class EuclideanDistanceCalculator implements DistanceCalculator {
 
     @Override
     public long calculateDistance(Location from, Location to) {
-        if (from == to) {
+        if (from.equals(to)) {
             return 0L;
         }
         double latitudeDiff = to.getLatitude() - from.getLatitude();

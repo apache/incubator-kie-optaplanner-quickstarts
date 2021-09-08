@@ -29,12 +29,11 @@ public class EuclideanDistanceCalculator implements DistanceCalculator {
 
     @Override
     public long calculateDistance(Location from, Location to) {
-        if (from == to) {
+        if (from.equals(to)) {
             return 0L;
         }
         double latitudeDiff = to.latitude - from.latitude;
         double longitudeDiff = to.longitude - from.longitude;
         return (long) ceil(sqrt(latitudeDiff * latitudeDiff + longitudeDiff * longitudeDiff) * METERS_PER_DEGREE);
     }
-
 }
