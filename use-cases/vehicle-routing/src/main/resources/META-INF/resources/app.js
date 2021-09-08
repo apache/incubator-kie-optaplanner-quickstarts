@@ -193,22 +193,25 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
     map.fitBounds(solution.bounds);
   }
   // Vehicles
+  $('[data-toggle="tooltip-load"]').tooltip('dispose');
   vehiclesTable.children().remove();
   solution.vehicleList.forEach((vehicle) => {
     const { id, capacity, totalDemand, totalDistanceMeters } = vehicle;
     const percentage = totalDemand / capacity * 100;
     const color = colorByVehicle(vehicle);
     const colorIfUsed = color;
-    vehiclesTable.append(`<tr class="table-active">
+    vehiclesTable.append(`<tr>
       <td><i class="fas fa-crosshairs" id="crosshairs-${id}"
       style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
       </i></td><td>Vehicle ${id}</td>
-      <td><div class="progress">
+      <td><div class="progress" data-toggle="tooltip-load" data-placement="left" data-html="true"
+        title="Cargo: ${totalDemand}<br/>Capacity: ${capacity}">
       <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${totalDemand}/${capacity}</div>
       <td>${formatDistance(totalDistanceMeters)}</td>
       </div></td>
       </tr>`);
   });
+  $('[data-toggle="tooltip-load"]').tooltip();
   // Depots
   depotsTable.children().remove();
   solution.depotList.forEach((depot) => {
@@ -218,7 +221,7 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
     const marker = getDepotMarker(depot);
     marker.setIcon(icon);
     marker.setPopupContent(depotPopupContent(depot, color));
-    depotsTable.append(`<tr class="table-active">
+    depotsTable.append(`<tr>
       <td><i class="fas fa-crosshairs" id="crosshairs-${id}"
       style="background-color: ${color}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
       </i></td><td>Depot ${id}</td>
@@ -257,3 +260,4 @@ solveButton.click(solve);
 stopSolvingButton.click(stopSolving);
 
 updateSolvingStatus();
+$('[data-toggle="tooltip"]').tooltip();
