@@ -30,7 +30,7 @@ class EuclideanDistanceCalculatorTest {
         Location b = new Location(id++, 0.0, 4.0);
         List<Location> locations = Arrays.asList(a, b);
         EuclideanDistanceCalculator distanceCalculator = new EuclideanDistanceCalculator();
-        Map<Long, Map<Long, Long>> distanceMatrix = distanceCalculator.calculateBulkDistance(locations, locations);
-        assertThat(distanceMatrix.get(a.getId()).get(b.getId())).isEqualTo(distanceCalculator.calculateDistance(a, b));
+        Map<Location, Map<Location, Long>> distanceMatrix = distanceCalculator.calculateBulkDistance(locations, locations);
+        assertThat(distanceMatrix.get(a).get(b)).isEqualTo(distanceCalculator.calculateDistance(a, b));
     }
 }

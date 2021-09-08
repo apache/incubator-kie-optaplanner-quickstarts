@@ -28,7 +28,7 @@ public class Location {
     private final long id;
     private final double latitude;
     private final double longitude;
-    private Map<Long, Long> distanceMap;
+    private Map<Location, Long> distanceMap;
 
     public Location(long id, double latitude, double longitude) {
         this.id = id;
@@ -53,7 +53,7 @@ public class Location {
      *
      * @param distanceMap a map containing distances from here to other locations
      */
-    public void setDistanceMap(Map<Long, Long> distanceMap) {
+    public void setDistanceMap(Map<Location, Long> distanceMap) {
         this.distanceMap = distanceMap;
     }
 
@@ -64,7 +64,7 @@ public class Location {
      * @return distance in meters
      */
     public long getDistanceTo(Location location) {
-        return distanceMap.get(location.id);
+        return distanceMap.get(location);
     }
 
     // ************************************************************************

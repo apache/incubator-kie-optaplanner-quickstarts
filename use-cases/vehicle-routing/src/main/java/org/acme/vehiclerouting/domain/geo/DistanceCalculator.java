@@ -18,6 +18,7 @@ package org.acme.vehiclerouting.domain.geo;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.acme.vehiclerouting.domain.Location;
@@ -41,13 +42,13 @@ public interface DistanceCalculator {
      * @param toLocations   never null
      * @return never null
      */
-    default Map<Long, Map<Long, Long>> calculateBulkDistance(
+    default Map<Location, Map<Location, Long>> calculateBulkDistance(
             Collection<Location> fromLocations,
             Collection<Location> toLocations) {
         return fromLocations.stream().collect(Collectors.toMap(
-                Location::getId,
+                Function.identity(),
                 from -> toLocations.stream().collect(Collectors.toMap(
-                        Location::getId,
+                        Function.identity(),
                         to -> calculateDistance(from, to)
                 ))
         ));
@@ -59,7 +60,7 @@ public interface DistanceCalculator {
      * @param locationList
      */
     default void initDistanceMaps(Collection<Location> locationList) {
-        Map<Long, Map<Long, Long>> distanceMatrix = calculateBulkDistance(locationList, locationList);
-        locationList.forEach(location -> location.setDistanceMap(distanceMatrix.get(location.getId())));
+        Map<Location, Map<Location, Long>> distanceMatrix = calculateBulkDistance(locationList, locationList);
+        locationList.forEach(location -> location.setDistanceMap(distanceMatrix.get(location)));
     }
 }
