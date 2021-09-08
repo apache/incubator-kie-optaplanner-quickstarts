@@ -200,15 +200,21 @@ const showProblem = ({ solution, scoreExplanation, isSolving }) => {
     const percentage = totalDemand / capacity * 100;
     const color = colorByVehicle(vehicle);
     const colorIfUsed = color;
-    vehiclesTable.append(`<tr>
-      <td><i class="fas fa-crosshairs" id="crosshairs-${id}"
-      style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
-      </i></td><td>Vehicle ${id}</td>
-      <td><div class="progress" data-toggle="tooltip-load" data-placement="left" data-html="true"
-        title="Cargo: ${totalDemand}<br/>Capacity: ${capacity}">
-      <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${totalDemand}/${capacity}</div>
-      <td>${formatDistance(totalDistanceMeters)}</td>
-      </div></td>
+    vehiclesTable.append(`
+      <tr>
+        <td>
+          <i class="fas fa-crosshairs" id="crosshairs-${id}"
+            style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
+          </i>
+        </td>
+        <td>Vehicle ${id}</td>
+        <td>
+          <div class="progress" data-toggle="tooltip-load" data-placement="left" data-html="true"
+            title="Cargo: ${totalDemand}<br/>Capacity: ${capacity}">
+            <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${totalDemand}/${capacity}</div>
+          </div>
+        </td>
+        <td>${formatDistance(totalDistanceMeters)}</td>
       </tr>`);
   });
   $('[data-toggle="tooltip-load"]').tooltip();
