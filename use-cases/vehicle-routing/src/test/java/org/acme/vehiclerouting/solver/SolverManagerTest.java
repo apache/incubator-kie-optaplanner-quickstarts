@@ -17,6 +17,7 @@
 package org.acme.vehiclerouting.solver;
 
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -43,6 +44,7 @@ class SolverManagerTest {
     }
 
     static void printSolution(VehicleRoutingSolution solution) {
-        solution.getVehicleList().forEach(vehicle -> System.out.println(vehicle.toString()));
+        solution.getVehicleList().forEach(vehicle -> System.out.printf("%s: %s%n", vehicle,
+                vehicle.getRoute().stream().map(Location::getId).collect(Collectors.toList())));
     }
 }
