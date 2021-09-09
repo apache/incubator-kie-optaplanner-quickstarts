@@ -68,6 +68,11 @@
       <artifactId>optaplanner-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- UI -->
     <dependency>
@@ -79,6 +84,11 @@
       <artifactId>bootstrap</artifactId>
       <version>4.5.3</version>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>popper.js</artifactId>
+      <version>1.16.0</version>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>

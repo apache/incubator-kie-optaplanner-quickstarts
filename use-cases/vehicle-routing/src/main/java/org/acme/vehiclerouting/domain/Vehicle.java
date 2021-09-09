@@ -16,23 +16,21 @@
 
 package org.acme.vehiclerouting.domain;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import org.acme.vehiclerouting.domain.location.Location;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({ "nextCustomer" })
 public class Vehicle implements Standstill {
 
-    protected Long id;
-    protected int capacity;
-    protected Depot depot;
+    private long id;
+    private int capacity;
+    private Depot depot;
 
-    // Shadow variables
-    protected Customer nextCustomer;
+    // Shadow variable
+    private Customer nextCustomer;
 
     public Vehicle() {
     }
@@ -43,11 +41,11 @@ public class Vehicle implements Standstill {
         this.depot = depot;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -77,36 +75,26 @@ public class Vehicle implements Standstill {
         this.nextCustomer = nextCustomer;
     }
 
-    // ************************************************************************
-    // Complex methods
-    // ************************************************************************
-
-    @Override
-    @JsonBackReference
-    public Vehicle getVehicle() {
-        return this;
-    }
-
     @Override
     public Location getLocation() {
         return depot.getLocation();
     }
 
-    /**
-     * @param standstill never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
-     */
-    public long getDistanceTo(Standstill standstill) {
-        return depot.getDistanceTo(standstill);
-    }
+    // ************************************************************************
+    // Complex methods
+    // ************************************************************************
 
     /**
      * @return route of the vehicle
      */
     public List<Location> getRoute() {
+        if (getNextCustomer() == null) {
+            return Collections.emptyList();
+        }
 
         List<Location> route = new ArrayList<Location>();
+
+        route.add(depot.getLocation());
 
         // add list of customer location
         Customer customer = getNextCustomer();
@@ -115,42 +103,41 @@ public class Vehicle implements Standstill {
             customer = customer.getNextCustomer();
         }
 
+        route.add(depot.getLocation());
+
         return route;
     }
 
-    public Long getTotalDistance() {
+    public int getTotalDemand() {
+        int totalDemand = 0;
+        Customer customer = getNextCustomer();
+        while (customer != null) {
+            totalDemand += customer.getDemand();
+            customer = customer.getNextCustomer();
+        }
+        return totalDemand;
+    }
 
-        Long totalDistance = getDistanceTo(this);
-        // add list of ride location
-        Customer ride = getNextCustomer();
-        Customer lastRide = getNextCustomer();
-        while (ride != null) {
-            totalDistance += ride.getDistanceFromPreviousStandstill();
-            lastRide = ride;
-            ride = ride.getNextCustomer();
+    public long getTotalDistanceMeters() {
+        long totalDistance = 0L;
+        Customer customer = getNextCustomer();
+        Customer lastCustomer = null;
+        while (customer != null) {
+            totalDistance += customer.getDistanceFromPreviousStandstill();
+            lastCustomer = customer;
+            customer = customer.getNextCustomer();
         }
 
-        if (lastRide != null) {
-            totalDistance += lastRide.getDistanceTo(this);
+        if (lastCustomer != null) {
+            totalDistance += lastCustomer.getDistanceToDepot();
         }
         return totalDistance;
     }
 
-    public String getTotalDistanceKm() {
-
-        long totalDistance = getTotalDistance();
-        long km = totalDistance / 10L;
-        long meter = totalDistance % 10L;
-        return km + "km " + meter + "m";
-    }
-
     @Override
     public String toString() {
-        Location location = getLocation();
-        if (location.getName() == null) {
-            return super.toString();
-        }
-        return location.getName() + "/" + super.toString();
+        return "Vehicle{" +
+                "id=" + id +
+                '}';
     }
-
 }

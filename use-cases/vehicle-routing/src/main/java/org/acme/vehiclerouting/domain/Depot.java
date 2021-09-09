@@ -16,56 +16,21 @@
 
 package org.acme.vehiclerouting.domain;
 
-import org.acme.vehiclerouting.domain.location.Location;
-
 public class Depot {
 
-    protected Long id;
-    protected Location location;
-
-    public Depot() {
-    }
+    private final long id;
+    private final Location location;
 
     public Depot(long id, Location location) {
         this.id = id;
         this.location = location;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public Location getLocation() {
         return location;
     }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    // ************************************************************************
-    // Complex methods
-    // ************************************************************************
-
-    /**
-     * @param standstill never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
-     */
-    public long getDistanceTo(Standstill standstill) {
-        return location.getDistanceTo(standstill.getLocation());
-    }
-
-    @Override
-    public String toString() {
-        if (location.getName() == null) {
-            return super.toString();
-        }
-        return location.getName();
-    }
-
 }

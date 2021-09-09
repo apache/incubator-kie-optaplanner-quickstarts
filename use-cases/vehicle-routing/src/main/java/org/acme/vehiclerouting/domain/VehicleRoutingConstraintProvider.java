@@ -18,7 +18,6 @@ package org.acme.vehiclerouting.domain;
 
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 
-import org.acme.vehiclerouting.domain.timewindowed.TimeWindowedCustomer;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -26,47 +25,46 @@ import org.optaplanner.core.api.score.stream.ConstraintProvider;
 
 public class VehicleRoutingConstraintProvider implements ConstraintProvider {
 
-        @Override
-        public Constraint[] defineConstraints(ConstraintFactory factory) {
-                return new Constraint[] { vehicleCapacity(factory), distanceToPreviousStandstill(factory),
-                                distanceFromLastCustomerToDepot(factory), arrivalAfterDueTime(factory) };
-        }
+    @Override
+    public Constraint[] defineConstraints(ConstraintFactory factory) {
+        return new Constraint[] {
+                vehicleCapacity(factory),
+                distanceFromPreviousStandstill(factory),
+                distanceFromLastCustomerToDepot(factory) };
+    }
 
-        // ************************************************************************
-        // Hard constraints
-        // ************************************************************************
+    // ************************************************************************
+    // Hard constraints
+    // ************************************************************************
 
-        protected Constraint vehicleCapacity(ConstraintFactory factory) {
-                return factory.from(Customer.class).groupBy(Customer::getVehicle, sum(Customer::getDemand))
-                                .filter((vehicle, demand) -> demand > vehicle.getCapacity())
-                                .penalizeLong("vehicleCapacity", HardSoftLongScore.ONE_HARD,
-                                                (vehicle, demand) -> demand - vehicle.getCapacity());
-        }
+    protected Constraint vehicleCapacity(ConstraintFactory factory) {
+        return factory.from(Customer.class)
+                .groupBy(Customer::getVehicle, sum(Customer::getDemand))
+                .filter((vehicle, demand) -> demand > vehicle.getCapacity())
+                .penalizeLong(
+                        "vehicleCapacity",
+                        HardSoftLongScore.ONE_HARD,
+                        (vehicle, demand) -> demand - vehicle.getCapacity());
+    }
 
-        // ************************************************************************
-        // Soft constraints
-        // ************************************************************************
+    // ************************************************************************
+    // Soft constraints
+    // ************************************************************************
 
-        protected Constraint distanceToPreviousStandstill(ConstraintFactory factory) {
-                return factory.from(Customer.class).penalizeLong("distanceToPreviousStandstill",
-                                HardSoftLongScore.ONE_SOFT, Customer::getDistanceFromPreviousStandstill);
-        }
+    protected Constraint distanceFromPreviousStandstill(ConstraintFactory factory) {
+        return factory.from(Customer.class)
+                .penalizeLong(
+                        "distanceFromPreviousStandstill",
+                        HardSoftLongScore.ONE_SOFT,
+                        Customer::getDistanceFromPreviousStandstill);
+    }
 
-        protected Constraint distanceFromLastCustomerToDepot(ConstraintFactory factory) {
-                return factory.from(Customer.class).filter(customer -> customer.getNextCustomer() == null).penalizeLong(
-                                "distanceFromLastCustomerToDepot", HardSoftLongScore.ONE_SOFT,
-                                customer -> customer.getDistanceTo(customer.getVehicle()));
-        }
-
-        // ************************************************************************
-        // TimeWindowed: additional hard constraints
-        // ************************************************************************
-
-        protected Constraint arrivalAfterDueTime(ConstraintFactory factory) {
-                return factory.from(TimeWindowedCustomer.class)
-                                .filter(customer -> customer.getArrivalTime() > customer.getDueTime())
-                                .penalizeLong("arrivalAfterDueTime", HardSoftLongScore.ONE_HARD,
-                                                customer -> customer.getArrivalTime() - customer.getDueTime());
-        }
-
+    protected Constraint distanceFromLastCustomerToDepot(ConstraintFactory factory) {
+        return factory.from(Customer.class)
+                .filter(Customer::isLast)
+                .penalizeLong(
+                        "distanceFromLastCustomerToDepot",
+                        HardSoftLongScore.ONE_SOFT,
+                        Customer::getDistanceToDepot);
+    }
 }

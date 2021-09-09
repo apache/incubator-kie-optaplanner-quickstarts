@@ -16,27 +16,32 @@
 
 package org.acme.vehiclerouting.domain;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.Location;
-import org.acme.vehiclerouting.domain.timewindowed.TimeWindowedCustomer;
-import org.acme.vehiclerouting.domain.timewindowed.TimeWindowedDepot;
-import org.junit.jupiter.api.Test;
-import org.optaplanner.test.api.score.stream.ConstraintVerifier;
+import java.util.Arrays;
 
 import javax.inject.Inject;
+
+import io.quarkus.test.junit.QuarkusTest;
+import org.acme.vehiclerouting.domain.geo.EuclideanDistanceCalculator;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
 @QuarkusTest
 class VehicleRoutingConstraintProviderTest {
 
     @Inject
     ConstraintVerifier<VehicleRoutingConstraintProvider, VehicleRoutingSolution> constraintVerifier;
-    private final Location location1 = new AirLocation(1L, 0.0, 0.0);
-    private final Location location2 = new AirLocation(2L, 0.0, 4.0);
-    private final Location location3 = new AirLocation(3L, 3.0, 0.0);
+    private static final Location location1 = new Location(1L, 0.0, 0.0);
+    private static final Location location2 = new Location(2L, 0.0, 4.0);
+    private static final Location location3 = new Location(3L, 3.0, 0.0);
+
+    @BeforeAll
+    static void initDistanceMaps() {
+        new EuclideanDistanceCalculator().initDistanceMaps(Arrays.asList(location1, location2, location3));
+    }
 
     @Test
-    public void vehicleCapacityUnpenalized() {
+    void vehicleCapacityUnpenalized() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -49,7 +54,7 @@ class VehicleRoutingConstraintProviderTest {
     }
 
     @Test
-    public void vehicleCapacityPenalized() {
+    void vehicleCapacityPenalized() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -66,7 +71,7 @@ class VehicleRoutingConstraintProviderTest {
     }
 
     @Test
-    public void distanceToPreviousStandstill() {
+    void distanceFromPreviousStandstill() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -77,13 +82,13 @@ class VehicleRoutingConstraintProviderTest {
         customer2.setVehicle(vehicleA);
         customer1.setNextCustomer(customer2);
 
-        constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::distanceToPreviousStandstill)
+        constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::distanceFromPreviousStandstill)
                 .given(vehicleA, customer1, customer2)
-                .penalizesBy(9000L);
+                .penalizesBy((4 + 5) * EuclideanDistanceCalculator.METERS_PER_DEGREE);
     }
 
     @Test
-    public void distanceFromLastCustomerToDepot() {
+    void distanceFromLastCustomerToDepot() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
         customer1.setPreviousStandstill(vehicleA);
@@ -96,26 +101,6 @@ class VehicleRoutingConstraintProviderTest {
 
         constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::distanceFromLastCustomerToDepot)
                 .given(vehicleA, customer1, customer2)
-                .penalizesBy(3000L);
+                .penalizesBy(3 * EuclideanDistanceCalculator.METERS_PER_DEGREE);
     }
-
-    @Test
-    public void arrivalAfterDueTime() {
-        Vehicle vehicleA = new Vehicle(1L, 100, new TimeWindowedDepot(1L, location1, 8_00_00L, 18_00_00L));
-        TimeWindowedCustomer customer1 = new TimeWindowedCustomer(2L, location2, 1, 8_00_00L, 18_00_00L, 1_00_00L);
-        customer1.setPreviousStandstill(vehicleA);
-        customer1.setVehicle(vehicleA);
-        vehicleA.setNextCustomer(customer1);
-        customer1.setArrivalTime(8_00_00L + 4000L);
-        TimeWindowedCustomer customer2 = new TimeWindowedCustomer(3L, location3, 40, 8_00_00L, 9_00_00L, 1_00_00L);
-        customer2.setPreviousStandstill(customer1);
-        customer2.setVehicle(vehicleA);
-        customer1.setNextCustomer(customer2);
-        customer2.setArrivalTime(8_00_00L + 4000L + 1_00_00L + 5000L);
-
-        constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::arrivalAfterDueTime)
-                .given(vehicleA, customer1, customer2)
-                .penalizesBy(90_00L);
-    }
-
 }

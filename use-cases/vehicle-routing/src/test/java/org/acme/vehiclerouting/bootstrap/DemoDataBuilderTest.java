@@ -16,21 +16,19 @@
 
 package org.acme.vehiclerouting.bootstrap;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.acme.vehiclerouting.domain.Location;
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
-import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.Location;
 import org.junit.jupiter.api.Test;
 
 class DemoDataBuilderTest {
 
     @Test
     void should_build_data() {
-
         Integer customerCount = 77;
         Integer vehicleCount = 6;
         Integer depotCount = 2;
@@ -39,8 +37,8 @@ class DemoDataBuilderTest {
 
         VehicleRoutingSolution problem = DemoDataBuilder.builder().setMinDemand(minDemand).setMaxDemand(maxDemand)
                 .setVehicleCapacity(15).setCustomerCount(customerCount).setVehicleCount(vehicleCount)
-                .setDepotCount(depotCount).setSouthWestCorner(new AirLocation(0L, 43.751466, 11.177210))
-                .setNorthEastCorner(new AirLocation(0L, 43.809291, 11.290195)).build();
+                .setDepotCount(depotCount).setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
+                .setNorthEastCorner(new Location(0L, 43.809291, 11.290195)).build();
 
         problem.getCustomerList().forEach(
                 customer -> assertTrue((minDemand <= customer.getDemand()) && (maxDemand >= customer.getDemand())));
@@ -57,53 +55,47 @@ class DemoDataBuilderTest {
 
     @Test
     void capacity_greater_than_zero() {
-        DemoDataBuilder builder = correctBuilder().setVehicleCapacity(0);
-        assertThrows(IllegalStateException.class, builder::build);
-        builder.setVehicleCapacity(-1);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder().setVehicleCapacity(0)::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder().setVehicleCapacity(-1)::build);
     }
 
     @Test
     void demand_test() {
-        DemoDataBuilder builder = correctBuilder().setMinDemand(0);
-        assertThrows(IllegalStateException.class, builder::build);
-        builder.setMinDemand(-1);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder().setMinDemand(0)::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder().setMinDemand(-1)::build);
 
-        builder = correctBuilder().setMaxDemand(0);
-        assertThrows(IllegalStateException.class, builder::build);
-        builder.setMaxDemand(-1);
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder().setMaxDemand(0)::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder().setMaxDemand(-1)::build);
 
-        builder = correctBuilder().setMaxDemand(2);
-        builder = correctBuilder().setMaxDemand(1);
-        assertThrows(IllegalStateException.class, builder::build);
-
+        assertThatIllegalStateException().isThrownBy(correctBuilder().setMinDemand(2).setMaxDemand(1)::build);
     }
 
     @Test
     void map_corner_test() {
-        DemoDataBuilder builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 2, 1));
-        builder.setNorthEastCorner(new AirLocation(0L, 1, 2));
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder()
+                        .setSouthWestCorner(new Location(0L, 2, 1))
+                        .setNorthEastCorner(new Location(0L, 1, 2))::build)
+                .withMessageMatching(".*northEast.*Latitude.*must be greater than southWest.*Latitude.*");
 
-        builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 1, 1));
-        builder.setNorthEastCorner(new AirLocation(0L, 1, 2));
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder()
+                        .setSouthWestCorner(new Location(0L, 1, 1))
+                        .setNorthEastCorner(new Location(0L, 1, 2))::build)
+                .withMessageMatching(".*northEast.*Latitude.*must be greater than southWest.*Latitude.*");
 
-        builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 1, 1));
-        builder.setNorthEastCorner(new AirLocation(0L, 2, 1));
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder()
+                        .setSouthWestCorner(new Location(0L, 1, 1))
+                        .setNorthEastCorner(new Location(0L, 2, 1))::build)
+                .withMessageMatching(".*northEast.*Longitude.*must be greater than southWest.*Longitude.*");
 
-        builder = correctBuilder().setSouthWestCorner(new AirLocation(0L, 1, 2));
-        builder.setNorthEastCorner(new AirLocation(0L, 2, 1));
-        assertThrows(IllegalStateException.class, builder::build);
+        assertThatIllegalStateException().isThrownBy(correctBuilder()
+                        .setSouthWestCorner(new Location(0L, 1, 2))
+                        .setNorthEastCorner(new Location(0L, 2, 1))::build)
+                .withMessageMatching(".*northEast.*Longitude.*must be greater than southWest.*Longitude.*");
     }
 
     static DemoDataBuilder correctBuilder() {
         return DemoDataBuilder.builder().setMinDemand(1).setMaxDemand(2).setVehicleCapacity(15).setCustomerCount(77)
-                .setVehicleCount(6).setDepotCount(2).setSouthWestCorner(new AirLocation(0L, 43.751466, 11.177210))
-                .setNorthEastCorner(new AirLocation(0L, 43.809291, 11.290195));
-
+                .setVehicleCount(6).setDepotCount(2).setSouthWestCorner(new Location(0L, 43.751466, 11.177210))
+                .setNorthEastCorner(new Location(0L, 43.809291, 11.290195));
     }
 }

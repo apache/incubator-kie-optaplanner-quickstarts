@@ -16,7 +16,6 @@
 
 package org.acme.vehiclerouting.domain;
 
-import org.acme.vehiclerouting.domain.location.Location;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.InverseRelationShadowVariable;
 
@@ -31,14 +30,8 @@ public interface Standstill {
     /**
      * @return sometimes null
      */
-    Vehicle getVehicle();
-
-    /**
-     * @return sometimes null
-     */
     @InverseRelationShadowVariable(sourceVariableName = "previousStandstill")
     Customer getNextCustomer();
 
     void setNextCustomer(Customer nextCustomer);
-
 }

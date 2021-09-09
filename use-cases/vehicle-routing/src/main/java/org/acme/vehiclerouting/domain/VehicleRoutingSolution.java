@@ -16,16 +16,10 @@
 
 package org.acme.vehiclerouting.domain;
 
-import java.text.NumberFormat;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-
 import org.acme.vehiclerouting.bootstrap.DemoDataBuilder;
-import org.acme.vehiclerouting.domain.location.AirLocation;
-import org.acme.vehiclerouting.domain.location.DistanceType;
-import org.acme.vehiclerouting.domain.location.Location;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
@@ -36,39 +30,35 @@ import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 @PlanningSolution
 public class VehicleRoutingSolution {
 
-    protected String name;
-    protected DistanceType distanceType;
-    protected String distanceUnitOfMeasurement;
+    private String name;
 
     @ProblemFactCollectionProperty
-    protected List<Location> locationList;
+    private List<Location> locationList;
 
     @ProblemFactCollectionProperty
-    protected List<Depot> depotList;
+    private List<Depot> depotList;
 
     @PlanningEntityCollectionProperty
     @ValueRangeProvider(id = "vehicleRange")
-    protected List<Vehicle> vehicleList;
+    private List<Vehicle> vehicleList;
 
     @PlanningEntityCollectionProperty
     @ValueRangeProvider(id = "customerRange")
-    protected List<Customer> customerList;
+    private List<Customer> customerList;
 
     @PlanningScore
-    protected HardSoftLongScore score;
+    private HardSoftLongScore score;
 
-    protected Location southWestCorner;
-    protected Location northEastCorner;
+    private Location southWestCorner;
+    private Location northEastCorner;
 
     public VehicleRoutingSolution() {
     }
 
-    public VehicleRoutingSolution(String name, DistanceType distanceType, String distanceUnitOfMeasurement,
+    public VehicleRoutingSolution(String name,
             List<Location> locationList, List<Depot> depotList, List<Vehicle> vehicleList, List<Customer> customerList,
             Location southWestCorner, Location northEastCorner) {
         this.name = name;
-        this.distanceType = distanceType;
-        this.distanceUnitOfMeasurement = distanceUnitOfMeasurement;
         this.locationList = locationList;
         this.depotList = depotList;
         this.vehicleList = vehicleList;
@@ -78,11 +68,10 @@ public class VehicleRoutingSolution {
     }
 
     public static VehicleRoutingSolution empty() {
-
         VehicleRoutingSolution problem = DemoDataBuilder.builder().setMinDemand(1).setMaxDemand(2)
                 .setVehicleCapacity(77).setCustomerCount(77).setVehicleCount(7).setDepotCount(1)
-                .setSouthWestCorner(new AirLocation(0L, 51.44, -0.16))
-                .setNorthEastCorner(new AirLocation(0L, 51.56, -0.01)).build();
+                .setSouthWestCorner(new Location(0L, 51.44, -0.16))
+                .setNorthEastCorner(new Location(0L, 51.56, -0.01)).build();
 
         problem.setScore(HardSoftLongScore.ZERO);
 
@@ -95,22 +84,6 @@ public class VehicleRoutingSolution {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public DistanceType getDistanceType() {
-        return distanceType;
-    }
-
-    public void setDistanceType(DistanceType distanceType) {
-        this.distanceType = distanceType;
-    }
-
-    public String getDistanceUnitOfMeasurement() {
-        return distanceUnitOfMeasurement;
-    }
-
-    public void setDistanceUnitOfMeasurement(String distanceUnitOfMeasurement) {
-        this.distanceUnitOfMeasurement = distanceUnitOfMeasurement;
     }
 
     public List<Location> getLocationList() {
@@ -161,45 +134,7 @@ public class VehicleRoutingSolution {
         return Arrays.asList(southWestCorner, northEastCorner);
     }
 
-    public String getDistanceString(NumberFormat numberFormat) {
-        if (score == null) {
-            return null;
-        }
-        long distance = -score.getSoftScore();
-        if (distanceUnitOfMeasurement == null) {
-            return numberFormat.format(((double) distance) / 1000.0);
-        }
-        switch (distanceUnitOfMeasurement) {
-            case "sec": // TODO why are the values 1000 larger?
-                long hours = distance / 3600000L;
-                long minutes = distance % 3600000L / 60000L;
-                long seconds = distance % 60000L / 1000L;
-                long milliseconds = distance % 1000L;
-                return hours + "h " + minutes + "m " + seconds + "s " + milliseconds + "ms";
-            case "km": { // TODO why are the values 1000 larger?
-                long km = distance / 1000L;
-                long meter = distance % 1000L;
-                return km + "km " + meter + "m";
-            }
-            case "meter": {
-                long km = distance / 1000L;
-                long meter = distance % 1000L;
-                return km + "km " + meter + "m";
-            }
-            default:
-                return numberFormat.format(((double) distance) / 1000.0) + " " + distanceUnitOfMeasurement;
-        }
+    public long getDistanceMeters() {
+        return score == null ? 0 : -score.getSoftScore();
     }
-
-    public String getDistanceKm() {
-        if (score == null) {
-            return null;
-        }
-        long distance = -score.getSoftScore();
-        long totalMeter = distance * 100;
-        long km = totalMeter / 1000L;
-        long meter = totalMeter % 1000L;
-        return km + "km " + meter + "m";
-    }
-
 }

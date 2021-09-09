@@ -16,31 +16,32 @@
 
 package org.acme.vehiclerouting.domain;
 
-import org.acme.vehiclerouting.domain.location.Location;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.acme.vehiclerouting.domain.solver.DepotAngleCustomerDifficultyWeightFactory;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.AnchorShadowVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariableGraphType;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 @JsonIgnoreProperties({ "previousStandstill", "nextCustomer" })
 @PlanningEntity(difficultyWeightFactoryClass = DepotAngleCustomerDifficultyWeightFactory.class)
 public class Customer implements Standstill {
 
-    protected Long id;
-    protected Location location;
-    protected int demand;
+    private long id;
+    private Location location;
+    private int demand;
 
-    // Planning variables: changes during planning, between score calculations.
-    @PlanningVariable(valueRangeProviderRefs = { "vehicleRange",
-            "customerRange" }, graphType = PlanningVariableGraphType.CHAINED)
-    protected Standstill previousStandstill;
+    // Planning variable: changes during planning, between score calculations.
+    @PlanningVariable(
+            valueRangeProviderRefs = { "vehicleRange", "customerRange" },
+            graphType = PlanningVariableGraphType.CHAINED)
+    private Standstill previousStandstill;
 
     // Shadow variables
-    protected Customer nextCustomer;
-    protected Vehicle vehicle;
+    private Customer nextCustomer;
+    @AnchorShadowVariable(sourceVariableName = "previousStandstill")
+    private Vehicle vehicle;
 
     public Customer() {
     }
@@ -51,11 +52,11 @@ public class Customer implements Standstill {
         this.demand = demand;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -94,8 +95,6 @@ public class Customer implements Standstill {
         this.nextCustomer = nextCustomer;
     }
 
-    @Override
-    @AnchorShadowVariable(sourceVariableName = "previousStandstill")
     public Vehicle getVehicle() {
         return vehicle;
     }
@@ -109,44 +108,42 @@ public class Customer implements Standstill {
     // ************************************************************************
 
     /**
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
+     * Distance from the previous standstill (a vehicle's depot or a customer).
+     *
+     * @return distance from the previous standstill
      */
+    @JsonIgnore
     public long getDistanceFromPreviousStandstill() {
         if (previousStandstill == null) {
-            // throw new IllegalStateException("This method must not be called when the
-            // previousStandstill ("
-            // + previousStandstill + ") is not initialized yet.");
-
-            return Long.MAX_VALUE;
+            throw new IllegalStateException("This method must not be called when the previousStandstill ("
+                    + previousStandstill + ") is not initialized yet.");
         }
-        return getDistanceFrom(previousStandstill);
+        return previousStandstill.getLocation().getDistanceTo(location);
     }
 
     /**
-     * @param standstill never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
+     * Distance to the depot where the vehicle visiting this customer started.
+     *
+     * @return distance to the depot
      */
-    public long getDistanceFrom(Standstill standstill) {
-        return standstill.getLocation().getDistanceTo(location);
+    @JsonIgnore
+    public long getDistanceToDepot() {
+        return location.getDistanceTo(vehicle.getLocation());
     }
 
     /**
-     * @param standstill never null
-     * @return a positive number, the distance multiplied by 1000 to avoid floating
-     *         point arithmetic rounding errors
+     * Whether this customer is the last in a chain.
+     *
+     * @return true, if this customer has no next customer
      */
-    public long getDistanceTo(Standstill standstill) {
-        return location.getDistanceTo(standstill.getLocation());
+    public boolean isLast() {
+        return nextCustomer == null;
     }
 
     @Override
     public String toString() {
-        if (location.getName() == null) {
-            return super.toString();
-        }
-        return location.getName();
+        return "Customer{" +
+                "id=" + id +
+                '}';
     }
-
 }

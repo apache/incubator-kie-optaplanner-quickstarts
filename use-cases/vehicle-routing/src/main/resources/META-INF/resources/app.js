@@ -21,7 +21,7 @@ let autoRefreshIntervalId = null;
 
 let initialized = false;
 const depotByIdMap = new Map();
-const vehicleByIdMap = new Map();
+const customerByIdMap = new Map();
 
 const solveButton = $('#solveButton');
 const stopSolvingButton = $('#stopSolvingButton');
@@ -49,15 +49,7 @@ const fetchHeaders = {
   },
 };
 
-const createCostFormat = (notation) => new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'USD',
-  maximumFractionDigits: 1,
-  minimumFractionDigits: 1,
-  notation,
-});
-const shortCostFormat = createCostFormat('compact');
-const longCostFormat = createCostFormat('standard');
+const formatDistance = (distanceInMeters) => `${Math.floor(distanceInMeters / 1000)}km ${distanceInMeters % 1000}m`;
 
 const getStatus = () => {
   fetch('/vrp/status', fetchHeaders)
@@ -72,7 +64,7 @@ const getStatus = () => {
 };
 
 const solve = () => {
-  fetch('/vrp/solve', {...fetchHeaders, method: 'POST'})
+  fetch('/vrp/solve', { ...fetchHeaders, method: 'POST' })
     .then((response) => {
       if (!response.ok) {
         return handleErrorResponse('Start solving failed', response);
@@ -88,7 +80,7 @@ const solve = () => {
 };
 
 const stopSolving = () => {
-  fetch('/vrp/stopSolving', {...fetchHeaders, method: 'POST'})
+  fetch('/vrp/stopSolving', { ...fetchHeaders, method: 'POST' })
     .then((response) => {
       if (!response.ok) {
         return handleErrorResponse('Stop solving failed', response);
@@ -127,7 +119,7 @@ const handleClientError = (title, error) => {
 const showError = (message, stackTrace) => {
   const notification = $(`<div class="toast shadow rounded-lg" role="alert" style="min-width: 30rem"/>`)
     .append($(
-`<div class="toast-header bg-danger">
+      `<div class="toast-header bg-danger">
 <strong class="mr-auto text-dark">Error</strong>
 <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">
 <span>&times;</span>
@@ -140,7 +132,7 @@ const showError = (message, stackTrace) => {
       ),
     );
   $('#notificationPanel').append(notification);
-  notification.toast({autohide: false});
+  notification.toast({ autohide: false });
   notification.toast('show');
 };
 
@@ -170,7 +162,10 @@ const depotPopupContent = (depot, color) => `<h5>Depot ${depot.id}</h5>
 </span> ${color}</li>
 </ul>`;
 
-const getDepotMarker = ({id, location}) => {
+const customerPopupContent = (customer) => `<h5>Customer ${customer.id}</h5>
+Demand: ${customer.demand}`;
+
+const getDepotMarker = ({ id, location }) => {
   let marker = depotByIdMap.get(id);
   if (marker) {
     return marker;
@@ -181,88 +176,81 @@ const getDepotMarker = ({id, location}) => {
   return marker;
 };
 
-const getVehicleMarker = ({id, location}) => {
-  let marker = vehicleByIdMap.get(id);
+const getCustomerMarker = ({ id, location }) => {
+  let marker = customerByIdMap.get(id);
   if (marker) {
     return marker;
   }
-  marker = L.marker(location);
-  marker.addTo(vehicleGroup).bindPopup();
-  vehicleByIdMap.set(id, marker);
+  marker = L.circleMarker(location);
+  marker.addTo(customerGroup).bindPopup();
+  customerByIdMap.set(id, marker);
   return marker;
 };
 
-const showProblem = ({solution, scoreExplanation, isSolving}) => {
+const showProblem = ({ solution, scoreExplanation, isSolving }) => {
   if (!initialized) {
     initialized = true;
     map.fitBounds(solution.bounds);
   }
   // Vehicles
+  $('[data-toggle="tooltip-load"]').tooltip('dispose');
   vehiclesTable.children().remove();
   solution.vehicleList.forEach((vehicle) => {
-    const {id,totalDistanceKm} = vehicle;
-    const totalCustomers = solution.customerList.length;
-    const vehicleCustomers = vehicle.route.length;
-    const percentage = vehicle.route.length / solution.customerList.length * 100;
+    const { id, capacity, totalDemand, totalDistanceMeters } = vehicle;
+    const percentage = totalDemand / capacity * 100;
     const color = colorByVehicle(vehicle);
     const colorIfUsed = color;
-    vehiclesTable.append(`<tr class="table-active">
-      <td><i class="fas fa-crosshairs" id="crosshairs-${id}"
-      style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
-      </i></td><td>Vehicle ${id}</td>
-      <td><div class="progress">
-      <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${vehicleCustomers}/${totalCustomers}</div>
-      <td>${totalDistanceKm}</td>
-      </div></td>
+    vehiclesTable.append(`
+      <tr>
+        <td>
+          <i class="fas fa-crosshairs" id="crosshairs-${id}"
+            style="background-color: ${colorIfUsed}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
+          </i>
+        </td>
+        <td>Vehicle ${id}</td>
+        <td>
+          <div class="progress" data-toggle="tooltip-load" data-placement="left" data-html="true"
+            title="Cargo: ${totalDemand}<br/>Capacity: ${capacity}">
+            <div class="progress-bar" role="progressbar" style="width: ${percentage}%">${totalDemand}/${capacity}</div>
+          </div>
+        </td>
+        <td>${formatDistance(totalDistanceMeters)}</td>
       </tr>`);
   });
+  $('[data-toggle="tooltip-load"]').tooltip();
   // Depots
   depotsTable.children().remove();
   solution.depotList.forEach((depot) => {
-    const {id} = depot;
+    const { id } = depot;
     const color = colorByDepot(depot);
     const icon = defaultIcon;
     const marker = getDepotMarker(depot);
     marker.setIcon(icon);
     marker.setPopupContent(depotPopupContent(depot, color));
-    depotsTable.append(`<tr class="table-active">
+    depotsTable.append(`<tr>
       <td><i class="fas fa-crosshairs" id="crosshairs-${id}"
       style="background-color: ${color}; display: inline-block; width: 1rem; height: 1rem; text-align: center">
       </i></td><td>Depot ${id}</td>
       </tr>`);
   });
-  // CustomerList
-  customerGroup.clearLayers();
+  // Customers
   solution.customerList.forEach((customer) => {
-    const color = colorByVehicle(customer.vehicle);
-    L.circleMarker(customer.location, color).addTo(customerGroup);
-    //L.polyline([customer.location, customer.vehicle.location], {color}).addTo(customerGroup);
+    getCustomerMarker(customer).setPopupContent(customerPopupContent(customer));
   });
-
-  //Route
+  // Route
+  routeGroup.clearLayers();
   solution.vehicleList.forEach((vehicle) => {
-    const color = colorByVehicle(vehicle);
-    from = vehicle.depot.location;
-    isRouteValid = false;
-    vehicle.route.forEach((route) => {
-      isRouteValid = TextTrackCueList;
-      to = route;
-      L.polyline([from, to], {color}).addTo(customerGroup);
-      from = to;
-    });
-
-    if (isRouteValid){
-      L.polyline([from, vehicle.depot.location], {color}).addTo(customerGroup);
-    }
+    L.polyline(vehicle.route, { color: colorByVehicle(vehicle) }).addTo(routeGroup);
   });
 
   // Summary
   $('#score').text(solution.score);
-  $('#distance').text(solution.distanceKm);
+  $('#scoreInfo').text(scoreExplanation);
+  $('#distance').text(formatDistance(solution.distanceMeters));
   updateSolvingStatus(isSolving);
 };
 
-const map = L.map('map', {doubleClickZoom: false}).setView([51.505, -0.09], 13);
+const map = L.map('map', { doubleClickZoom: false }).setView([51.505, -0.09], 13);
 map.whenReady(getStatus);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -270,14 +258,12 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
 }).addTo(map);
 
-const customerGroup = L.layerGroup();
-const vehicleGroup = L.layerGroup();
-const depotGroup = L.layerGroup();
-customerGroup.addTo(map);
-vehicleGroup.addTo(map);
-depotGroup.addTo(map);
+const customerGroup = L.layerGroup().addTo(map);
+const depotGroup = L.layerGroup().addTo(map);
+const routeGroup = L.layerGroup().addTo(map);
 
 solveButton.click(solve);
 stopSolvingButton.click(stopSolving);
 
 updateSolvingStatus();
+$('[data-toggle="tooltip"]').tooltip();
