@@ -15,7 +15,7 @@
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>2.2.2.Final</quarkus.platform.version>
 
-    <version.org.optaplanner>8.11.1-SNAPSHOT</version.org.optaplanner>
+    <version.org.optaplanner>8.11.1.Final</version.org.optaplanner>
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
