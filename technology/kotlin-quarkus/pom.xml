@@ -15,7 +15,7 @@
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>2.2.2.Final</quarkus.platform.version>
 
-    <version.org.optaplanner>8.11.1-SNAPSHOT</version.org.optaplanner>
+    <version.org.optaplanner>8.11.1.Final</version.org.optaplanner>
 
     <version.kotlin>1.5.10</version.kotlin>
 
