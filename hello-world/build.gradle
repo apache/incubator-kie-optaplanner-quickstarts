@@ -21,10 +21,11 @@ repositories {
 }
 
 dependencies {
-    implementation "org.optaplanner:optaplanner-core:${optaplannerVersion}"
+    implementation platform ("org.optaplanner:optaplanner-bom:${optaplannerVersion}")
+    implementation "org.optaplanner:optaplanner-core"
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 
-    testImplementation "org.optaplanner:optaplanner-test:${optaplannerVersion}"
+    testImplementation "org.optaplanner:optaplanner-test"
 }
 
 java {
