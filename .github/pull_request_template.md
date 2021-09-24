@@ -26,3 +26,16 @@ changes that span multiple kiegroup repositories and depend on each other. -->
 * https://github.com/kiegroup/optaplanner/pull/899
 * etc.
 -->
+
+<details>
+<summary>
+How to retest this PR or trigger a specific build:
+</summary>
+
+* for a <b>pull request build</b> please add comment: <b>Jenkins retest this</b>
+* for a <b>specific pull request build</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] tests</b>
+* for a <b>Quarkus LTS check</b> please add comment: <b>Jenkins run LTS</b>
+* for a <b>specific Quarkus LTS check</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] LTS</b>
+* for a <b>Native check</b> please add comment: <b>Jenkins run native</b>
+* for a <b>specific Native LTS check</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] native</b>
+</details>
