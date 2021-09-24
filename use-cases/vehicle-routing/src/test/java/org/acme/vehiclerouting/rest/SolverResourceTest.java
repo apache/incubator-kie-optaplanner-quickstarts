@@ -1,12 +1,13 @@
 package org.acme.vehiclerouting.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 
 @QuarkusTest
 public class SolverResourceTest {
@@ -20,26 +21,22 @@ public class SolverResourceTest {
                 .then()
                 .statusCode(204);
 
-        assertTrue(given()
+        await().until(() -> !given()
                 .when()
                 .contentType(ContentType.JSON)
                 .get("/vrp/status")
                 .then()
                 .statusCode(200)
                 .extract().body().jsonPath().getBoolean("isSolving"));
-        given()
-                .when()
-                .contentType(ContentType.JSON)
-                .post("/vrp/stopSolving")
-                .then()
-                .statusCode(204);
 
-        assertFalse(given()
+        String scoreString = given()
                 .when()
                 .contentType(ContentType.JSON)
                 .get("/vrp/status")
                 .then()
                 .statusCode(200)
-                .extract().body().jsonPath().getBoolean("isSolving"));
+                .extract()
+                .jsonPath().get("solution.score");
+        assertTrue(HardSoftScore.parseScore(scoreString).isFeasible());
     }
 }
