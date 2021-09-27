@@ -33,6 +33,7 @@ How to retest this PR or trigger a specific build:
 </summary>
 
 * for a <b>pull request build</b> please add comment: <b>Jenkins retest this</b>
+* for a <b>full downstream build</b> please add the label `run_fdb`
 * for a <b>specific pull request build</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] tests</b>
 * for a <b>Quarkus LTS check</b> please add comment: <b>Jenkins run LTS</b>
 * for a <b>specific Quarkus LTS check</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] LTS</b>
