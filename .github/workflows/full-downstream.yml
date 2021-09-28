@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [labeled]
     branches:
-      - main
+      - development
       - 8.*
     paths-ignore:
       - 'LICENSE*'
