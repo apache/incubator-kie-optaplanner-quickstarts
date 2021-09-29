@@ -18,12 +18,12 @@ on:
 jobs:
   build-chain:
     concurrency:
-      group: pull_request-${{ github.head_ref }}
+      group: pull_request-${{ github.event_name }}-${{ github.head_ref }}-${{ matrix.os }}-${{ matrix.java-version }}
       cancel-in-progress: true
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        java-version: [11]
+        java-version: [11, 17]
       fail-fast: true
     runs-on: ${{ matrix.os }}
     name: Maven Build
@@ -44,7 +44,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.java-version }}-m2
       - name: Build Chain ${{ matrix.java-version }}
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v2.6.5
+        uses: kiegroup/github-action-build-chain@v2.6.8
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/main/.ci/pull-request-config.yaml
         env:
