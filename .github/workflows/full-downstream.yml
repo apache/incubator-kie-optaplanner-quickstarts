@@ -1,5 +1,4 @@
-
-name: [FDB] Build Chain
+name: (FDB) Build Chain
 
 on:
   pull_request:
