@@ -1,4 +1,5 @@
 import org.kie.jenkins.jobdsl.templates.KogitoJobTemplate
+import org.kie.jenkins.jobdsl.KogitoJobUtils
 
 def getDefaultJobParams(String repoName = 'optaplanner-quickstarts') {
     return KogitoJobTemplate.getDefaultJobParams(this, repoName)
@@ -29,6 +30,13 @@ Map getMultijobPRConfig() {
 setupMultijobPrDefaultChecks()
 setupMultijobPrNativeChecks()
 setupMultijobPrLTSChecks()
+
+// Tools
+KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', 'Optaplanner Quickstarts', [
+    properties: [ 'quarkus.platform.version' ],
+], [
+    regex: [ 'id "io.quarkus" version', 'def quarkusVersion =' ]
+])
 
 /////////////////////////////////////////////////////////////////
 // Methods
