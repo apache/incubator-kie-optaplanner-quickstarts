@@ -35,7 +35,7 @@ setupMultijobPrLTSChecks()
 KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', 'Optaplanner Quickstarts', [
     properties: [ 'quarkus.platform.version' ],
 ], [
-    regex: [ 'id \"io.quarkus\" version', 'def quarkusVersion =' ]
+    regex: [ 'id "io.quarkus" version', 'def quarkusVersion =' ]
 ])
 
 /////////////////////////////////////////////////////////////////
