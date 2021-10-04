@@ -21,12 +21,12 @@ repositories {
 }
 
 dependencies {
-    // Alternatively, use "io.quarkus:quarkus-universe-bom" which includes both quarkus-bom and optaplanner-bom.
-    implementation enforcedPlatform("io.quarkus:quarkus-bom:${quarkusVersion}")
-    implementation "org.optaplanner:optaplanner-quarkus:${optaplannerVersion}"
-    implementation "org.optaplanner:optaplanner-quarkus-jackson:${optaplannerVersion}"
-    implementation "org.optaplanner:optaplanner-quarkus-benchmark:${optaplannerVersion}"
-    implementation "org.optaplanner:optaplanner-test:${optaplannerVersion}"
+    implementation enforcedPlatform("org.optaplanner:optaplanner-bom:${optaplannerVersion}")
+    implementation platform("io.quarkus:quarkus-bom:${quarkusVersion}")
+    implementation "org.optaplanner:optaplanner-quarkus"
+    implementation "org.optaplanner:optaplanner-quarkus-jackson"
+    implementation "org.optaplanner:optaplanner-quarkus-benchmark"
+    implementation "org.optaplanner:optaplanner-test"
     implementation "io.quarkus:quarkus-resteasy"
     implementation "io.quarkus:quarkus-resteasy-jackson"
     implementation "io.quarkus:quarkus-hibernate-orm-panache"
