@@ -18,7 +18,7 @@ Map getMultijobPRConfig() {
                     // Currently disabled
                     DISABLE_SONARCLOUD: true,
                     // DISABLE_SONARCLOUD: !Utils.isMainBranch(this),
-                    BUILD_MVN_OPTS: '-Dfull',
+                    OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: '-Dfull',
                 ]
             ]
         ],
