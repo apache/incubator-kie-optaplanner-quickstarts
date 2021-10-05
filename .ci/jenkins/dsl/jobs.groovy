@@ -32,7 +32,7 @@ setupMultijobPrNativeChecks()
 setupMultijobPrLTSChecks()
 
 // Tools
-KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', 'Optaplanner Quickstarts', [
+KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', 'OptaPlanner Quickstarts', [
     properties: [ 'version.io.quarkus' ],
 ], [
     // Escaping quotes so it is correctly handled by Json marshalling/unmarshalling
