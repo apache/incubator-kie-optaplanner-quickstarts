@@ -83,7 +83,7 @@
     </fileSet>
     <fileSet>
       <directory>../../use-cases/vehicle-routing/target</directory>
-      <outputDirectory>binaries/use-cases/vehicle-routing</outputDirectory>
+      <outputDirectory>quickstarts/binaries/use-cases/vehicle-routing</outputDirectory>
       <includes>
         <include>quarkus-app/**</include>
       </includes>
