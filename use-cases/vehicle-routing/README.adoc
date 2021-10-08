@@ -1,6 +1,19 @@
 = Vehicle Routing Problem (Java, Quarkus, Maven)
 
+Find the most efficient routes for a fleet of vehicles.
+
+image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-vehicle-routing-screenshot.png[]
+
 == Run the application with live coding
+
+. Git clone the optaplanner-quickstarts repo:
++
+[source, shell]
+----
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+...
+$ cd optaplanner-quickstarts/use-cases/vehicle-routing
+----
 
 . Start the application:
 +

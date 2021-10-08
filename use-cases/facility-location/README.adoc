@@ -1,6 +1,19 @@
 = Facility location problem (Java, Quarkus, Maven)
 
+Pick the best geographical locations for new stores, distribution centers, covid test centers or telco masts.
+
+image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-facility-location-screenshot.png[]
+
 == Run the application with live coding
+
+. Git clone the optaplanner-quickstarts repo:
++
+[source, shell]
+----
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+...
+$ cd optaplanner-quickstarts/use-cases/facility-location
+----
 
 . Start the application:
 +

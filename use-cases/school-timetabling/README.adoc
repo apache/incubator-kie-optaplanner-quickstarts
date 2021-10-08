@@ -1,6 +1,19 @@
 = School Timetabling (Java, Quarkus, Maven or Gradle)
 
+Assign lessons to timeslots and rooms to produce a better schedule for teachers and students.
+
+image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-school-timetabling-screenshot.png[]
+
 == Run the application with live coding
+
+. Git clone the optaplanner-quickstarts repo:
++
+[source, shell]
+----
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+...
+$ cd optaplanner-quickstarts/use-cases/school-timetabling
+----
 
 . Start the application with Maven:
 +

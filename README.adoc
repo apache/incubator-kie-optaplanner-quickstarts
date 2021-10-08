@@ -68,8 +68,7 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 [[maintenance-scheduling]]
 === Maintenance scheduling
 
-Schedule maintenance jobs to crews over time
-to reduce both premature and overdue maintenance.
+Schedule maintenance jobs to crews over time to reduce both premature and overdue maintenance.
 
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-maintenance-scheduling-screenshot.png[]
 
@@ -87,8 +86,7 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 [[vaccination-scheduling]]
 === Vaccination scheduling
 
-Assign people to vaccination injection appointments over time at vaccination centers
-to end a pandemic sooner.
+Assign people to vaccination injection appointments over time at vaccination centers to end a pandemic sooner.
 
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-vaccination-scheduling-screenshot.png[]
 
