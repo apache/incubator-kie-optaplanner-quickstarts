@@ -1,6 +1,20 @@
 = Maintenance Scheduling (Java, Quarkus, Maven)
 
+Schedule maintenance jobs to crews over time to reduce both premature and overdue maintenance.
+
+image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-maintenance-scheduling-screenshot.png[]
+
+
 == Run the application with live coding
+
+. Git clone the optaplanner-quickstarts repo:
++
+[source, shell]
+----
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+...
+$ cd optaplanner-quickstarts/use-cases/maintenance-scheduling
+----
 
 . Start the application with Maven:
 +

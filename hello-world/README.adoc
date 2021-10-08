@@ -1,6 +1,17 @@
 = School Timetabling (Java, Maven or Gradle)
 
+Assign lessons to timeslots and rooms to produce a better schedule for teachers and students.
+
 == Run the application
+
+. Git clone the optaplanner-quickstarts repo:
++
+[source, shell]
+----
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+...
+$ cd optaplanner-quickstarts/hello-world
+----
 
 . Start the application with Maven:
 +

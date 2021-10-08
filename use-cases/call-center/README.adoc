@@ -1,6 +1,19 @@
 = Call center real-time scheduling (Java, Quarkus, Maven)
 
+Schedule incoming calls to employees matching skills and availability.
+
+image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-call-center-screenshot.png[]
+
 == Run the application with live coding
+
+. Git clone the optaplanner-quickstarts repo:
++
+[source, shell]
+----
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+...
+$ cd optaplanner-quickstarts/use-cases/call-center
+----
 
 . Start the application:
 +
