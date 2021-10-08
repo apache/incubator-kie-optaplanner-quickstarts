@@ -22,10 +22,10 @@ repositories {
 }
 
 dependencies {
-    implementation enforcedPlatform("org.optaplanner:optaplanner-bom:${optaplannerVersion}")
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-data-rest"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation enforcedPlatform("org.optaplanner:optaplanner-bom:${optaplannerVersion}")
     runtimeOnly "com.h2database:h2"
     implementation "org.optaplanner:optaplanner-spring-boot-starter"
     runtimeOnly "org.webjars:webjars-locator:0.37"

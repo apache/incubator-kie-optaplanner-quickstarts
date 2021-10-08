@@ -21,8 +21,8 @@ repositories {
 }
 
 dependencies {
-    implementation enforcedPlatform("org.optaplanner:optaplanner-bom:${optaplannerVersion}")
     implementation platform("io.quarkus:quarkus-bom:${quarkusVersion}")
+    implementation enforcedPlatform("org.optaplanner:optaplanner-bom:${optaplannerVersion}")
     implementation "org.optaplanner:optaplanner-quarkus"
     implementation "org.optaplanner:optaplanner-quarkus-jackson"
     implementation "org.optaplanner:optaplanner-quarkus-benchmark"
