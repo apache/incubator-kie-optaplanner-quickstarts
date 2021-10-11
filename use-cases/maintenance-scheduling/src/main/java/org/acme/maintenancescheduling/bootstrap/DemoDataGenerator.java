@@ -94,8 +94,8 @@ public class DemoDataGenerator {
         maintainableUnitRepository.persist(maintainableUnitList);
 
         List<MaintenanceCrew> maintenanceCrewList = new ArrayList<>();
-        maintenanceCrewList.add(new MaintenanceCrew("Crew Alpha"));
-        maintenanceCrewList.add(new MaintenanceCrew("Crew Beta"));
+        maintenanceCrewList.add(new MaintenanceCrew("Alpha crew"));
+        maintenanceCrewList.add(new MaintenanceCrew("Beta crew"));
 
         maintenanceCrewRepository.persist(maintenanceCrewList);
 

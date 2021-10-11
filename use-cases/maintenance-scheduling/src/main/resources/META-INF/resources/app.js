@@ -6,13 +6,13 @@ var initialDateTime = moment().startOf('isoWeek').add(1, 'weeks').set('hour', 9)
 
 // DOM element where the Timeline will be attached
 var employeeContainer = document.getElementById('employeeVisualization');
-var assignedMaintenanceJobs = new vis.DataSet();
-var crewGroups = new vis.DataSet();
+var assignedMaintenanceJobsVisDS = new vis.DataSet();
+var crewGroupsVisDS = new vis.DataSet();
 
 // Manager timeline element
 var managerContainer = document.getElementById('managerVisualization');
-var maintenanceJobReadyDueTimes = new vis.DataSet();
-var unitAndJobGroups = new vis.DataSet();
+var maintenanceJobReadyDueTimesVisDS = new vis.DataSet();
+var unitAndJobGroupsVisDS = new vis.DataSet();
 
 // Configuration for the employee timeline
 var employeeTimelineOptions = {
@@ -67,9 +67,9 @@ var managerTimelineOptions = {
 };
 
 // Create timelines displaying maintenance jobs
-var employeeTimeline = new vis.Timeline(employeeContainer, assignedMaintenanceJobs, crewGroups,
+var employeeTimeline = new vis.Timeline(employeeContainer, assignedMaintenanceJobsVisDS, crewGroupsVisDS,
     employeeTimelineOptions);
-var managerTimeline = new vis.Timeline(managerContainer, maintenanceJobReadyDueTimes, unitAndJobGroups,
+var managerTimeline = new vis.Timeline(managerContainer, maintenanceJobReadyDueTimesVisDS, unitAndJobGroupsVisDS,
     managerTimelineOptions);
 
 $(document).ready(function () {
@@ -184,9 +184,9 @@ function refreshSchedule() {
         unassignedJobs.children().remove();
 
         // Add a group for each crew
-        crewGroups.clear();
+        crewGroupsVisDS.clear();
         $.each(schedule.assignedCrewList, (index, crew) => {
-            crewGroups.add({
+            crewGroupsVisDS.add({
                 id: crew.id,
                 content: crew.crewName
             });
@@ -196,10 +196,10 @@ function refreshSchedule() {
         var unitToJobs = {};
 
         // Add a nested group for each job under its unit
-        unitAndJobGroups.clear();
+        unitAndJobGroupsVisDS.clear();
         $.each(schedule.maintenanceJobAssignmentList, (index, jobAssignment) => {
             var maintenanceJob = jobAssignment.maintenanceJob;
-            unitAndJobGroups.add({
+            unitAndJobGroupsVisDS.add({
                 id: jobAssignment.id,
                 content: maintenanceJob.jobName
             });
@@ -214,7 +214,7 @@ function refreshSchedule() {
 
         // Add a group for each unit
         $.each(schedule.maintainableUnitList, (index, unit) => {
-            unitAndJobGroups.add({
+            unitAndJobGroupsVisDS.add({
                 id: unit.id,
                 content: `Vehicle ` + unit.unitName,
                 nestedGroups: unitToJobs[unit.unitName]
@@ -234,8 +234,8 @@ function refreshSchedule() {
             });
         });
 
-        assignedMaintenanceJobs.clear();
-        maintenanceJobReadyDueTimes.clear();
+        assignedMaintenanceJobsVisDS.clear();
+        maintenanceJobReadyDueTimesVisDS.clear();
         var managerTimelineFocusIds = [];
         $.each(schedule.maintenanceJobAssignmentList, (index, jobAssignment) => {
             var maintenanceJob = jobAssignment.maintenanceJob;
@@ -245,7 +245,7 @@ function refreshSchedule() {
                     maintenanceJob.durationInGrains, `hours`);
 
                 // Display assigned job in employee view timeline
-                assignedMaintenanceJobs.add({
+                assignedMaintenanceJobsVisDS.add({
                     id: jobAssignment.id,
                     group: jobAssignment.assignedCrew.id,
                     content: `<b>` + maintenanceJob.jobName + `</b><br><i>at ` +
@@ -256,7 +256,7 @@ function refreshSchedule() {
                 });
 
                 // Display assigned job in manager view timeline
-                maintenanceJobReadyDueTimes.add({
+                maintenanceJobReadyDueTimesVisDS.add({
                     id: jobAssignment.id,
                     group: jobAssignment.id,
                     content: `<b>` + jobAssignment.assignedCrew.crewName + `</b><br><i> at ` +
@@ -267,24 +267,22 @@ function refreshSchedule() {
                 });
 
                 managerTimelineFocusIds.push(jobAssignment.id);
-            }
-            else {
-                const unassignedJobElement = $(`<div class="card bg-secondary"/>`)
-                    .append($(`<div class="card-body p-2"/>`)
-                        .append($(`<b h6 class="card-title"/>`).text(maintenanceJob.jobName))
-                        .append($(`<br><span class="badge" style="background-color: white"/>`)
-                            .text(maintenanceJob.maintainableUnit.unitName)));
+            } else {
+
+                const jobDiv = $(`<div class="card"/>`);
+                const jobDivBody = $(`<div class="card-body p-2"/>`).appendTo(jobDiv);
+                jobDivBody.append($(`<p class="card-title m-0"/>`).append($(`<b/>`).text(maintenanceJob.jobName)))
+                        .append($(`<p class="card-text m-0"/>`).text(maintenanceJob.maintainableUnit.unitName));
                 // Append mutually exclusive tags on jobs
                 $.each(jobToMutuallyExclusiveTagMap[maintenanceJob.jobName],
                     (index, mutuallyExclusiveTag) => {
                         const color = pickColor(mutuallyExclusiveTag);
-                        unassignedJobElement.append($(`<span class="badge badge-info m-2" style="background-color: 
-                        ${color}"/>`).text(mutuallyExclusiveTag));
+                        jobDivBody.append($(`<span class="badge" style="background-color: ${color}"/>`).text(mutuallyExclusiveTag));
                     });
-                unassignedJobs.append(unassignedJobElement);
+                unassignedJobs.append(jobDiv);
 
                 // Display unassigned job in manager view timeline
-                maintenanceJobReadyDueTimes.add({
+                maintenanceJobReadyDueTimesVisDS.add({
                     id: jobAssignment.id,
                     group: jobAssignment.id,
                     content: `<b>` + maintenanceJob.jobName + `</b><br><i>Unassigned</i><br>`,
@@ -298,33 +296,23 @@ function refreshSchedule() {
                 })
                 managerTimelineFocusIds.push(jobAssignment.id);
             }
-            maintenanceJobReadyDueTimes.add([
-                // Ready/due date
+            maintenanceJobReadyDueTimesVisDS.add([
                 {
+                    id: jobAssignment.id + "readyDue",
                     group: jobAssignment.id,
-                    content: ``,
+                    start: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`),
+                    end: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`),
                     type: `background`,
-                    style: `background-color: lightgrey`,
-                    start: moment(initialDateTime).subtract(1, `years`),
-                    end: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`)
+                    style: `background-color: rgba(138, 226, 52, 0.2)`
                 },
                 {
+                    id: jobAssignment.id + "_safetyMargin",
                     group: jobAssignment.id,
-                    content: ``,
-                    type: `background`,
-                    style: `background-color: lightgrey`,
-                    start: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`),
-                    end: moment(initialDateTime).add(1, `years`)
-                },
-                // Safety margin
-                {
-                    group: jobAssignment.id,
-                    content: ``,
-                    type: `background`,
-                    style: `background-color: orange`,
                     start: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex -
                         maintenanceJob.safetyMarginDurationInGrains, `hours`),
-                    end: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`)
+                    end: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`),
+                    type: `background`,
+                    style: `background-color: rgba(252, 175, 62, 0.2)`,
                 }
             ]);
         });
