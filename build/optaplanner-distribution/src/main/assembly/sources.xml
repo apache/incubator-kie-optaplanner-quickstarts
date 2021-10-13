@@ -74,7 +74,7 @@
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../use-cases/order-picking</directory>
-      <outputDirectory>sources/use-cases/order-picking</outputDirectory>
+      <outputDirectory>quickstarts/sources/use-cases/order-picking</outputDirectory>
       <excludes>
         <exclude>target/**</exclude>
         <exclude>.gitignore</exclude>
