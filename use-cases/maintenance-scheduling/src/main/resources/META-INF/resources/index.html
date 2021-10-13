@@ -19,10 +19,18 @@
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1" name="viewport">
 
-    <link rel="stylesheet" href="//unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" type="text/css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-timeline@7.4.9/styles/vis-timeline-graph2d.min.css"
+          integrity="sha256-VzPuX2N5f+QlIAqqWaRTrh8oY/Ecry74lBiCrweCzyA=" crossorigin="anonymous">
 
     <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/webjars/font-awesome/css/all.css"/>
+
+    <!-- TODO Workaround to remove red borders of https://github.com/visjs/vis-timeline/issues/1265 -->
+    <style>
+        .vis-group-level-unknown-but-gte1 {
+            border: none;
+        }
+    </style>
 
     <title>Maintenance Scheduling - OptaPlanner Quarkus Quickstart</title>
 </head>
@@ -40,7 +48,7 @@
     <h1>Rental car maintenance schedule solver</h1>
     <p>Generate the optimal schedule for your maintenance staff.</p>
 
-    <div style="margin-bottom: .5rem">
+    <div class="mb-2">
         <button id="refreshButton" type="button" class="btn btn-secondary">
             <span class="fas fa-refresh"></span> Refresh
         </button>
@@ -64,23 +72,9 @@
                 </li>
             </ul>
         </div>
-
-        <!-- TODO: Add job/unit/crew button functionality -->
-        <!-- <div class="float-right">
-            <button id="addJobButton" type="button" class="btn btn-primary" data-toggle="modal"
-                    data-target="#jobDialog">
-                <span class="fas fa-plus"></span> Add job
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#unitDialog">
-                <span class="fas fa-plus"></span> Add unit
-            </button>
-            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#crewDialog">
-                <span class="fas fa-plus"></span> Add crew
-            </button>
-        </div> -->
     </div>
 
-    <div class="tab-content" id="myTabContent">
+    <div class="mb-4 tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="employeeView" role="tabpanel" aria-labelledby="employeeViewTab">
             <div id="employeeVisualization"></div>
         </div>
@@ -89,109 +83,15 @@
         </div>
     </div>
 
-    <h2 style="margin-top: 2rem">Unassigned jobs</h2>
+    <h2>Unassigned jobs</h2>
     <div id="unassignedJobs" class="card-columns"></div>
-</div>
-
-<div class="modal fade" id="jobDialog" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>Add a job</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <!-- Job requires name, unit, readyTimeGrainIndex, dueTimeGrainIndex, durationInGrains, critical -->
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="job_name">Job name</label>
-                    <input type="text" class="form-control" id="job_name" required value="Windshield wiper replacement">
-                </div>
-                <!-- Insert dropdown of current units -->
-                <div class="form-group">
-                    <label for="maintenance_unit_dropdown">Maintenance unit</label>
-                    <br/>
-                    <select id="maintenance_unit_dropdown"></select>
-                </div>
-                <div class="form-group">
-                    <label for="ready_time_index">Ready time index</label>
-                    <input type="number" class="form-control" id="ready_time_index" required value=0>
-                </div>
-                <div class="form-group">
-                    <label for="due_time_index">Due time index</label>
-                    <input type="number" class="form-control" id="due_time_index" required value=8>
-                </div>
-                <div class="form-group">
-                    <label for="duration">Duration</label>
-                    <input type="number" class="form-control" id="duration" required value=4>
-                </div>
-                <div class="form-group">
-                    <label for="critical"> This job is critical</label>
-                    <input type="checkbox" id="critical" checked="checked" value=false>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="addJobSubmitButton">Submit new job</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="unitDialog" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>Add a unit</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <!-- Unit requires name -->
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="unit_name">Unit name</label>
-                    <input type="text" class="form-control" id="unit_name" required value="Dodge Caravan 1">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="addUnitSubmitButton">Submit new unit</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="crewDialog" tabindex="-1" role="dialog">
-    <div class="modal-dialog" role="dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4>Add a crew</h4>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
-            </div>
-            <!-- Crew requires name -->
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="crew_name">Crew name</label>
-                    <input type="text" class="form-control" id="crew_name" required value="New Crew">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="addCrewSubmitButton">Submit new crew</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script src="/webjars/jquery/jquery.min.js"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 <script src="/webjars/momentjs/min/moment.min.js"></script>
-<script src="//unpkg.com/vis-timeline@latest/standalone/umd/vis-timeline-graph2d.min.js"
-            type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.4.9/dist/vis-timeline-graph2d.min.js"
+        integrity="sha256-agfOCSC6BGv4gGu8aHt1UycGlgL4FRWtH79N70HP5ng=" crossorigin="anonymous"></script>
 <script src="/app.js"></script>
 </body>
 </html>
