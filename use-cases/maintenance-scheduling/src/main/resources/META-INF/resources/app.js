@@ -14,61 +14,34 @@ var managerContainer = document.getElementById('managerVisualization');
 var maintenanceJobReadyDueTimesVisDS = new vis.DataSet();
 var unitAndJobGroupsVisDS = new vis.DataSet();
 
-// Configuration for the employee timeline
 var employeeTimelineOptions = {
-    // Make jobs editable through UI
-    // editable: true,
-
-    // Hide weekends using any weekend and repeat weekly
-    hiddenDates: [{
-        start: '2020-02-29 00:00:00',
-        end: '2020-03-02 00:00:00',
-        repeat: 'weekly'
-    },
-    // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
-    {
-        start: '2020-02-29 17:00:00',
-        end: '2020-03-02 09:00:00',
-        repeat: 'daily'
-    }
+    hiddenDates: [
+        // Hide weekends using any weekend and repeat weekly
+        {start: '2020-02-29 00:00:00', end: '2020-03-02 00:00:00', repeat: 'weekly'},
+        // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
+        {start: '2020-02-29 17:00:00', end: '2020-03-02 09:00:00', repeat: 'daily'}
     ],
-
     // Always snap to full hours, independent of the scale
     snap: function (date, scale, step) {
         var hour = 60 * 60 * 1000;
         return Math.round(date / hour) * hour;
     },
-
     // Prevent jobs from stacking in timeline
     stack: false
 };
-
-// Configuration for the manager timeline
-var managerTimelineOptions = {
-    // Make jobs editable through UI
-    // editable: true,
-
-    // Hide weekends using any weekend and repeat weekly
-    hiddenDates: [{
-        start: '2020-02-29 00:00:00',
-        end: '2020-03-02 00:00:00',
-        repeat: 'weekly'
-    },
-    // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
-    {
-        start: '2020-02-29 17:00:00',
-        end: '2020-03-02 09:00:00',
-        repeat: 'daily'
-    }
-    ],
-
-    // Prevent jobs from stacking in timeline
-    stack: false
-};
-
-// Create timelines displaying maintenance jobs
 var employeeTimeline = new vis.Timeline(employeeContainer, assignedMaintenanceJobsVisDS, crewGroupsVisDS,
-    employeeTimelineOptions);
+  employeeTimelineOptions);
+
+var managerTimelineOptions = {
+    hiddenDates: [
+        // Hide weekends using any weekend and repeat weekly
+        {start: '2020-02-29 00:00:00', end: '2020-03-02 00:00:00', repeat: 'weekly'},
+        // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
+        {start: '2020-02-29 17:00:00', end: '2020-03-02 09:00:00', repeat: 'daily'}
+    ],
+    // Prevent jobs from stacking in timeline
+    stack: false
+};
 var managerTimeline = new vis.Timeline(managerContainer, maintenanceJobReadyDueTimesVisDS, unitAndJobGroupsVisDS,
     managerTimelineOptions);
 
@@ -248,8 +221,8 @@ function refreshSchedule() {
                 assignedMaintenanceJobsVisDS.add({
                     id: jobAssignment.id,
                     group: jobAssignment.assignedCrew.id,
-                    content: `<b>` + maintenanceJob.jobName + `</b><br><i>at ` +
-                        startDateTime.format(`HH:mm`) + `</i><br>` +
+                    content: `<b>` + maintenanceJob.jobName + `</b><br/><i>at ` +
+                        startDateTime.format(`HH:mm`) + `</i><br/>` +
                         maintenanceJob.maintainableUnit.unitName,
                     start: startDateTime,
                     end: endDateTime
@@ -259,16 +232,14 @@ function refreshSchedule() {
                 maintenanceJobReadyDueTimesVisDS.add({
                     id: jobAssignment.id,
                     group: jobAssignment.id,
-                    content: `<b>` + jobAssignment.assignedCrew.crewName + `</b><br><i> at ` +
-                        startDateTime.format(`HH:mm`) + `</i><br>`,
-                    style: `background-color: lightgreen`,
+                    content: `<b>` + jobAssignment.assignedCrew.crewName + `</b><br/><i> at ` +
+                        startDateTime.format(`HH:mm`) + `</i>`,
                     start: startDateTime,
                     end: endDateTime
                 });
 
                 managerTimelineFocusIds.push(jobAssignment.id);
             } else {
-
                 const jobDiv = $(`<div class="card"/>`);
                 const jobDivBody = $(`<div class="card-body p-2"/>`).appendTo(jobDiv);
                 jobDivBody.append($(`<p class="card-title m-0"/>`).append($(`<b/>`).text(maintenanceJob.jobName)))
@@ -285,7 +256,7 @@ function refreshSchedule() {
                 maintenanceJobReadyDueTimesVisDS.add({
                     id: jobAssignment.id,
                     group: jobAssignment.id,
-                    content: `<b>` + maintenanceJob.jobName + `</b><br><i>Unassigned</i><br>`,
+                    content: `<b>` + maintenanceJob.jobName + `</b><br/><i>Unassigned</i>`,
                     style: `background-color: red`,
                     start: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`)
                         .add((maintenanceJob.dueTimeGrainIndex -
