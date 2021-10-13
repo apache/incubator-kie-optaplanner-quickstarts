@@ -73,9 +73,8 @@ public class QuickstartLauncherResource {
         } catch (IOException e) {
             throw new IllegalStateException("Could not determine the workingDirectory.", e);
         }
-        // Quarkus uses the target dir as working directory
-        if (workingDirectory.getName().equals("target")) {
-            baseDirectory = new File(workingDirectory, "../../..");
+        if (new File(workingDirectory, "target").exists()) {
+            baseDirectory = new File(workingDirectory, "../..");
             development = true;
         } else {
             baseDirectory = new File(workingDirectory, "quickstarts/binaries");
