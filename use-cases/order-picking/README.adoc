@@ -1,6 +1,19 @@
 = Order picking (Java, Quarkus, Maven)
 
+Generate an optimal picking plan for completing a set of orders.
+
+image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-order-picking-screenshot.png[]
+
 == Run the application with live coding
+
+. Git clone the optaplanner-quickstarts repo:
++
+[source, shell]
+----
+$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+...
+$ cd optaplanner-quickstarts/use-cases/order-picking
+----
 
 . Start the application:
 +
