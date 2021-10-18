@@ -44,9 +44,6 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         return BendableLongScore.ofSoft(HARD_LEVELS_SIZE, SOFT_LEVELS_SIZE, softLevel, softScore);
     }
 
-    // Because the @PlanningVariable is nullable=true, the from() classes needed to be filtered
-    private Predicate<PersonAssignment> personAssignedFilter = (personAssignment -> personAssignment.getVaccinationSlot() != null);
-
     @Override
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[]{
@@ -77,7 +74,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
 
     Constraint vaccinationSlotCapacity(ConstraintFactory constraintFactory) {
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .groupBy(PersonAssignment::getVaccinationSlot, ConstraintCollectors.count())
                 .filter((vaccinationSlot, personCount) -> personCount > vaccinationSlot.getCapacity())
                 .penalizeLong("Vaccination slot capacity", ofHard(1_000),
@@ -87,7 +84,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
     Constraint requiredVaccineType(ConstraintFactory constraintFactory) {
         // Typical usage: if a person is coming for their 2nd dose, use the same vaccine type as their 1st dose.
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter((personAssignment -> personAssignment.getRequiredVaccineType() != null
                         && personAssignment.getVaccinationSlot().getVaccineType() != personAssignment.getRequiredVaccineType()))
                 .penalize("Required vaccine type", ofHard(10_000_000));
@@ -96,7 +93,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
     Constraint requiredVaccinationCenter(ConstraintFactory constraintFactory) {
         // Typical usage: if a person is coming for their 2nd dose, enforce the same vaccination center as their 1st dose.
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter((personAssignment -> personAssignment.getRequiredVaccinationCenter() != null
                         && personAssignment.getVaccinationSlot().getVaccinationCenter() != personAssignment.getRequiredVaccinationCenter()))
                 .penalize("Required vaccination center", ofHard(1_000_000));
@@ -105,7 +102,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
     Constraint minimumAgeVaccineType(ConstraintFactory constraintFactory) {
         // Don't inject too young people with a vaccine that has minimum age
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter(personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge() != null
                         && personAssignment.getAgeOnVaccinationDate()
                         < personAssignment.getVaccinationSlot().getVaccineType().getMinimumAge()
@@ -118,7 +115,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
     Constraint maximumAgeVaccineType(ConstraintFactory constraintFactory) {
         // Don't inject too oldr people with a vaccine that has maximum age
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter(personAssignment -> personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge() != null
                         && personAssignment.getAgeOnVaccinationDate()
                         > personAssignment.getVaccinationSlot().getVaccineType().getMaximumAge()
@@ -136,7 +133,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // set the readyDate one day after the appointment date to avoid inviting the same day (especially for multiple reschedules)
         // and also prohibit gamification (to get an earlier appointment).
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter(personAssignment -> personAssignment.getReadyDate() != null
                         && personAssignment.getVaccinationSlot().getDate().compareTo(personAssignment.getReadyDate()) < 0)
                 .penalizeLong("Ready date", ofHard(1),
@@ -148,7 +145,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // Typical usage 1: If a person is coming for their 2nd dose, don't inject it after the due day.
         // For example, Pfizer is due to be injected 3 months after the first dose.
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter(personAssignment -> personAssignment.getDueDate() != null
                         && personAssignment.getVaccinationSlot().getDate().compareTo(personAssignment.getDueDate()) > 0)
                 .penalizeLong("Due date", ofHard(1),
@@ -165,7 +162,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // even before 1st dose healthcare workers and older people (although 2nd dosers will normally be that too).
         // This is to avoid a snowball effect on the backlog.
         return constraintFactory
-                .from(PersonAssignment.class)
+                .forEachIncludingNullVars(PersonAssignment.class)
                 // TODO filter for ideal date is earlier or equal to planning window last day
                 .filter(personAssignment -> personAssignment.getDoseNumber() > 1 && personAssignment.getVaccinationSlot() == null)
                 .penalizeLong("Schedule second (or later) dose people", ofSoft(0, 1),
@@ -176,7 +173,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // Assign healthcare workers and older people for an appointment.
         // Priority rating is a person's age augmented by a few hundred points if they're a healthcare worker.
         return constraintFactory
-                .from(PersonAssignment.class)
+                .forEachIncludingNullVars(PersonAssignment.class)
                 .filter(personAssignment -> personAssignment.getVaccinationSlot() == null)
                 // This is softer than scheduleSecondOrLaterDosePeople()
                 // to avoid creating a backlog of 2nd dose persons, that would grow too big to respect due dates.
@@ -191,7 +188,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
     Constraint preferredVaccineType(ConstraintFactory constraintFactory) {
         // Typical usage: if a person can pick a favorite vaccine type
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter((personAssignment -> personAssignment.getPreferredVaccineType() != null
                         && personAssignment.getVaccinationSlot().getVaccineType() != personAssignment.getPreferredVaccineType()))
                 .penalize("Preferred vaccine type", ofSoft(2, 1_000_000_000));
@@ -200,7 +197,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
     Constraint preferredVaccinationCenter(ConstraintFactory constraintFactory) {
         // Typical usage: if a person is coming for their 2nd dose, prefer the same vaccination center as their 1st dose.
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter((personAssignment -> personAssignment.getPreferredVaccinationCenter() != null
                         && personAssignment.getVaccinationSlot().getVaccinationCenter() != personAssignment.getPreferredVaccinationCenter()))
                 // TODO ignore the distance cost instead
@@ -211,7 +208,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // Minimize the distance from each person's home location to their assigned vaccination center
         // subtracted by the distance to the nearest vaccination center
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .penalizeLong("Regret distance cost", ofSoft(2, 1),
                         personAssignment -> {
                             long regretDistance = personAssignment.getRegretDistanceTo(
@@ -225,7 +222,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // Typical usage: If a person is coming for their 2nd dose, inject it on the ideal day.
         // For example, Pfizer is ideally injected 21 days after the first dose. Moderna after 28 days.
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 .filter(personAssignment -> personAssignment.getIdealDate() != null
                         && !personAssignment.getIdealDate().equals(personAssignment.getVaccinationSlot().getDate()))
                 // This constraint is softer than distanceCost() to avoid sending people
@@ -244,7 +241,7 @@ public class VaccinationScheduleConstraintProvider implements ConstraintProvider
         // Priority rating is a person's age augmented by a few hundred points if they're a healthcare worker.
         // Differs from scheduleHigherPriorityRatingPeople(), which requires they be assigned
         return constraintFactory
-                .from(PersonAssignment.class).filter(personAssignedFilter)
+                .forEach(PersonAssignment.class)
                 // This constraint is softer than distanceCost() to avoid sending people
                 // half-way across the country just to get their vaccine one day earlier.
                 .penalizeLong("Higher priority rating earlier", ofSoft(4, 1),

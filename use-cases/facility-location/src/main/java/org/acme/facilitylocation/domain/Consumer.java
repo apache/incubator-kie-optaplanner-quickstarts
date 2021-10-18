@@ -16,6 +16,7 @@
 
 package org.acme.facilitylocation.domain;
 
+import org.acme.facilitylocation.solver.FacilityLocationConstraintProvider;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 

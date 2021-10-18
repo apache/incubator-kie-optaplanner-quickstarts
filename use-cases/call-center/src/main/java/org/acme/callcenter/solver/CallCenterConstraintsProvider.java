@@ -17,13 +17,13 @@ public class CallCenterConstraintsProvider implements ConstraintProvider {
     }
 
     Constraint noRequiredSkillMissing(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(Call.class)
+        return constraintFactory.forEach(Call.class)
                 .filter(call -> call.getMissingSkillCount() > 0)
                 .penalize("No required skills are missing", HardSoftScore.ONE_HARD, call -> call.getMissingSkillCount());
     }
 
     Constraint minimizeWaitingTime(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(Call.class)
+        return constraintFactory.forEach(Call.class)
                 .filter(call -> call.getNextCall() == null)
                 .penalize("Minimize waiting time",
                         HardSoftScore.ONE_SOFT, call -> Math.toIntExact(call.getEstimatedWaiting().getSeconds()

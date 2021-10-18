@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package org.acme.vehiclerouting.domain;
+package org.acme.vehiclerouting.solver;
 
 import java.util.Arrays;
 
 import javax.inject.Inject;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.acme.vehiclerouting.domain.Customer;
+import org.acme.vehiclerouting.domain.Depot;
+import org.acme.vehiclerouting.domain.Location;
+import org.acme.vehiclerouting.domain.Vehicle;
+import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
 import org.acme.vehiclerouting.domain.geo.EuclideanDistanceCalculator;
+import org.acme.vehiclerouting.solver.VehicleRoutingConstraintProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;

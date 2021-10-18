@@ -23,9 +23,9 @@ import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 @ConstraintConfiguration
 public class FacilityLocationConstraintConfiguration {
 
-    static final String FACILITY_CAPACITY = "facility capacity";
-    static final String FACILITY_SETUP_COST = "facility setup cost";
-    static final String DISTANCE_FROM_FACILITY = "distance from facility";
+    public static final String FACILITY_CAPACITY = "facility capacity";
+    public static final String FACILITY_SETUP_COST = "facility setup cost";
+    public static final String DISTANCE_FROM_FACILITY = "distance from facility";
 
     @ConstraintWeight(FACILITY_CAPACITY)
     HardSoftLongScore facilityCapacity = HardSoftLongScore.ofHard(1);

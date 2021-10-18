@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package org.acme.vehiclerouting.domain;
+package org.acme.vehiclerouting.solver;
 
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 
+import org.acme.vehiclerouting.domain.Customer;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -38,7 +39,7 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     // ************************************************************************
 
     protected Constraint vehicleCapacity(ConstraintFactory factory) {
-        return factory.from(Customer.class)
+        return factory.forEach(Customer.class)
                 .groupBy(Customer::getVehicle, sum(Customer::getDemand))
                 .filter((vehicle, demand) -> demand > vehicle.getCapacity())
                 .penalizeLong(
@@ -52,7 +53,7 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     // ************************************************************************
 
     protected Constraint distanceFromPreviousStandstill(ConstraintFactory factory) {
-        return factory.from(Customer.class)
+        return factory.forEach(Customer.class)
                 .penalizeLong(
                         "distanceFromPreviousStandstill",
                         HardSoftLongScore.ONE_SOFT,
@@ -60,7 +61,7 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     }
 
     protected Constraint distanceFromLastCustomerToDepot(ConstraintFactory factory) {
-        return factory.from(Customer.class)
+        return factory.forEach(Customer.class)
                 .filter(Customer::isLast)
                 .penalizeLong(
                         "distanceFromLastCustomerToDepot",
