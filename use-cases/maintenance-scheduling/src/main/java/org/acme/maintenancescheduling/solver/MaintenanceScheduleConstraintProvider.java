@@ -16,12 +16,21 @@
 
 package org.acme.maintenancescheduling.solver;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.WEEKS;
+import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
+import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sumDuration;
 import static org.optaplanner.core.api.score.stream.Joiners.equal;
 import static org.optaplanner.core.api.score.stream.Joiners.filtering;
 import static org.optaplanner.core.api.score.stream.Joiners.lessThan;
+import static org.optaplanner.core.api.score.stream.Joiners.overlapping;
 
-import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
-import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
+import org.acme.maintenancescheduling.domain.Job;
+import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
 import org.optaplanner.core.api.score.stream.ConstraintProvider;
@@ -32,15 +41,11 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     public Constraint[] defineConstraints(ConstraintFactory constraintFactory) {
         return new Constraint[] {
                 // Hard constraints
-                jobsMustStartAfterReadyTimeGrain(constraintFactory),
-                jobsMustFinishBeforeDueTime(constraintFactory),
-                assignAllCriticalJobs(constraintFactory),
-                oneJobPerCrewPerPeriod(constraintFactory),
-                mutuallyExclusiveJobs(constraintFactory),
-                oneJobPerUnitPerPeriod(constraintFactory),
+                crewConflict(constraintFactory),
+                readyDate(constraintFactory),
+                dueDate(constraintFactory),
                 // Soft constraints
-                assignAllNonCriticalJobs(constraintFactory),
-                jobsShouldFinishBeforeSafetyMargin(constraintFactory)
+                mutuallyExclusiveTag(constraintFactory),
         };
     }
 
@@ -48,87 +53,57 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     // Hard constraints
     // ************************************************************************
 
-    public Constraint jobsMustStartAfterReadyTimeGrain(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
-                        && maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex() < maintenanceJobAssignment.getMaintenanceJob().getReadyTimeGrainIndex())
-                .penalizeConfigurable("Jobs must start after ready time grain",
-                        maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().getReadyTimeGrainIndex()
-                                - maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex());
+    public Constraint crewConflict(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .fromUniquePair(Job.class,
+                        equal(Job::getCrew),
+                        overlapping(Job::getStartDate, Job::getEndDate))
+                .penalizeLong("Crew conflict", HardSoftLongScore.ONE_HARD,
+                        (job1, job2) -> DAYS.between(
+                                job1.getStartDate().isAfter(job2.getStartDate())
+                                        ? job1.getStartDate() : job2.getStartDate(),
+                                job1.getEndDate().isBefore(job2.getEndDate())
+                                        ? job1.getEndDate() : job2.getEndDate()));
     }
 
-    public Constraint jobsMustFinishBeforeDueTime(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
-                        && maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex()
-                                + maintenanceJobAssignment.getMaintenanceJob().getDurationInGrains() > maintenanceJobAssignment.getMaintenanceJob().getDueTimeGrainIndex())
-                .penalizeConfigurable("Jobs must finish before due time",
-                        maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex()
-                                + maintenanceJobAssignment.getMaintenanceJob().getDurationInGrains() - maintenanceJobAssignment.getMaintenanceJob().getDueTimeGrainIndex());
+    public Constraint readyDate(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(Job.class)
+                .filter(job -> job.getReadyDate() != null
+                        && job.getStartDate().isBefore(job.getReadyDate()))
+                .penalizeLong("Ready date", HardSoftLongScore.ONE_HARD,
+                        job -> DAYS.between(job.getStartDate(), job.getReadyDate()));
     }
 
-    public Constraint assignAllCriticalJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                // Critical maintenance jobs must be assigned a crew and start period
-                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().isCritical() && (maintenanceJobAssignment.getAssignedCrew() == null
-                        || maintenanceJobAssignment.getStartingTimeGrain() == null))
-                .penalizeConfigurable("Assign all critical jobs");
+    public Constraint dueDate(ConstraintFactory constraintFactory) {
+        return constraintFactory.from(Job.class)
+                .filter(job -> job.getDueDate() != null
+                        && job.getDueDate().isBefore(job.getEndDate()))
+                .penalizeLong("Due date", HardSoftLongScore.ONE_HARD,
+                        job -> DAYS.between(job.getDueDate(), job.getEndDate()));
     }
-
-    public Constraint oneJobPerCrewPerPeriod(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
-                        && maintenanceJobAssignment.getAssignedCrew() != null)
-                .join(MaintenanceJobAssignment.class,
-                        equal(MaintenanceJobAssignment::getAssignedCrew),
-                        lessThan(MaintenanceJobAssignment::getId),
-                        filtering((maintenanceJobAssignment, otherJob) -> maintenanceJobAssignment.calculateOverlap(otherJob) > 0))
-                .penalizeConfigurable("One job per crew per period", MaintenanceJobAssignment::calculateOverlap);
+    
+    public Constraint mutuallyExclusiveTag(ConstraintFactory constraintFactory) {
+        return constraintFactory
+                .fromUniquePair(Job.class,
+                        overlapping(Job::getStartDate, Job::getEndDate),
+                        // TODO Use intersecting() when available https://issues.redhat.com/browse/PLANNER-2558
+                        filtering((job1, job2) -> !Collections.disjoint(
+                                job1.getMutuallyExclusiveTagSet(), job2.getMutuallyExclusiveTagSet())))
+                .penalizeLong("Mutually exclusive tag", HardSoftLongScore.ONE_SOFT,
+                        (job1, job2) -> {
+                            Set<String> intersection = new HashSet<>(job1.getMutuallyExclusiveTagSet());
+                            intersection.retainAll(job2.getMutuallyExclusiveTagSet());
+                            long overlap = DAYS.between(
+                                    job1.getStartDate().isAfter(job2.getStartDate())
+                                            ? job1.getStartDate()  : job2.getStartDate(),
+                                    job1.getEndDate().isBefore(job2.getEndDate())
+                                            ? job1.getEndDate() : job2.getEndDate());
+                            return intersection.size() * overlap;
+                        });
     }
-
-    public Constraint mutuallyExclusiveJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null)
-                .join(MaintenanceJobAssignment.class,
-                        lessThan(MaintenanceJobAssignment::getId),
-                        filtering((maintenanceJobAssignment, otherJobAssignment) -> maintenanceJobAssignment.calculateOverlap(otherJobAssignment) > 0))
-                .join(MutuallyExclusiveJobs.class,
-                        filtering((maintenanceJobAssignment, otherJobAssignment, mutuallyExclusiveJobs) ->
-                        mutuallyExclusiveJobs.isMutuallyExclusive(maintenanceJobAssignment.getMaintenanceJob(), otherJobAssignment.getMaintenanceJob())))
-                .penalizeConfigurable("Mutually exclusive jobs cannot overlap",
-                        (maintenanceJobAssignment, otherJobAssignment, mutuallyExclusiveJobs) -> maintenanceJobAssignment.calculateOverlap(otherJobAssignment));
-    }
-
-    public Constraint oneJobPerUnitPerPeriod(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null)
-                .join(MaintenanceJobAssignment.class,
-                        equal(maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().getMaintainableUnit()),
-                        lessThan(MaintenanceJobAssignment::getId),
-                        filtering((maintenanceJobAssignment, otherJobAssignment) -> maintenanceJobAssignment.calculateOverlap(otherJobAssignment) > 0))
-                .penalizeConfigurable("One job per unit per period", MaintenanceJobAssignment::calculateOverlap);
-    }
-
-    // TODO: Add constraint that prevents specific unit from being maintained at certain period (outside of MVP)
 
     // ************************************************************************
     // Soft constraints
     // ************************************************************************
-
-    public Constraint assignAllNonCriticalJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                // Non critical maintenance jobs must be assigned a crew and start period
-                .filter(maintenanceJobAssignment -> !maintenanceJobAssignment.getMaintenanceJob().isCritical()
-                        && (maintenanceJobAssignment.getAssignedCrew() == null || maintenanceJobAssignment.getStartingTimeGrain() == null))
-                .penalizeConfigurable("Assign all non critical jobs");
-    }
-
-    public Constraint jobsShouldFinishBeforeSafetyMargin(ConstraintFactory constraintFactory) {
-        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
-                .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
-                        && maintenanceJobAssignment.calculateSafetyMarginPenalty() > 0)
-                .penalizeConfigurable("Jobs should finish before safety margin",
-                        MaintenanceJobAssignment::calculateSafetyMarginPenalty);
-    }
 
 }

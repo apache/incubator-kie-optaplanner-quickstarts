@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,32 +16,41 @@
 
 package org.acme.maintenancescheduling.domain;
 
+import java.time.Duration;
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity
-public class MaintainableUnit {
+import org.optaplanner.core.api.domain.lookup.PlanningId;
 
+@Entity
+public class Crew {
+
+    @PlanningId
     @Id
     @GeneratedValue
     private Long id;
 
-    private String unitName;
+    private String name;
 
-    public MaintainableUnit() {
+    // No-arg constructor required for Hibernate
+    public Crew() {
     }
 
-    public MaintainableUnit(String unitName) {
-        this.unitName = unitName;
+    public Crew(String name) {
+        this.name = name;
+    }
+
+    public Crew(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return "MaintainableUnit{" +
-                "id=" + id +
-                ", unitName='" + unitName + '\'' +
-                '}';
+        return name;
     }
 
     // ************************************************************************
@@ -52,11 +61,7 @@ public class MaintainableUnit {
         return id;
     }
 
-    public String getUnitName() {
-        return unitName;
-    }
-
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
+    public String getName() {
+        return name;
     }
 }

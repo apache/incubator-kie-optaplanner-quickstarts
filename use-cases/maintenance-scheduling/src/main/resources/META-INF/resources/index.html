@@ -18,25 +18,23 @@
 <head>
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
     <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Maintenance scheduling - OptaPlanner Quarkus</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-timeline@7.4.9/styles/vis-timeline-graph2d.min.css"
           integrity="sha256-VzPuX2N5f+QlIAqqWaRTrh8oY/Ecry74lBiCrweCzyA=" crossorigin="anonymous">
 
     <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/webjars/font-awesome/css/all.css"/>
-
-    <!-- TODO Workaround to remove red borders of https://github.com/visjs/vis-timeline/issues/1265 -->
     <style>
-        .vis-group-level-unknown-but-gte1 {
-            border: none;
+        .vis-time-axis .vis-grid.vis-saturday,
+        .vis-time-axis .vis-grid.vis-sunday {
+            background: #D3D7CFFF;
         }
     </style>
-
-    <title>Maintenance Scheduling - OptaPlanner Quarkus Quickstart</title>
 </head>
 
 <body>
-<div class="container">
+<div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="https://www.optaplanner.org">
             <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
@@ -45,7 +43,7 @@
     <div class="sticky-top d-flex justify-content-center align-items-center" aria-live="polite" aria-atomic="true">
         <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
     </div>
-    <h1>Rental car maintenance schedule solver</h1>
+    <h1>Road maintenance schedule solver</h1>
     <p>Generate the optimal schedule for your maintenance staff.</p>
 
     <div class="mb-2">
@@ -63,22 +61,21 @@
         <div class="float-right">
             <ul class="nav nav-pills" id="myTab" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="employeeViewTab" data-toggle="tab" href="#employeeView" role="tab"
-                        aria-controls="employeeView" aria-selected="true">Employee View</a>
+                    <a class="nav-link active" id="byCrewPanelTab" data-toggle="tab" href="#byCrewPanel" role="tab"
+                        aria-controls="byCrewPanel" aria-selected="true">By crew</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="managerViewTab" data-toggle="tab" href="#managerView" role="tab"
-                        aria-controls="managerView" aria-selected="false">Manager View</a>
+                    <a class="nav-link" id="byJobPanelTab" data-toggle="tab" href="#byJobPanel" role="tab"
+                        aria-controls="byJobPanel" aria-selected="false">By job</a>
                 </li>
             </ul>
         </div>
     </div>
-
     <div class="mb-4 tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="employeeView" role="tabpanel" aria-labelledby="employeeViewTab">
+        <div class="tab-pane fade show active" id="byCrewPanel" role="tabpanel" aria-labelledby="byCrewPanelTab">
             <div id="employeeVisualization"></div>
         </div>
-        <div class="tab-pane fade" id="managerView" role="tabpanel" aria-labelledby="managerViewTab">
+        <div class="tab-pane fade" id="byJobPanel" role="tabpanel" aria-labelledby="byJobPanelTab">
             <div id="managerVisualization"></div>
         </div>
     </div>
@@ -89,7 +86,7 @@
 
 <script src="/webjars/jquery/jquery.min.js"></script>
 <script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script src="/webjars/momentjs/min/moment.min.js"></script>
+<script src="/webjars/js-joda/dist/js-joda.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.4.9/dist/vis-timeline-graph2d.min.js"
         integrity="sha256-agfOCSC6BGv4gGu8aHt1UycGlgL4FRWtH79N70HP5ng=" crossorigin="anonymous"></script>
 <script src="/app.js"></script>

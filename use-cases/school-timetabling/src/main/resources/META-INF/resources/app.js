@@ -1,5 +1,52 @@
 var autoRefreshIntervalId = null;
 
+$(document).ready(function () {
+  $.ajaxSetup({
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    }
+  });
+  // Extend jQuery to support $.put() and $.delete()
+  jQuery.each(["put", "delete"], function (i, method) {
+    jQuery[method] = function (url, data, callback, type) {
+      if (jQuery.isFunction(data)) {
+        type = type || callback;
+        callback = data;
+        data = undefined;
+      }
+      return jQuery.ajax({
+        url: url,
+        type: method,
+        dataType: type,
+        data: data,
+        success: callback
+      });
+    };
+  });
+
+  $("#refreshButton").click(function () {
+    refreshTimeTable();
+  });
+  $("#solveButton").click(function () {
+    solve();
+  });
+  $("#stopSolvingButton").click(function () {
+    stopSolving();
+  });
+  $("#addLessonSubmitButton").click(function () {
+    addLesson();
+  });
+  $("#addTimeslotSubmitButton").click(function () {
+    addTimeslot();
+  });
+  $("#addRoomSubmitButton").click(function () {
+    addRoom();
+  });
+
+  refreshTimeTable();
+});
+
 function refreshTimeTable() {
   $.getJSON("/timeTable", function (timeTable) {
     refreshSolvingButtons(timeTable.solverStatus != null && timeTable.solverStatus !== "NOT_SOLVING");
@@ -239,53 +286,6 @@ function showError(title, xhr) {
   notification.toast({delay: 30000});
   notification.toast('show');
 }
-
-$(document).ready(function () {
-  $.ajaxSetup({
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    }
-  });
-  // Extend jQuery to support $.put() and $.delete()
-  jQuery.each(["put", "delete"], function (i, method) {
-    jQuery[method] = function (url, data, callback, type) {
-      if (jQuery.isFunction(data)) {
-        type = type || callback;
-        callback = data;
-        data = undefined;
-      }
-      return jQuery.ajax({
-        url: url,
-        type: method,
-        dataType: type,
-        data: data,
-        success: callback
-      });
-    };
-  });
-
-  $("#refreshButton").click(function () {
-    refreshTimeTable();
-  });
-  $("#solveButton").click(function () {
-    solve();
-  });
-  $("#stopSolvingButton").click(function () {
-    stopSolving();
-  });
-  $("#addLessonSubmitButton").click(function () {
-    addLesson();
-  });
-  $("#addTimeslotSubmitButton").click(function () {
-    addTimeslot();
-  });
-  $("#addRoomSubmitButton").click(function () {
-    addRoom();
-  });
-
-  refreshTimeTable();
-});
 
 // ****************************************************************************
 // TangoColorFactory

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.acme.maintenancescheduling.rest;
+package org.acme.maintenancescheduling.persistence;
 
-import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
-import org.acme.maintenancescheduling.persistence.MutuallyExclusiveJobsRepository;
+import javax.enterprise.context.ApplicationScoped;
 
-import io.quarkus.hibernate.orm.rest.data.panache.PanacheRepositoryResource;
-import io.quarkus.rest.data.panache.ResourceProperties;
+import org.acme.maintenancescheduling.domain.Job;
 
-@ResourceProperties(path = "mutuallyExclusiveJobs")
-public interface MutuallyExclusiveJobsResource extends PanacheRepositoryResource<MutuallyExclusiveJobsRepository, MutuallyExclusiveJobs, Long> {
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+
+@ApplicationScoped
+public class JobRepository implements PanacheRepository<Job> {
 
 }
