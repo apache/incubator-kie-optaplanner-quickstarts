@@ -43,7 +43,7 @@ class TimeTableConstraintProvider : ConstraintProvider {
         // A room can accommodate at most one lesson at the same time.
         return constraintFactory
                 // Select each pair of 2 different lessons ...
-                .fromUniquePair(Lesson::class.java,
+                .forEachUniquePair(Lesson::class.java,
                         // ... in the same timeslot ...
                         Joiners.equal(Lesson::timeslot),
                         // ... in the same room ...
@@ -55,7 +55,7 @@ class TimeTableConstraintProvider : ConstraintProvider {
     fun teacherConflict(constraintFactory: ConstraintFactory): Constraint {
         // A teacher can teach at most one lesson at the same time.
         return constraintFactory
-                .fromUniquePair(Lesson::class.java,
+                .forEachUniquePair(Lesson::class.java,
                         Joiners.equal(Lesson::timeslot),
                         Joiners.equal(Lesson::teacher))
                 .penalize("Teacher conflict", HardSoftScore.ONE_HARD)
@@ -64,7 +64,7 @@ class TimeTableConstraintProvider : ConstraintProvider {
     fun studentGroupConflict(constraintFactory: ConstraintFactory): Constraint {
         // A student can attend at most one lesson at the same time.
         return constraintFactory
-                .fromUniquePair(Lesson::class.java,
+                .forEachUniquePair(Lesson::class.java,
                         Joiners.equal(Lesson::timeslot),
                         Joiners.equal(Lesson::studentGroup))
                 .penalize("Student group conflict", HardSoftScore.ONE_HARD)
@@ -73,7 +73,7 @@ class TimeTableConstraintProvider : ConstraintProvider {
     fun teacherRoomStability(constraintFactory: ConstraintFactory): Constraint {
         // A teacher prefers to teach in a single room.
         return constraintFactory
-                .fromUniquePair(Lesson::class.java,
+                .forEachUniquePair(Lesson::class.java,
                         Joiners.equal(Lesson::teacher))
                 .filter { lesson1: Lesson, lesson2: Lesson -> lesson1.room !== lesson2.room }
                 .penalize("Teacher room stability", HardSoftScore.ONE_SOFT)
@@ -82,8 +82,9 @@ class TimeTableConstraintProvider : ConstraintProvider {
     fun teacherTimeEfficiency(constraintFactory: ConstraintFactory): Constraint {
         // A teacher prefers to teach sequential lessons and dislikes gaps between lessons.
         return constraintFactory
-                .from(Lesson::class.java)
-                .join(Lesson::class.java, Joiners.equal(Lesson::teacher),
+                .forEach(Lesson::class.java)
+                .join(Lesson::class.java,
+                        Joiners.equal(Lesson::teacher),
                         Joiners.equal { lesson: Lesson -> lesson.timeslot?.dayOfWeek })
                 .filter { lesson1: Lesson, lesson2: Lesson ->
                     val between = Duration.between(lesson1.timeslot?.endTime,
@@ -96,7 +97,7 @@ class TimeTableConstraintProvider : ConstraintProvider {
     fun studentGroupSubjectVariety(constraintFactory: ConstraintFactory): Constraint {
         // A student group dislikes sequential lessons on the same subject.
         return constraintFactory
-                .from(Lesson::class.java)
+                .forEach(Lesson::class.java)
                 .join(Lesson::class.java,
                         Joiners.equal(Lesson::subject),
                         Joiners.equal(Lesson::studentGroup),

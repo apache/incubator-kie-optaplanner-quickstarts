@@ -49,7 +49,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     // ************************************************************************
 
     public Constraint jobsMustStartAfterReadyTimeGrain(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
                         && maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex() < maintenanceJobAssignment.getMaintenanceJob().getReadyTimeGrainIndex())
                 .penalizeConfigurable("Jobs must start after ready time grain",
@@ -58,7 +58,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint jobsMustFinishBeforeDueTime(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
                         && maintenanceJobAssignment.getStartingTimeGrain().getGrainIndex()
                                 + maintenanceJobAssignment.getMaintenanceJob().getDurationInGrains() > maintenanceJobAssignment.getMaintenanceJob().getDueTimeGrainIndex())
@@ -68,7 +68,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint assignAllCriticalJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 // Critical maintenance jobs must be assigned a crew and start period
                 .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().isCritical() && (maintenanceJobAssignment.getAssignedCrew() == null
                         || maintenanceJobAssignment.getStartingTimeGrain() == null))
@@ -76,7 +76,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint oneJobPerCrewPerPeriod(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
                         && maintenanceJobAssignment.getAssignedCrew() != null)
                 .join(MaintenanceJobAssignment.class,
@@ -87,7 +87,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint mutuallyExclusiveJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null)
                 .join(MaintenanceJobAssignment.class,
                         lessThan(MaintenanceJobAssignment::getId),
@@ -100,7 +100,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint oneJobPerUnitPerPeriod(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null)
                 .join(MaintenanceJobAssignment.class,
                         equal(maintenanceJobAssignment -> maintenanceJobAssignment.getMaintenanceJob().getMaintainableUnit()),
@@ -116,7 +116,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     // ************************************************************************
 
     public Constraint assignAllNonCriticalJobs(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 // Non critical maintenance jobs must be assigned a crew and start period
                 .filter(maintenanceJobAssignment -> !maintenanceJobAssignment.getMaintenanceJob().isCritical()
                         && (maintenanceJobAssignment.getAssignedCrew() == null || maintenanceJobAssignment.getStartingTimeGrain() == null))
@@ -124,7 +124,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint jobsShouldFinishBeforeSafetyMargin(ConstraintFactory constraintFactory) {
-        return constraintFactory.fromUnfiltered(MaintenanceJobAssignment.class)
+        return constraintFactory.forEachIncludingNullVars(MaintenanceJobAssignment.class)
                 .filter(maintenanceJobAssignment -> maintenanceJobAssignment.getStartingTimeGrain() != null
                         && maintenanceJobAssignment.calculateSafetyMarginPenalty() > 0)
                 .penalizeConfigurable("Jobs should finish before safety margin",

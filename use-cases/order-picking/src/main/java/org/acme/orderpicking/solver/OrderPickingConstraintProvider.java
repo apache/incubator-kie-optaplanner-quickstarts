@@ -51,7 +51,7 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
      */
     Constraint requiredNumberOfBuckets(ConstraintFactory constraintFactory) {
         return constraintFactory
-                .from(TrolleyStep.class)
+                .forEach(TrolleyStep.class)
                 //raw total volume per order
                 .groupBy(trolleyStep -> trolleyStep.getTrolley(),
                         trolleyStep -> trolleyStep.getOrderItem().getOrder(),
@@ -74,7 +74,7 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
      * An Order should ideally be prepared on the same trolley, penalize the order splitting into different trolleys.
      */
     Constraint minimizeOrderSplitByTrolley(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(TrolleyStep.class)
+        return constraintFactory.forEach(TrolleyStep.class)
                 .groupBy(trolleyStep -> trolleyStep.getOrderItem().getOrder(),
                         countDistinctLong(TrolleyStep::getTrolley))
                 .penalizeLong("Minimize order split by trolley",
@@ -88,7 +88,7 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
      * @see TrolleyStep for more information about the model constructed by the Solver.
      */
     Constraint minimizeDistanceFromPreviousTrolleyStep(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(TrolleyStep.class)
+        return constraintFactory.forEach(TrolleyStep.class)
                 .penalizeLong("Minimize the distance from the previous trolley step",
                         HardSoftLongScore.ONE_SOFT,
                         trolleyStep -> calculateDistance(trolleyStep.getPreviousElement().getLocation(), trolleyStep.getLocation()));
@@ -101,7 +101,7 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
      * @see TrolleyStep for more information about the model constructed by the Solver.
      */
     Constraint minimizeDistanceFromLastTrolleyStepToPathOrigin(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(TrolleyStep.class)
+        return constraintFactory.forEach(TrolleyStep.class)
                 .filter(TrolleyStep::isLast)
                 .penalizeLong(
                         "Minimize the distance from last trolley step to the path origin",

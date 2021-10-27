@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package org.acme.facilitylocation.domain;
+package org.acme.facilitylocation.solver;
 
 import javax.inject.Inject;
 
+import org.acme.facilitylocation.domain.Consumer;
+import org.acme.facilitylocation.domain.Facility;
+import org.acme.facilitylocation.domain.FacilityLocationProblem;
+import org.acme.facilitylocation.domain.Location;
+import org.acme.facilitylocation.solver.FacilityLocationConstraintProvider;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;
 
