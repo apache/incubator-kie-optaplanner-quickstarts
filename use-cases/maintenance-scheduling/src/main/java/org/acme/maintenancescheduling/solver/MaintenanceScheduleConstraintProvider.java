@@ -55,7 +55,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
 
     public Constraint crewConflict(ConstraintFactory constraintFactory) {
         return constraintFactory
-                .fromUniquePair(Job.class,
+                .forEachUniquePair(Job.class,
                         equal(Job::getCrew),
                         overlapping(Job::getStartDate, Job::getEndDate))
                 .penalizeLong("Crew conflict", HardSoftLongScore.ONE_HARD,
@@ -67,7 +67,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint readyDate(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(Job.class)
+        return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getReadyDate() != null
                         && job.getStartDate().isBefore(job.getReadyDate()))
                 .penalizeLong("Ready date", HardSoftLongScore.ONE_HARD,
@@ -75,7 +75,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint dueDate(ConstraintFactory constraintFactory) {
-        return constraintFactory.from(Job.class)
+        return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getDueDate() != null
                         && job.getDueDate().isBefore(job.getEndDate()))
                 .penalizeLong("Due date", HardSoftLongScore.ONE_HARD,
@@ -84,7 +84,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     
     public Constraint mutuallyExclusiveTag(ConstraintFactory constraintFactory) {
         return constraintFactory
-                .fromUniquePair(Job.class,
+                .forEachUniquePair(Job.class,
                         overlapping(Job::getStartDate, Job::getEndDate),
                         // TODO Use intersecting() when available https://issues.redhat.com/browse/PLANNER-2558
                         filtering((job1, job2) -> !Collections.disjoint(
