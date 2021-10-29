@@ -27,8 +27,10 @@ import javax.ws.rs.Path;
 
 import org.acme.maintenancescheduling.domain.Job;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
+import org.acme.maintenancescheduling.domain.WorkCalendar;
 import org.acme.maintenancescheduling.persistence.CrewRepository;
 import org.acme.maintenancescheduling.persistence.JobRepository;
+import org.acme.maintenancescheduling.persistence.WorkCalendarRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -41,6 +43,8 @@ public class MaintenanceScheduleResource {
 
     public static final Long SINGLETON_SCHEDULE_ID = 1L;
 
+    @Inject
+    WorkCalendarRepository workCalendarRepository;
     @Inject
     CrewRepository crewRepository;
     @Inject
@@ -86,11 +90,8 @@ public class MaintenanceScheduleResource {
         if (!SINGLETON_SCHEDULE_ID.equals(id)) {
             throw new IllegalStateException("There is no schedule with id (" + id + ").");
         }
-        // TODO get all working days (no weekend nor holidays) from database
-        LocalDate fromDate = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
-        LocalDate toDate = fromDate.plusWeeks(10);
         return new MaintenanceSchedule(
-                fromDate, toDate,
+                workCalendarRepository.listAll().get(0),
                 crewRepository.listAll(Sort.by("name").and("id")),
                 jobRepository.listAll(Sort.by("dueDate").and("readyDate").and("name").and("id")));
     }

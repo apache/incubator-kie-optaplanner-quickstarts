@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -30,8 +31,10 @@ import javax.transaction.Transactional;
 
 import org.acme.maintenancescheduling.domain.Crew;
 import org.acme.maintenancescheduling.domain.Job;
+import org.acme.maintenancescheduling.domain.WorkCalendar;
 import org.acme.maintenancescheduling.persistence.CrewRepository;
 import org.acme.maintenancescheduling.persistence.JobRepository;
+import org.acme.maintenancescheduling.persistence.WorkCalendarRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.runtime.StartupEvent;
@@ -48,6 +51,8 @@ public class DemoDataGenerator {
         LARGE
     }
 
+    @Inject
+    WorkCalendarRepository workCalendarRepository;
     @Inject
     CrewRepository crewRepository;
     @Inject
@@ -69,8 +74,14 @@ public class DemoDataGenerator {
         }
         crewRepository.persist(crewList);
 
-        LocalDate nextMonday = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        LocalDate fromDate = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
         int weekListSize = (demoData == DemoData.LARGE) ? 16 : 8;
+        LocalDate toDate = fromDate.plusWeeks(weekListSize);
+        List<LocalDate> workDateList = fromDate.datesUntil(toDate)
+                    .filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY
+                            && date.getDayOfWeek() != DayOfWeek.SUNDAY)
+                    .collect(Collectors.toList());
+        workCalendarRepository.persist(new WorkCalendar(fromDate, toDate, workDateList));
         int workdayTotal = weekListSize * 5;
 
         final String[] JOB_AREA_NAMES = {
@@ -91,7 +102,7 @@ public class DemoDataGenerator {
             int readyDueBetweenWorkdays = durationInDays + 5 // at least 5 days of flexibility
                     + random.nextInt(workdayTotal - (durationInDays + 5));
             int readyWorkdayOffset = random.nextInt(workdayTotal - readyDueBetweenWorkdays + 1);
-            LocalDate readyDate = plusWorkdays(nextMonday, readyWorkdayOffset);
+            LocalDate readyDate = plusWorkdays(fromDate, readyWorkdayOffset);
             LocalDate dueDate = plusWorkdays(readyDate, readyDueBetweenWorkdays);
             Set<String> mutuallyExclusiveTagSet = random.nextDouble() < 0.1 ? Set.of(jobArea, "Subway") : Set.of(jobArea);
             jobList.add(new Job(jobArea + " " + jobTarget, readyDate, dueDate, durationInDays, mutuallyExclusiveTagSet));

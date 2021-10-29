@@ -16,41 +16,40 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import java.time.Duration;
 import java.time.LocalDate;
-
+import java.util.List;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.optaplanner.core.api.domain.lookup.PlanningId;
-
 @Entity
-public class Crew {
+public class WorkCalendar {
 
-    @PlanningId
     @Id
     @GeneratedValue
     private Long id;
 
-    private String name;
+    private LocalDate fromDate; // Inclusive
+    private LocalDate toDate; // Exclusive
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<LocalDate> workDateList;
 
     // No-arg constructor required for Hibernate
-    public Crew() {
+    public WorkCalendar() {
     }
 
-    public Crew(String name) {
-        this.name = name;
-    }
-
-    public Crew(Long id, String name) {
-        this.id = id;
-        this.name = name;
+    public WorkCalendar(LocalDate fromDate, LocalDate toDate, List<LocalDate> workDateList) {
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.workDateList = workDateList;
     }
 
     @Override
     public String toString() {
-        return name;
+        return fromDate + " - " + toDate;
     }
 
     // ************************************************************************
@@ -61,8 +60,16 @@ public class Crew {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public LocalDate getFromDate() {
+        return fromDate;
+    }
+
+    public LocalDate getToDate() {
+        return toDate;
+    }
+
+    public List<LocalDate> getWorkDateList() {
+        return workDateList;
     }
 
 }

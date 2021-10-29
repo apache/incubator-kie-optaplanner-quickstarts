@@ -25,6 +25,7 @@ import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
 import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
+import org.optaplanner.core.api.domain.solution.ProblemFactProperty;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.solver.SolverStatus;
@@ -32,9 +33,8 @@ import org.optaplanner.core.api.solver.SolverStatus;
 @PlanningSolution
 public class MaintenanceSchedule {
 
-    private LocalDate fromDate; // Inclusive
-    private LocalDate toDate; // Exclusive
-
+    @ProblemFactProperty
+    private WorkCalendar workCalendar;
     @ProblemFactCollectionProperty
     @ValueRangeProvider(id = "crewRange")
     private List<Crew> crewList;
@@ -51,31 +51,24 @@ public class MaintenanceSchedule {
     public MaintenanceSchedule() {
     }
 
-    public MaintenanceSchedule(LocalDate fromDate, LocalDate toDate,
+    public MaintenanceSchedule(WorkCalendar workCalendar,
             List<Crew> crewList, List<Job> jobList) {
-        this.fromDate = fromDate;
-        this.toDate = toDate;
+        this.workCalendar = workCalendar;
         this.crewList = crewList;
         this.jobList = jobList;
     }
 
     @ValueRangeProvider(id = "startDateRange")
-    public List<LocalDate> createStartDateRange() {
-        return fromDate.datesUntil(toDate)
-                .filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY && date.getDayOfWeek() != DayOfWeek.SUNDAY)
-                .collect(Collectors.toList());
+    public List<LocalDate> getWorkDateList() {
+        return workCalendar.getWorkDateList();
     }
 
     // ************************************************************************
     // Getters and setters
     // ************************************************************************
 
-    public LocalDate getFromDate() {
-        return fromDate;
-    }
-
-    public LocalDate getToDate() {
-        return toDate;
+    public WorkCalendar getWorkCalendar() {
+        return workCalendar;
     }
 
     public List<Crew> getCrewList() {

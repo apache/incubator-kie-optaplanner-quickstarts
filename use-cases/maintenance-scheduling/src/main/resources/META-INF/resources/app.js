@@ -152,8 +152,8 @@ function refreshSchedule() {
                 });
             }
         });
-        byCrewTimeline.fit();
-        byJobTimeline.fit();
+        byCrewTimeline.setWindow(schedule.workCalendar.fromDate, schedule.workCalendar.toDate);
+        byJobTimeline.setWindow(schedule.workCalendar.fromDate, schedule.workCalendar.toDate);
     });
 }
 
