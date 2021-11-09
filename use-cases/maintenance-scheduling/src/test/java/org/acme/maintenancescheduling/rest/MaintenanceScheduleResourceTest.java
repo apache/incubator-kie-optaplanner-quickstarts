@@ -41,7 +41,8 @@ public class MaintenanceScheduleResourceTest {
     public void solveDemoDataUntilFeasible() throws InterruptedException {
         maintenanceScheduleResource.solve();
         MaintenanceSchedule maintenanceSchedule = maintenanceScheduleResource.getSchedule();
-        while (maintenanceSchedule.getSolverStatus() != SolverStatus.NOT_SOLVING) {
+        while (maintenanceSchedule.getSolverStatus() != SolverStatus.NOT_SOLVING
+                || !maintenanceSchedule.getScore().isFeasible()) {
             // Quick polling (not a Test Thread Sleep anti-pattern)
             // Test is still fast on fast machines and doesn't randomly fail on slow machines.
             Thread.sleep(20L);
