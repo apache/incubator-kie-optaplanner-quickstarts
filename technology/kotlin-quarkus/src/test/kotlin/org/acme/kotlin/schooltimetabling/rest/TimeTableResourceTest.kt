@@ -42,7 +42,7 @@ class TimeTableResourceTest {
             // Test is still fast on fast machines and doesn't randomly fail on slow machines.
             Thread.sleep(20L)
             timeTable = timeTableResource.getTimeTable()
-        } while (timeTable.solverStatus != SolverStatus.NOT_SOLVING)
+        } while (timeTable.solverStatus != SolverStatus.NOT_SOLVING || !timeTable.score!!.isFeasible)
         Assertions.assertFalse(timeTable.lessonList.isEmpty())
         for (lesson in timeTable.lessonList) {
             Assertions.assertNotNull(lesson.timeslot)
