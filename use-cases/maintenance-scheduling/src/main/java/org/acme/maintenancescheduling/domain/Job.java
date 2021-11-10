@@ -26,9 +26,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.acme.maintenancescheduling.solver.EndDateUpdatingVariableListener;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
+import org.optaplanner.core.api.domain.variable.CustomShadowVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
+import org.optaplanner.core.api.domain.variable.PlanningVariableReference;
 
 @PlanningEntity
 @Entity
@@ -46,10 +49,14 @@ public class Job {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> mutuallyExclusiveTagSet;
 
-    // @PlanningVariable annotations on the getters so setStartDate() can adjust endDate too
+    @PlanningVariable(valueRangeProviderRefs = {"crewRange"})
     @ManyToOne
     private Crew crew;
+    // Follows the TimeGrain Design Pattern
+    @PlanningVariable(valueRangeProviderRefs = {"startDateRange"})
     private LocalDate startDate; // Inclusive
+    @CustomShadowVariable(variableListenerClass = EndDateUpdatingVariableListener.class,
+            sources = @PlanningVariableReference(variableName = "startDate"))
     private LocalDate endDate; // Exclusive
 
     // No-arg constructor required for Hibernate and OptaPlanner
@@ -110,7 +117,6 @@ public class Job {
         return mutuallyExclusiveTagSet;
     }
 
-    @PlanningVariable(valueRangeProviderRefs = {"crewRange"})
     public Crew getCrew() {
         return crew;
     }
@@ -119,24 +125,19 @@ public class Job {
         this.crew = crew;
     }
 
-    // Follows the TimeGrain Design Pattern
-    @PlanningVariable(valueRangeProviderRefs = {"startDateRange"})
     public LocalDate getStartDate() {
         return startDate;
     }
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
-        if (startDate == null) {
-            endDate = null;
-        } else {
-            int weekendPadding = 2 * ((durationInDays + (startDate.getDayOfWeek().getValue() - 1)) / 5);
-            endDate = startDate.plusDays(durationInDays + weekendPadding);
-        }
     }
 
     public LocalDate getEndDate() {
         return endDate;
     }
 
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 }

@@ -103,6 +103,7 @@ public class MaintenanceScheduleResource {
             Job attachedJob = jobRepository.findById(job.getId());
             attachedJob.setCrew(job.getCrew());
             attachedJob.setStartDate(job.getStartDate());
+            attachedJob.setEndDate(job.getEndDate());
         }
     }
 }

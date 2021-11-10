@@ -77,11 +77,7 @@ public class DemoDataGenerator {
         LocalDate fromDate = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
         int weekListSize = (demoData == DemoData.LARGE) ? 16 : 8;
         LocalDate toDate = fromDate.plusWeeks(weekListSize);
-        List<LocalDate> workDateList = fromDate.datesUntil(toDate)
-                    .filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY
-                            && date.getDayOfWeek() != DayOfWeek.SUNDAY)
-                    .collect(Collectors.toList());
-        workCalendarRepository.persist(new WorkCalendar(fromDate, toDate, workDateList));
+        workCalendarRepository.persist(new WorkCalendar(fromDate, toDate));
         int workdayTotal = weekListSize * 5;
 
         final String[] JOB_AREA_NAMES = {

@@ -34,17 +34,13 @@ public class WorkCalendar {
     private LocalDate fromDate; // Inclusive
     private LocalDate toDate; // Exclusive
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<LocalDate> workDateList;
-
     // No-arg constructor required for Hibernate
     public WorkCalendar() {
     }
 
-    public WorkCalendar(LocalDate fromDate, LocalDate toDate, List<LocalDate> workDateList) {
+    public WorkCalendar(LocalDate fromDate, LocalDate toDate) {
         this.fromDate = fromDate;
         this.toDate = toDate;
-        this.workDateList = workDateList;
     }
 
     @Override
@@ -66,10 +62,6 @@ public class WorkCalendar {
 
     public LocalDate getToDate() {
         return toDate;
-    }
-
-    public List<LocalDate> getWorkDateList() {
-        return workDateList;
     }
 
 }
