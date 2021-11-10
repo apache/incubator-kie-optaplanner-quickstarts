@@ -56,6 +56,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     // ************************************************************************
 
     public Constraint crewConflict(ConstraintFactory constraintFactory) {
+        // A crew can do at most one maintenance job at the same time.
         return constraintFactory
                 .forEachUniquePair(Job.class,
                         equal(Job::getCrew),
@@ -69,6 +70,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint readyDate(ConstraintFactory constraintFactory) {
+        // Don't start a maintenance job before its ready to start.
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getReadyDate() != null
                         && job.getStartDate().isBefore(job.getReadyDate()))
@@ -77,6 +79,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint dueDate(ConstraintFactory constraintFactory) {
+        // Don't end a maintenance job after its due.
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getDueDate() != null
                         && job.getEndDate().isAfter(job.getDueDate()))
@@ -89,6 +92,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     // ************************************************************************
 
     public Constraint beforeIdealEndDate(ConstraintFactory constraintFactory) {
+        // Early maintenance is expensive because the sooner maintenance is done, the sooner it needs to happen again.
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getIdealEndDate() != null
                         && job.getEndDate().isBefore(job.getIdealEndDate()))
@@ -97,6 +101,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
 
     public Constraint afterIdealEndDate(ConstraintFactory constraintFactory) {
+        // Late maintenance is risky because delays can push it over the due date.
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getIdealEndDate() != null
                         && job.getEndDate().isAfter(job.getIdealEndDate()))
@@ -105,6 +110,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     }
     
     public Constraint mutuallyExclusiveTag(ConstraintFactory constraintFactory) {
+        // Avoid overlapping maintenance jobs with the same tag (for example road maintenance in the same area).
         return constraintFactory
                 .forEachUniquePair(Job.class,
                         overlapping(Job::getStartDate, Job::getEndDate),
