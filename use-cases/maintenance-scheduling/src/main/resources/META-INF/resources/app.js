@@ -1,49 +1,27 @@
-var autoRefreshCount = 0;
 var autoRefreshIntervalId = null;
 
-// Initial date/time (next Monday)
-var initialDateTime = moment().startOf('isoWeek').add(1, 'weeks').set('hour', 9);
-
-// DOM element where the Timeline will be attached
-var employeeContainer = document.getElementById('employeeVisualization');
-var assignedMaintenanceJobsVisDS = new vis.DataSet();
-var crewGroupsVisDS = new vis.DataSet();
-
-// Manager timeline element
-var managerContainer = document.getElementById('managerVisualization');
-var maintenanceJobReadyDueTimesVisDS = new vis.DataSet();
-var unitAndJobGroupsVisDS = new vis.DataSet();
-
-var employeeTimelineOptions = {
-    hiddenDates: [
-        // Hide weekends using any weekend and repeat weekly
-        {start: '2020-02-29 00:00:00', end: '2020-03-02 00:00:00', repeat: 'weekly'},
-        // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
-        {start: '2020-02-29 17:00:00', end: '2020-03-02 09:00:00', repeat: 'daily'}
-    ],
-    // Always snap to full hours, independent of the scale
-    snap: function (date, scale, step) {
-        var hour = 60 * 60 * 1000;
-        return Math.round(date / hour) * hour;
-    },
-    // Prevent jobs from stacking in timeline
-    stack: false
+const byCrewPanel = document.getElementById("byCrewPanel");
+const byCrewTimelineOptions = {
+    timeAxis: {scale: "day"},
+    orientation: {axis: "top"},
+    stack: false,
+    xss: {disabled: true}, // Items are XSS safe through JQuery
+    zoomMin: 3 * 1000 * 60 * 60 * 24 // Three day in milliseconds
 };
-var employeeTimeline = new vis.Timeline(employeeContainer, assignedMaintenanceJobsVisDS, crewGroupsVisDS,
-  employeeTimelineOptions);
+var byCrewGroupDataSet = new vis.DataSet();
+var byCrewItemDataSet = new vis.DataSet();
+var byCrewTimeline = new vis.Timeline(byCrewPanel, byCrewItemDataSet, byCrewGroupDataSet, byCrewTimelineOptions);
 
-var managerTimelineOptions = {
-    hiddenDates: [
-        // Hide weekends using any weekend and repeat weekly
-        {start: '2020-02-29 00:00:00', end: '2020-03-02 00:00:00', repeat: 'weekly'},
-        // Hide non-working hours outside of 9am to 5pm using any two days and repeat daily
-        {start: '2020-02-29 17:00:00', end: '2020-03-02 09:00:00', repeat: 'daily'}
-    ],
-    // Prevent jobs from stacking in timeline
-    stack: false
+const byJobPanel = document.getElementById("byJobPanel");
+const byJobTimelineOptions = {
+    timeAxis: {scale: "day"},
+    orientation: {axis: "top"},
+    xss: {disabled: true}, // Items are XSS safe through JQuery
+    zoomMin: 3 * 1000 * 60 * 60 * 24 // Three day in milliseconds
 };
-var managerTimeline = new vis.Timeline(managerContainer, maintenanceJobReadyDueTimesVisDS, unitAndJobGroupsVisDS,
-    managerTimelineOptions);
+var byJobGroupDataSet = new vis.DataSet();
+var byJobItemDataSet = new vis.DataSet();
+var byJobTimeline = new vis.Timeline(byJobPanel, byJobItemDataSet, byJobGroupDataSet, byJobTimelineOptions);
 
 $(document).ready(function () {
     $.ajaxSetup({
@@ -79,74 +57,16 @@ $(document).ready(function () {
     $("#stopSolvingButton").click(function () {
         stopSolving();
     });
-    $("#employeeViewTab").click(function () {
-        setTimeout(() => { refreshSchedule() }, 500);
-    });
-    $("#managerViewTab").click(function () {
-        setTimeout(() => { refreshSchedule() }, 500);
-    });
-    $("#addJobButton").click(function () {
-        dropdownMaintenanceUnits();
-    });
+    // HACK to allow vis-timeline to work within Bootstrap tabs
+    $("#byCrewPanelTab").on('shown.bs.tab', function (event) {
+        byCrewTimeline.redraw();
+    })
+    $("#byJobPanelTab").on('shown.bs.tab', function (event) {
+        byJobTimeline.redraw();
+    })
 
     refreshSchedule();
 });
-
-function solve() {
-    $.post("/schedule/solve", function () {
-        refreshSolvingButtons(true);
-        autoRefreshCount = 16;
-        if (autoRefreshIntervalId == null) {
-            autoRefreshIntervalId = setInterval(autoRefresh, 2000);
-        }
-    }).fail(function (xhr, ajaxOptions, thrownError) {
-        // TODO: Implement showError
-        // showError("Start solving failed.", xhr);
-    });
-}
-
-function refreshSolvingButtons(solving) {
-    if (solving) {
-        $("#solveButton").hide();
-        $("#stopSolvingButton").show();
-    } else {
-        $("#solveButton").show();
-        $("#stopSolvingButton").hide();
-    }
-}
-
-function autoRefresh() {
-    refreshSchedule();
-    autoRefreshCount--;
-    if (autoRefreshCount <= 0) {
-        clearInterval(autoRefreshIntervalId);
-        autoRefreshIntervalId = null;
-    }
-}
-
-function stopSolving() {
-    $.post("/schedule/stopSolving", function () {
-        refreshSolvingButtons(false);
-        refreshSchedule();
-        clearInterval(autoRefreshIntervalId);
-        autoRefreshIntervalId = null;
-    }).fail(function (xhr, ajaxOptions, thrownError) {
-        //showError("Stop solving failed.", xhr);
-    });
-}
-
-function dropdownMaintenanceUnits() {
-    // Fetch maintenance units and display in a dropdown
-    var unitDropdown = $("#maintenance_unit_dropdown");
-    unitDropdown.empty();
-    $.getJSON("/units", function (units) {
-        $.each(units, (index, unit) => {
-            $("<option>")
-                .html(unit.unitName)
-                .appendTo(unitDropdown);
-        });
-    });
-}
 
 function refreshSchedule() {
     $.getJSON("/schedule", function (schedule) {
@@ -155,142 +75,152 @@ function refreshSchedule() {
 
         const unassignedJobs = $("#unassignedJobs");
         unassignedJobs.children().remove();
+        var unassignedJobsCount = 0;
+        byCrewGroupDataSet.clear();
+        byJobGroupDataSet.clear();
+        byCrewItemDataSet.clear();
+        byJobItemDataSet.clear();
 
-        // Add a group for each crew
-        crewGroupsVisDS.clear();
-        $.each(schedule.assignedCrewList, (index, crew) => {
-            crewGroupsVisDS.add({
-                id: crew.id,
-                content: crew.crewName
-            });
+        $.each(schedule.crewList, (index, crew) => {
+            byCrewGroupDataSet.add({id : crew.id, content: crew.name});
         });
 
-        // Map jobs to units
-        var unitToJobs = {};
-
-        // Add a nested group for each job under its unit
-        unitAndJobGroupsVisDS.clear();
-        $.each(schedule.maintenanceJobAssignmentList, (index, jobAssignment) => {
-            var maintenanceJob = jobAssignment.maintenanceJob;
-            unitAndJobGroupsVisDS.add({
-                id: jobAssignment.id,
-                content: maintenanceJob.jobName
+        $.each(schedule.jobList, (index, job) => {
+            const jobGroupElement = $(`<div/>`)
+              .append($(`<h5 class="card-title mb-1"/>`).text(job.name))
+              .append($(`<p class="card-text ml-2 mb-0"/>`).text(`${job.durationInDays} workdays`));
+            byJobGroupDataSet.add({
+                id : job.id,
+                content: jobGroupElement.html()
+            });
+            byJobItemDataSet.add({
+                  id: job.id + "_readyToIdealEnd", group: job.id,
+                  start: job.readyDate, end: job.idealEndDate,
+                  type: "background",
+                  style: "background-color: #8AE23433"
+            });
+            byJobItemDataSet.add({
+                  id: job.id + "_idealEndToDue", group: job.id,
+                  start: job.idealEndDate, end: job.dueDate,
+                  type: "background",
+                  style: "background-color: #FCAF3E33"
             });
 
-            // Map job to unit
-            if (unitToJobs[maintenanceJob.maintainableUnit.unitName]) {
-                unitToJobs[maintenanceJob.maintainableUnit.unitName].push(jobAssignment.id)
+            if (job.crew == null || job.startDate == null) {
+                unassignedJobsCount++;
+                const unassignedJobElement = $(`<div class="card-body p-2"/>`)
+                    .append($(`<h5 class="card-title mb-1"/>`).text(job.name))
+                    .append($(`<p class="card-text ml-2 mb-0"/>`).text(`${job.durationInDays} workdays`))
+                    .append($(`<p class="card-text ml-2 mb-0"/>`).text(`Ready: ${job.readyDate}`))
+                    .append($(`<p class="card-text ml-2 mb-0"/>`).text(`Due: ${job.dueDate}`));
+                const byJobJobElement = $(`<div/>`)
+                  .append($(`<h5 class="card-title mb-1"/>`).text(`Unassigned`));
+                $.each(job.tagSet, (index, tag) => {
+                    const color = pickColor(tag);
+                    unassignedJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
+                    byJobJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
+                });
+                unassignedJobs.append($(`<div class="card"/>`).append(unassignedJobElement));
+                byJobItemDataSet.add({
+                    id : job.id, group: job.id,
+                    content: byJobJobElement.html(),
+                    start: job.readyDate, end: JSJoda.LocalDate.parse(job.readyDate).plusDays(job.durationInDays).toString(),
+                    style: "background-color: #EF292999"
+                });
             } else {
-                unitToJobs[maintenanceJob.maintainableUnit.unitName] = [jobAssignment.id]
+                const beforeReady = JSJoda.LocalDate.parse(job.startDate).isBefore(JSJoda.LocalDate.parse(job.readyDate));
+                const afterDue = JSJoda.LocalDate.parse(job.endDate).isAfter(JSJoda.LocalDate.parse(job.dueDate));
+                const byCrewJobElement = $(`<div/>`)
+                    .append($(`<h5 class="card-title mb-1"/>`).text(job.name))
+                    .append($(`<p class="card-text ml-2 mb-0"/>`).text(`${job.durationInDays} workdays`));
+                const byJobJobElement = $(`<div/>`)
+                    .append($(`<h5 class="card-title mb-1"/>`).text(job.crew.name));
+                if (beforeReady) {
+                    byCrewJobElement.append($(`<p class="badge badge-danger mb-0"/>`).text(`Before ready (too early)`));
+                    byJobJobElement.append($(`<p class="badge badge-danger mb-0"/>`).text(`Before ready (too early)`));
+                }
+                if (afterDue) {
+                    byCrewJobElement.append($(`<p class="badge badge-danger mb-0"/>`).text(`After due (too late)`));
+                    byJobJobElement.append($(`<p class="badge badge-danger mb-0"/>`).text(`After due (too late)`));
+                }
+                $.each(job.tagSet, (index, tag) => {
+                    const color = pickColor(tag);
+                    byCrewJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
+                    byJobJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
+                });
+                byCrewItemDataSet.add({
+                    id : job.id, group: job.crew.id,
+                    content: byCrewJobElement.html(),
+                    start: job.startDate, end: job.endDate
+                });
+                byJobItemDataSet.add({
+                    id : job.id, group: job.id,
+                    content: byJobJobElement.html(),
+                    start: job.startDate, end: job.endDate
+                });
             }
         });
-
-        // Add a group for each unit
-        $.each(schedule.maintainableUnitList, (index, unit) => {
-            unitAndJobGroupsVisDS.add({
-                id: unit.id,
-                content: `Vehicle ` + unit.unitName,
-                nestedGroups: unitToJobs[unit.unitName]
-            });
-        });
-
-        // Label each mutually exclusive job with tag
-        const jobToMutuallyExclusiveTagMap = {};
-        $.each(schedule.mutuallyExclusiveJobsList, (index, mutuallyExclusiveJobs) => {
-            $.each(mutuallyExclusiveJobs.mutuallyExclusiveJobList, (index, job) => {
-                if (jobToMutuallyExclusiveTagMap[job.jobName] == null) {
-                    jobToMutuallyExclusiveTagMap[job.jobName] = [mutuallyExclusiveJobs.exclusiveTag];
-                }
-                else {
-                    jobToMutuallyExclusiveTagMap[job.jobName].push(mutuallyExclusiveJobs.exclusiveTag);
-                }
-            });
-        });
-
-        assignedMaintenanceJobsVisDS.clear();
-        maintenanceJobReadyDueTimesVisDS.clear();
-        var managerTimelineFocusIds = [];
-        $.each(schedule.maintenanceJobAssignmentList, (index, jobAssignment) => {
-            var maintenanceJob = jobAssignment.maintenanceJob;
-            if (jobAssignment.assignedCrew != null && jobAssignment.startingTimeGrain != null) {
-                var startDateTime = moment(initialDateTime).add(jobAssignment.startingTimeGrain.grainIndex, `hours`);
-                var endDateTime = moment(initialDateTime).add(jobAssignment.startingTimeGrain.grainIndex +
-                    maintenanceJob.durationInGrains, `hours`);
-
-                // Display assigned job in employee view timeline
-                assignedMaintenanceJobsVisDS.add({
-                    id: jobAssignment.id,
-                    group: jobAssignment.assignedCrew.id,
-                    content: `<b>` + maintenanceJob.jobName + `</b><br/><i>at ` +
-                        startDateTime.format(`HH:mm`) + `</i><br/>` +
-                        maintenanceJob.maintainableUnit.unitName,
-                    start: startDateTime,
-                    end: endDateTime
-                });
-
-                // Display assigned job in manager view timeline
-                maintenanceJobReadyDueTimesVisDS.add({
-                    id: jobAssignment.id,
-                    group: jobAssignment.id,
-                    content: `<b>` + jobAssignment.assignedCrew.crewName + `</b><br/><i> at ` +
-                        startDateTime.format(`HH:mm`) + `</i>`,
-                    start: startDateTime,
-                    end: endDateTime
-                });
-
-                managerTimelineFocusIds.push(jobAssignment.id);
-            } else {
-                const jobDiv = $(`<div class="card"/>`);
-                const jobDivBody = $(`<div class="card-body p-2"/>`).appendTo(jobDiv);
-                jobDivBody.append($(`<p class="card-title m-0"/>`).append($(`<b/>`).text(maintenanceJob.jobName)))
-                        .append($(`<p class="card-text m-0"/>`).text(maintenanceJob.maintainableUnit.unitName));
-                // Append mutually exclusive tags on jobs
-                $.each(jobToMutuallyExclusiveTagMap[maintenanceJob.jobName],
-                    (index, mutuallyExclusiveTag) => {
-                        const color = pickColor(mutuallyExclusiveTag);
-                        jobDivBody.append($(`<span class="badge" style="background-color: ${color}"/>`).text(mutuallyExclusiveTag));
-                    });
-                unassignedJobs.append(jobDiv);
-
-                // Display unassigned job in manager view timeline
-                maintenanceJobReadyDueTimesVisDS.add({
-                    id: jobAssignment.id,
-                    group: jobAssignment.id,
-                    content: `<b>` + maintenanceJob.jobName + `</b><br/><i>Unassigned</i>`,
-                    style: `background-color: red`,
-                    start: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`)
-                        .add((maintenanceJob.dueTimeGrainIndex -
-                            maintenanceJob.readyTimeGrainIndex) * 1 / 3, `hours`),
-                    end: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`)
-                        .add((maintenanceJob.dueTimeGrainIndex -
-                            maintenanceJob.readyTimeGrainIndex) * 2 / 3, `hours`)
-                })
-                managerTimelineFocusIds.push(jobAssignment.id);
-            }
-            maintenanceJobReadyDueTimesVisDS.add([
-                {
-                    id: jobAssignment.id + "readyDue",
-                    group: jobAssignment.id,
-                    start: moment(initialDateTime).add(maintenanceJob.readyTimeGrainIndex, `hours`),
-                    end: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`),
-                    type: `background`,
-                    style: `background-color: rgba(138, 226, 52, 0.2)`
-                },
-                {
-                    id: jobAssignment.id + "_safetyMargin",
-                    group: jobAssignment.id,
-                    start: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex -
-                        maintenanceJob.safetyMarginDurationInGrains, `hours`),
-                    end: moment(initialDateTime).add(maintenanceJob.dueTimeGrainIndex, `hours`),
-                    type: `background`,
-                    style: `background-color: rgba(252, 175, 62, 0.2)`,
-                }
-            ]);
-        });
-
-        employeeTimeline.fit();
-        managerTimeline.focus(managerTimelineFocusIds);
+        if (unassignedJobsCount === 0) {
+            unassignedJobs.append($(`<p/>`).text(`There are no unassigned jobs.`));
+        }
+        byCrewTimeline.setWindow(schedule.workCalendar.fromDate, schedule.workCalendar.toDate);
+        byJobTimeline.setWindow(schedule.workCalendar.fromDate, schedule.workCalendar.toDate);
     });
+}
+
+function solve() {
+    $.post("/schedule/solve", function () {
+        refreshSolvingButtons(true);
+    }).fail(function (xhr, ajaxOptions, thrownError) {
+        showError("Start solving failed.", xhr);
+    });
+}
+
+function refreshSolvingButtons(solving) {
+    if (solving) {
+        $("#solveButton").hide();
+        $("#stopSolvingButton").show();
+        if (autoRefreshIntervalId == null) {
+            autoRefreshIntervalId = setInterval(refreshSchedule, 2000);
+        }
+    } else {
+        $("#solveButton").show();
+        $("#stopSolvingButton").hide();
+        if (autoRefreshIntervalId != null) {
+            clearInterval(autoRefreshIntervalId);
+            autoRefreshIntervalId = null;
+        }
+    }
+}
+
+function stopSolving() {
+    $.post("/schedule/stopSolving", function () {
+        refreshSolvingButtons(false);
+        refreshSchedule();
+    }).fail(function (xhr, ajaxOptions, thrownError) {
+        showError("Stop solving failed.", xhr);
+    });
+}
+
+function showError(title, xhr) {
+    const serverErrorMessage = !xhr.responseJSON ? `${xhr.status}: ${xhr.statusText}` : xhr.responseJSON.message;
+    console.error(title + "\n" + serverErrorMessage);
+    const notification = $(`<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 30rem"/>`)
+      .append($(`<div class="toast-header bg-danger">
+                 <strong class="mr-auto text-dark">Error</strong>
+                 <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                   <span aria-hidden="true">&times;</span>
+                 </button>
+               </div>`))
+      .append($(`<div class="toast-body"/>`)
+        .append($(`<p/>`).text(title))
+        .append($(`<pre/>`)
+          .append($(`<code/>`).text(serverErrorMessage))
+        )
+      );
+    $("#notificationPanel").append(notification);
+    notification.toast({delay: 30000});
+    notification.toast('show');
 }
 
 // ****************************************************************************

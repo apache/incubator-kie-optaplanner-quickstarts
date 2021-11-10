@@ -16,19 +16,21 @@
 
 package org.acme.maintenancescheduling.rest;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
+import org.acme.maintenancescheduling.domain.Job;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
-import org.acme.maintenancescheduling.persistence.MaintainableUnitRepository;
-import org.acme.maintenancescheduling.persistence.MaintenanceCrewRepository;
-import org.acme.maintenancescheduling.persistence.MaintenanceJobAssignmentRepository;
-import org.acme.maintenancescheduling.persistence.MutuallyExclusiveJobsRepository;
-import org.acme.maintenancescheduling.persistence.TimeGrainRepository;
+import org.acme.maintenancescheduling.domain.WorkCalendar;
+import org.acme.maintenancescheduling.persistence.CrewRepository;
+import org.acme.maintenancescheduling.persistence.JobRepository;
+import org.acme.maintenancescheduling.persistence.WorkCalendarRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.solver.SolverManager;
@@ -42,15 +44,11 @@ public class MaintenanceScheduleResource {
     public static final Long SINGLETON_SCHEDULE_ID = 1L;
 
     @Inject
-    MaintainableUnitRepository maintainableUnitRepository;
+    WorkCalendarRepository workCalendarRepository;
     @Inject
-    MaintenanceCrewRepository maintenanceCrewRepository;
+    CrewRepository crewRepository;
     @Inject
-    MaintenanceJobAssignmentRepository maintenanceJobAssignmentRepository;
-    @Inject
-    MutuallyExclusiveJobsRepository mutuallyExclusiveJobsRepository;
-    @Inject
-    TimeGrainRepository timeGrainRepository;
+    JobRepository jobRepository;
 
     @Inject
     SolverManager<MaintenanceSchedule, Long> solverManager;
@@ -92,22 +90,20 @@ public class MaintenanceScheduleResource {
         if (!SINGLETON_SCHEDULE_ID.equals(id)) {
             throw new IllegalStateException("There is no schedule with id (" + id + ").");
         }
-
         return new MaintenanceSchedule(
-                maintainableUnitRepository.listAll(Sort.by("unitName").and("id")),
-                mutuallyExclusiveJobsRepository.listAll(Sort.by("id")),
-                maintenanceCrewRepository.listAll(Sort.by("crewName").and("id")),
-                timeGrainRepository.listAll(Sort.by("grainIndex").and("id")),
-                maintenanceJobAssignmentRepository.listAll(Sort.by("id")));
+                workCalendarRepository.listAll().get(0),
+                crewRepository.listAll(Sort.by("name").and("id")),
+                jobRepository.listAll(Sort.by("dueDate").and("readyDate").and("name").and("id")));
     }
 
     @Transactional
     protected void save(MaintenanceSchedule schedule) {
-        for (MaintenanceJobAssignment job : schedule.getMaintenanceJobAssignmentList()) {
+        for (Job job : schedule.getJobList()) {
             // TODO this is awfully naive: optimistic locking causes issues if called by the SolverManager
-            MaintenanceJobAssignment persistedJobAssignment = maintenanceJobAssignmentRepository.findById(job.getId());
-            persistedJobAssignment.setStartingTimeGrain(job.getStartingTimeGrain());
-            persistedJobAssignment.setAssignedCrew(job.getAssignedCrew());
+            Job attachedJob = jobRepository.findById(job.getId());
+            attachedJob.setCrew(job.getCrew());
+            attachedJob.setStartDate(job.getStartDate());
+            attachedJob.setEndDate(job.getEndDate());
         }
     }
 }

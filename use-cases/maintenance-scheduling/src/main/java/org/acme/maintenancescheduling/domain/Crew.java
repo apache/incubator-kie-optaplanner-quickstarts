@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.acme.maintenancescheduling.domain;
 
+import java.time.Duration;
+import java.time.LocalDate;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -23,28 +26,31 @@ import javax.persistence.Id;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
 
 @Entity
-public class TimeGrain {
+public class Crew {
 
     @PlanningId
     @Id
     @GeneratedValue
     private Long id;
 
-    private int grainIndex; // unique
+    private String name;
 
-    public TimeGrain() {
+    // No-arg constructor required for Hibernate
+    public Crew() {
     }
 
-    public TimeGrain(int grainIndex) {
-        this.grainIndex = grainIndex;
+    public Crew(String name) {
+        this.name = name;
+    }
+
+    public Crew(Long id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     @Override
     public String toString() {
-        return "TimeGrain{" +
-                "id=" + id +
-                ", grainIndex=" + grainIndex +
-                '}';
+        return name;
     }
 
     // ************************************************************************
@@ -55,11 +61,8 @@ public class TimeGrain {
         return id;
     }
 
-    public int getGrainIndex() {
-        return grainIndex;
+    public String getName() {
+        return name;
     }
 
-    public void setGrainIndex(int grainIndex) {
-        this.grainIndex = grainIndex;
-    }
 }

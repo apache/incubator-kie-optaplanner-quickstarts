@@ -16,26 +16,25 @@
 
 package org.acme.maintenancescheduling.bootstrap;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Random;
+import java.util.Set;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.acme.maintenancescheduling.domain.MaintainableUnit;
-import org.acme.maintenancescheduling.domain.MaintenanceCrew;
-import org.acme.maintenancescheduling.domain.MaintenanceJob;
-import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
-import org.acme.maintenancescheduling.domain.MutuallyExclusiveJobs;
-import org.acme.maintenancescheduling.domain.TimeGrain;
-import org.acme.maintenancescheduling.persistence.MaintainableUnitRepository;
-import org.acme.maintenancescheduling.persistence.MaintenanceCrewRepository;
-import org.acme.maintenancescheduling.persistence.MaintenanceJobAssignmentRepository;
-import org.acme.maintenancescheduling.persistence.MaintenanceJobRepository;
-import org.acme.maintenancescheduling.persistence.MutuallyExclusiveJobsRepository;
-import org.acme.maintenancescheduling.persistence.TimeGrainRepository;
+import org.acme.maintenancescheduling.domain.Crew;
+import org.acme.maintenancescheduling.domain.Job;
+import org.acme.maintenancescheduling.domain.WorkCalendar;
+import org.acme.maintenancescheduling.persistence.CrewRepository;
+import org.acme.maintenancescheduling.persistence.JobRepository;
+import org.acme.maintenancescheduling.persistence.WorkCalendarRepository;
+import org.acme.maintenancescheduling.solver.EndDateUpdatingVariableListener;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.runtime.StartupEvent;
@@ -53,17 +52,11 @@ public class DemoDataGenerator {
     }
 
     @Inject
-    MaintainableUnitRepository maintainableUnitRepository;
+    WorkCalendarRepository workCalendarRepository;
     @Inject
-    MaintenanceCrewRepository maintenanceCrewRepository;
+    CrewRepository crewRepository;
     @Inject
-    MaintenanceJobRepository maintenanceJobRepository;
-    @Inject
-    MaintenanceJobAssignmentRepository maintenanceJobAssignmentRepository;
-    @Inject
-    MutuallyExclusiveJobsRepository mutuallyExclusiveJobsRepository;
-    @Inject
-    TimeGrainRepository timeGrainRepository;
+    JobRepository jobRepository;
 
     @Transactional
     public void generateDemoData(@Observes StartupEvent startupEvent) {
@@ -71,144 +64,49 @@ public class DemoDataGenerator {
             return;
         }
 
-        List<MaintainableUnit> maintainableUnitList = new ArrayList<>();
-        maintainableUnitList.add(new MaintainableUnit("ABC-001"));
-        maintainableUnitList.add(new MaintainableUnit("BCD-002"));
-        maintainableUnitList.add(new MaintainableUnit("CDE-003"));
-        maintainableUnitList.add(new MaintainableUnit("DEF-004"));
-        maintainableUnitList.add(new MaintainableUnit("EFG-005"));
-        maintainableUnitList.add(new MaintainableUnit("FGH-006"));
-        maintainableUnitList.add(new MaintainableUnit("GHI-007"));
-        maintainableUnitList.add(new MaintainableUnit("HIJ-008"));
-
+        List<Crew> crewList = new ArrayList<>();
+        crewList.add(new Crew("Alpha crew"));
+        crewList.add(new Crew("Beta crew"));
+        crewList.add(new Crew("Gamma crew"));
         if (demoData == DemoData.LARGE) {
-            maintainableUnitList.add(new MaintainableUnit("IJK-010"));
-            maintainableUnitList.add(new MaintainableUnit("JKL-011"));
-            maintainableUnitList.add(new MaintainableUnit("KLM-012"));
-            maintainableUnitList.add(new MaintainableUnit("LMN-013"));
-            maintainableUnitList.add(new MaintainableUnit("MNO-014"));
-            maintainableUnitList.add(new MaintainableUnit("NOP-015"));
-            maintainableUnitList.add(new MaintainableUnit("OPQ-016"));
-            maintainableUnitList.add(new MaintainableUnit("PQR-017"));
+            crewList.add(new Crew("Delta crew"));
+            crewList.add(new Crew("Epsilon crew"));
         }
-        maintainableUnitRepository.persist(maintainableUnitList);
+        crewRepository.persist(crewList);
 
-        List<MaintenanceCrew> maintenanceCrewList = new ArrayList<>();
-        maintenanceCrewList.add(new MaintenanceCrew("Alpha crew"));
-        maintenanceCrewList.add(new MaintenanceCrew("Beta crew"));
+        LocalDate fromDate = LocalDate.now().with(TemporalAdjusters.next(DayOfWeek.MONDAY));
+        int weekListSize = (demoData == DemoData.LARGE) ? 16 : 8;
+        LocalDate toDate = fromDate.plusWeeks(weekListSize);
+        workCalendarRepository.persist(new WorkCalendar(fromDate, toDate));
+        int workdayTotal = weekListSize * 5;
 
-        maintenanceCrewRepository.persist(maintenanceCrewList);
+        final String[] JOB_AREA_NAMES = {
+                "Downtown", "Uptown", "Park", "Airport", "Bay", "Hill", "Forest", "Station", "Hospital",
+                "Harbor", "Market", "Fort", "Beach", "Garden", "River", "Springs", "Tower", "Mountain"};
+        final String[] JOB_TARGET_NAMES = {"Street", "Bridge", "Tunnel", "Highway", "Boulevard", "Avenue",
+                "Square", "Plaza"};
 
-        List<TimeGrain> timeGrainList = new ArrayList<>();
-        for (int i = 0; i <= 48; i++) {
-            timeGrainList.add(new TimeGrain(i));
+        List<Job> jobList = new ArrayList<>();
+        int jobListSize = weekListSize * crewList.size() * 3 / 5;
+        int jobAreaTargetLimit = Math.min(JOB_TARGET_NAMES.length, crewList.size() * 2);
+        Random random = new Random(17);
+        for (int i = 0; i < jobListSize; i++) {
+            String jobArea = JOB_AREA_NAMES[i / jobAreaTargetLimit];
+            String jobTarget = JOB_TARGET_NAMES[i % jobAreaTargetLimit];
+            // 1 day to 2 workweeks (1 workweek on average)
+            int durationInDays = 1 + random.nextInt(10);
+            int readyDueBetweenWorkdays = durationInDays + 5 // at least 5 days of flexibility
+                    + random.nextInt(workdayTotal - (durationInDays + 5));
+            int readyWorkdayOffset = random.nextInt(workdayTotal - readyDueBetweenWorkdays + 1);
+            int readyIdealEndBetweenWorkdays = readyDueBetweenWorkdays - 1 - random.nextInt(4);
+            LocalDate readyDate = EndDateUpdatingVariableListener.calculateEndDate(fromDate, readyWorkdayOffset);
+            LocalDate dueDate = EndDateUpdatingVariableListener.calculateEndDate(readyDate, readyDueBetweenWorkdays);
+            LocalDate idealEndDate = EndDateUpdatingVariableListener.calculateEndDate(readyDate, readyIdealEndBetweenWorkdays);
+            Set<String> tagSet = random.nextDouble() < 0.1 ? Set.of(jobArea, "Subway") : Set.of(jobArea);
+            jobList.add(new Job(jobArea + " " + jobTarget, durationInDays, readyDate, dueDate, idealEndDate, tagSet));
         }
-        if (demoData == DemoData.LARGE) {
-            for (int i = 49; i <= 96; i++) {
-                timeGrainList.add(new TimeGrain(i));
-            }
-        }
-        timeGrainRepository.persist(timeGrainList);
 
-        List<MaintenanceJob> maintenanceJobList = new ArrayList<>();
-        maintenanceJobList.add(new MaintenanceJob("Tire change 1", maintainableUnitList.get(0), 0, 8, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Tire change 2", maintainableUnitList.get(1), 0, 8, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Tire change 3", maintainableUnitList.get(2), 0, 8, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Tire change 4", maintainableUnitList.get(3), 0, 8, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Tire change 5", maintainableUnitList.get(4), 24, 32, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Tire change 6", maintainableUnitList.get(5), 24, 32, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Tire change 7", maintainableUnitList.get(6), 24, 32, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Tire change 8", maintainableUnitList.get(7), 24, 32, 1, 2, true));
-
-        maintenanceJobList.add(new MaintenanceJob("Oil change 1", maintainableUnitList.get(0), 0, 8, 2, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Oil change 2", maintainableUnitList.get(1), 0, 8, 2, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Oil change 3", maintainableUnitList.get(2), 24, 32, 2, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Oil change 4", maintainableUnitList.get(3), 24, 32, 2, 2, true));
-
-        maintenanceJobList.add(new MaintenanceJob("Car wash 1", maintainableUnitList.get(4), 0, 8, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Car wash 2", maintainableUnitList.get(5), 0, 8, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Car wash 3", maintainableUnitList.get(6), 24, 32, 1, 2, true));
-        maintenanceJobList.add(new MaintenanceJob("Car wash 4", maintainableUnitList.get(7), 24, 32, 1, 2, true));
-
-        if (demoData == DemoData.LARGE) {
-            maintenanceJobList.add(new MaintenanceJob("Tire change 9", maintainableUnitList.get(8), 48, 56, 1, 2,
-                    true));
-            maintenanceJobList.add(new MaintenanceJob("Tire change 10", maintainableUnitList.get(9), 48, 56, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Tire change 11", maintainableUnitList.get(10), 48, 56, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Tire change 12", maintainableUnitList.get(11), 48, 56, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Tire change 13", maintainableUnitList.get(12), 72, 80, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Tire change 14", maintainableUnitList.get(13), 72, 80, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Tire change 15", maintainableUnitList.get(14), 72, 80, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Tire change 16", maintainableUnitList.get(15), 72, 80, 1, 2, true));
-
-            maintenanceJobList.add(new MaintenanceJob("Oil change 5", maintainableUnitList.get(8), 48, 56, 2, 2,
-                    true));
-            maintenanceJobList.add(new MaintenanceJob("Oil change 6", maintainableUnitList.get(9), 48, 56, 2, 2,
-                    true));
-            maintenanceJobList.add(new MaintenanceJob("Oil change 7", maintainableUnitList.get(10), 72, 80, 2, 2,
-                    true));
-            maintenanceJobList.add(new MaintenanceJob("Oil change 8", maintainableUnitList.get(11), 72, 80, 2, 2,
-                    true));
-
-            maintenanceJobList.add(new MaintenanceJob("Car wash 5", maintainableUnitList.get(12), 48, 56, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Car wash 6", maintainableUnitList.get(13), 48, 56, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Car wash 7", maintainableUnitList.get(14), 72, 80, 1, 2, true));
-            maintenanceJobList.add(new MaintenanceJob("Car wash 8", maintainableUnitList.get(15), 72, 80, 1, 2, true));
-
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 1", maintainableUnitList.get(0), 0, 8, 2, 2,
-                    false));
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 2", maintainableUnitList.get(1), 0, 8, 2, 2,
-                    false));
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 3", maintainableUnitList.get(2), 24, 32, 2, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 4", maintainableUnitList.get(3), 24, 32, 2, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 5", maintainableUnitList.get(4), 48, 56, 2, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 6", maintainableUnitList.get(5), 48, 56, 2, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 7", maintainableUnitList.get(6), 72, 80, 2, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Wax vehicle 8", maintainableUnitList.get(7), 72, 80, 2, 2, false));
-
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 1", maintainableUnitList.get(8), 0, 8, 1, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 2", maintainableUnitList.get(9), 0, 8, 1, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 3", maintainableUnitList.get(10), 24, 32, 1, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 4", maintainableUnitList.get(11), 24, 32, 1, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 5", maintainableUnitList.get(12), 48, 56, 1, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 6", maintainableUnitList.get(13), 48, 56, 1, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 7", maintainableUnitList.get(14), 72, 80, 1, 2, false));
-            maintenanceJobList.add(new MaintenanceJob("Battery inspection 8", maintainableUnitList.get(15), 72, 80, 1, 2, false));
-        }
-        maintenanceJobRepository.persist(maintenanceJobList);
-
-        List<MaintenanceJobAssignment> maintenanceJobAssignmentList = new ArrayList<>();
-        for (MaintenanceJob job : maintenanceJobList) {
-            maintenanceJobAssignmentList.add(new MaintenanceJobAssignment(job));
-        }
-        maintenanceJobAssignmentRepository.persist(maintenanceJobAssignmentList);
-
-        List<MutuallyExclusiveJobs> mutuallyExclusiveJobsList = new ArrayList<>();
-        if (demoData == DemoData.SMALL) {
-            mutuallyExclusiveJobsList.add(new MutuallyExclusiveJobs("Tire change", maintenanceJobList.get(0),
-                    maintenanceJobList.get(1), maintenanceJobList.get(2), maintenanceJobList.get(3), maintenanceJobList.get(4),
-                    maintenanceJobList.get(5), maintenanceJobList.get(6), maintenanceJobList.get(7)));
-
-            mutuallyExclusiveJobsList.add(new MutuallyExclusiveJobs("Oil change", maintenanceJobList.get(8),
-                    maintenanceJobList.get(9), maintenanceJobList.get(10), maintenanceJobList.get(11)));
-
-            mutuallyExclusiveJobsList.add(new MutuallyExclusiveJobs("Car wash", maintenanceJobList.get(12),
-                    maintenanceJobList.get(13), maintenanceJobList.get(14), maintenanceJobList.get(15)));
-        }
-        else if (demoData == DemoData.LARGE) {
-            mutuallyExclusiveJobsList.add(new MutuallyExclusiveJobs("Tire change", maintenanceJobList.get(0),
-                    maintenanceJobList.get(1), maintenanceJobList.get(2), maintenanceJobList.get(3), maintenanceJobList.get(4),
-                    maintenanceJobList.get(5), maintenanceJobList.get(6), maintenanceJobList.get(7), maintenanceJobList.get(16),
-                    maintenanceJobList.get(17), maintenanceJobList.get(18), maintenanceJobList.get(19),
-                    maintenanceJobList.get(20), maintenanceJobList.get(21), maintenanceJobList.get(22),
-                    maintenanceJobList.get(23)));
-            mutuallyExclusiveJobsList.add(new MutuallyExclusiveJobs("Oil change", maintenanceJobList.get(8),
-                    maintenanceJobList.get(9), maintenanceJobList.get(10), maintenanceJobList.get(11), maintenanceJobList.get(24),
-                    maintenanceJobList.get(25), maintenanceJobList.get(26), maintenanceJobList.get(27)));
-            mutuallyExclusiveJobsList.add(new MutuallyExclusiveJobs("Car wash", maintenanceJobList.get(12),
-                    maintenanceJobList.get(13), maintenanceJobList.get(14), maintenanceJobList.get(15), maintenanceJobList.get(28),
-                    maintenanceJobList.get(29), maintenanceJobList.get(30), maintenanceJobList.get(31)));
-        }
-        mutuallyExclusiveJobsRepository.persist(mutuallyExclusiveJobsList);
+        jobRepository.persist(jobList);
     }
+
 }

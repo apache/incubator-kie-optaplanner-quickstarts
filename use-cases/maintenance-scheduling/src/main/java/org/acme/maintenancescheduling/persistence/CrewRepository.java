@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-package org.acme.maintenancescheduling.rest;
+package org.acme.maintenancescheduling.persistence;
 
-import io.quarkus.test.junit.NativeImageTest;
+import javax.enterprise.context.ApplicationScoped;
 
-@NativeImageTest
-public class TimeGrainResourceIT extends TimeGrainResourceTest {
+import org.acme.maintenancescheduling.domain.Crew;
+
+import io.quarkus.hibernate.orm.panache.PanacheRepository;
+
+@ApplicationScoped
+public class CrewRepository implements PanacheRepository<Crew> {
+
 }

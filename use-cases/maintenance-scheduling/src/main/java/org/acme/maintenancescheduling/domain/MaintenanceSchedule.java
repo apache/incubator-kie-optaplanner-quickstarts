@@ -16,117 +16,80 @@
 
 package org.acme.maintenancescheduling.domain;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.optaplanner.core.api.domain.constraintweight.ConstraintConfigurationProvider;
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
 import org.optaplanner.core.api.domain.solution.PlanningScore;
 import org.optaplanner.core.api.domain.solution.PlanningSolution;
 import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
+import org.optaplanner.core.api.domain.solution.ProblemFactProperty;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
-import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.solver.SolverStatus;
 
 @PlanningSolution
 public class MaintenanceSchedule {
 
-    @ConstraintConfigurationProvider
-    private MaintenanceSchedulingConstraintConfiguration constraintConfiguration =
-            new MaintenanceSchedulingConstraintConfiguration();
-
+    @ProblemFactProperty
+    private WorkCalendar workCalendar;
     @ProblemFactCollectionProperty
-    private List<MaintainableUnit> maintainableUnitList;
-
-    @ProblemFactCollectionProperty
-    private List<MutuallyExclusiveJobs> mutuallyExclusiveJobsList;
-
-    @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "assignedCrewRange")
-    private List<MaintenanceCrew> assignedCrewList;
-
-    @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "timeGrainRange")
-    private List<TimeGrain> timeGrainList;
-
+    @ValueRangeProvider(id = "crewRange")
+    private List<Crew> crewList;
     @PlanningEntityCollectionProperty
-    private List<MaintenanceJobAssignment> maintenanceJobAssignmentList;
+    private List<Job> jobList;
 
     @PlanningScore
-    private HardSoftScore score;
+    private HardSoftLongScore score;
 
     // Ignored by OptaPlanner, used by the UI to display solve or stop solving button
     private SolverStatus solverStatus;
 
+    // No-arg constructor required for OptaPlanner
     public MaintenanceSchedule() {
     }
 
-    public MaintenanceSchedule(List<MaintainableUnit> maintainableUnitList,
-            List<MutuallyExclusiveJobs> mutuallyExclusiveJobsList, List<MaintenanceCrew> assignedCrewList,
-            List<TimeGrain> timeGrainList, List<MaintenanceJobAssignment> maintenanceJobAssignmentList) {
-        this.maintainableUnitList = maintainableUnitList;
-        this.mutuallyExclusiveJobsList = mutuallyExclusiveJobsList;
-        this.assignedCrewList = assignedCrewList;
-        this.timeGrainList = timeGrainList;
-        this.maintenanceJobAssignmentList = maintenanceJobAssignmentList;
+    public MaintenanceSchedule(WorkCalendar workCalendar,
+            List<Crew> crewList, List<Job> jobList) {
+        this.workCalendar = workCalendar;
+        this.crewList = crewList;
+        this.jobList = jobList;
+    }
+
+    @ValueRangeProvider(id = "startDateRange")
+    public List<LocalDate> createStartDateList() {
+        return workCalendar.getFromDate().datesUntil(workCalendar.getToDate())
+                // Skip weekends. Does not work for holidays.
+                // Keep in sync with EndDateUpdatingVariableListener.updateEndDate().
+                // To skip holidays too, cache all working days in WorkCalendar.
+                .filter(date -> date.getDayOfWeek() != DayOfWeek.SATURDAY
+                        && date.getDayOfWeek() != DayOfWeek.SUNDAY)
+                .collect(Collectors.toList());
     }
 
     // ************************************************************************
     // Getters and setters
     // ************************************************************************
 
-    public MaintenanceSchedulingConstraintConfiguration getConstraintConfiguration() {
-        return constraintConfiguration;
+    public WorkCalendar getWorkCalendar() {
+        return workCalendar;
     }
 
-    public void setConstraintConfiguration(MaintenanceSchedulingConstraintConfiguration constraintConfiguration) {
-        this.constraintConfiguration = constraintConfiguration;
+    public List<Crew> getCrewList() {
+        return crewList;
     }
 
-    public List<MaintainableUnit> getMaintainableUnitList() {
-        return maintainableUnitList;
+    public List<Job> getJobList() {
+        return jobList;
     }
 
-    public void setMaintainableUnitList(List<MaintainableUnit> maintainableUnitList) {
-        this.maintainableUnitList = maintainableUnitList;
-    }
-
-    public List<MutuallyExclusiveJobs> getMutuallyExclusiveJobsList() {
-        return mutuallyExclusiveJobsList;
-    }
-
-    public void setMutuallyExclusiveJobsList(List<MutuallyExclusiveJobs> mutuallyExclusiveJobsList) {
-        this.mutuallyExclusiveJobsList = mutuallyExclusiveJobsList;
-    }
-
-    public List<MaintenanceCrew> getAssignedCrewList() {
-        return assignedCrewList;
-    }
-
-    public void setAssignedCrewList(List<MaintenanceCrew> assignedCrewList) {
-        this.assignedCrewList = assignedCrewList;
-    }
-
-    public List<TimeGrain> getTimeGrainList() {
-        return timeGrainList;
-    }
-
-    public void setTimeGrainList(List<TimeGrain> timeGrainList) {
-        this.timeGrainList = timeGrainList;
-    }
-
-    public List<MaintenanceJobAssignment> getMaintenanceJobAssignmentList() {
-        return maintenanceJobAssignmentList;
-    }
-
-    public void setMaintenanceJobList(List<MaintenanceJobAssignment> maintenanceJobAssignmentList) {
-        this.maintenanceJobAssignmentList = maintenanceJobAssignmentList;
-    }
-
-    public HardSoftScore getScore() {
+    public HardSoftLongScore getScore() {
         return score;
     }
 
-    public void setScore(HardSoftScore score) {
+    public void setScore(HardSoftLongScore score) {
         this.score = score;
     }
 

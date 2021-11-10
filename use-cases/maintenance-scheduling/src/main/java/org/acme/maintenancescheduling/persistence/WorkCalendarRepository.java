@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2021 Red Hat, Inc. and/or its affiliates.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@ package org.acme.maintenancescheduling.persistence;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.acme.maintenancescheduling.domain.TimeGrain;
+import org.acme.maintenancescheduling.domain.Crew;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import org.acme.maintenancescheduling.domain.WorkCalendar;
 
 @ApplicationScoped
-public class TimeGrainRepository implements PanacheRepository<TimeGrain> {
+public class WorkCalendarRepository implements PanacheRepository<WorkCalendar> {
 
 }

@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.inject.Inject;
 
-import org.acme.maintenancescheduling.domain.MaintenanceJobAssignment;
+import org.acme.maintenancescheduling.domain.Job;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -47,10 +47,10 @@ public class MaintenanceScheduleResourceTest {
             Thread.sleep(20L);
             maintenanceSchedule = maintenanceScheduleResource.getSchedule();
         }
-        assertFalse(maintenanceSchedule.getMaintenanceJobAssignmentList().isEmpty());
-        for (MaintenanceJobAssignment job : maintenanceSchedule.getMaintenanceJobAssignmentList()) {
-            assertNotNull(job.getStartingTimeGrain());
-            assertNotNull(job.getAssignedCrew());
+        assertFalse(maintenanceSchedule.getJobList().isEmpty());
+        for (Job job : maintenanceSchedule.getJobList()) {
+            assertNotNull(job.getCrew());
+            assertNotNull(job.getStartDate());
         }
         assertTrue(maintenanceSchedule.getScore().isFeasible());
     }
