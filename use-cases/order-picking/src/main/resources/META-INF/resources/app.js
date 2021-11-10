@@ -388,11 +388,13 @@ function printTrolleysMap(orderPickingSolution) {
     const mapActionsContainer = $('#mapActionsContainer');
     mapActionsContainer.children().remove();
     const trolleyCheckBoxes = [];
+    let trolleyIndex = 0;
     for (const trolley of orderPickingSolution.trolleyList) {
         if (trolley.nextElement != null) {
-            printTrolleyPath(trolley);
+            printTrolleyPath(trolley, trolleyIndex, orderPickingSolution.trolleyList.length);
             trolleyCheckBoxes.push(trolley.id);
         }
+        trolleyIndex++;
     }
     if (trolleyCheckBoxes.length > 0) {
         const mapActionsContainer = $('#mapActionsContainer');
@@ -402,7 +404,7 @@ function printTrolleysMap(orderPickingSolution) {
     }
 }
 
-function printTrolleyPath(trolley) {
+function printTrolleyPath(trolley, trolleyIndex, trolleyCount) {
     const trolleySteps = extractTrolleySteps(trolley);
     const trolleyPath = [];
     const trolleyLocation = trolley.location;
@@ -418,7 +420,7 @@ function printTrolleyPath(trolley) {
     const color = trolleyColor(trolley.id);
     let trolleyCheckboxEnabled = false;
     if (trolleyPath.length > 2) {
-        drawTrolleyPath(color, trolleyPath);
+        drawTrolleyPath(color, trolleyPath, trolleyIndex, trolleyCount);
         trolleyCheckboxEnabled = true;
     }
     const travelDistance = TROLLEY_TRAVEL_DISTANCE.get(trolley.id);
@@ -461,12 +463,14 @@ function printSelectedTrolleys() {
     clearWarehouseCanvas();
     drawWarehouse();
     const it = TROLLEY_PATHS.entries();
+    let trolleyIndex = 0;
     for (const trolleyEntry of it) {
         const trolleyCheck = document.getElementById('trolleyPath_' + trolleyEntry[0]);
         if (trolleyCheck.checked) {
             const color = trolleyColor(trolleyEntry[0]);
-            drawTrolleyPath(color, trolleyEntry[1]);
+            drawTrolleyPath(color, trolleyEntry[1], trolleyIndex, TROLLEY_PATHS.size);
         }
+        trolleyIndex++;
     }
 }
 

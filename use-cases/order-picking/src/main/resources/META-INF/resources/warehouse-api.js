@@ -20,8 +20,8 @@ const RIGHT = 'RIGHT';
 const WAREHOUSE_COLUMNS = ['A', 'B', 'C', 'D', 'E'];
 const WAREHOUSE_ROWS = ['1', '2', '3'];
 
-const WAREHOUSE_PADDING_TOP = 10;
-const WAREHOUSE_PADDING_LEFT = 10;
+const WAREHOUSE_PADDING_TOP = 100;
+const WAREHOUSE_PADDING_LEFT = 100;
 
 const SHELVING_PADDING = 80;
 const SHELVING_WIDTH = 150;
@@ -131,52 +131,196 @@ function drawShelving(ctx, shelving) {
 /**
  * Draws the path travelled by a Trolley.
  */
-function drawTrolleyPath(strokeStyle, warehouseLocations) {
+function drawTrolleyPath(strokeStyle, warehouseLocations, trolleyIndex, trolleyCount) {
     const ctx = getWarehouseCanvasContext();
     ctx.lineJoin = TROLLEY_PATH_LINE_JOIN;
     ctx.lineWidth = TROLLEY_PATH_LINE_WIDTH;
     ctx.strokeStyle = strokeStyle;
-    drawWarehousePath(warehouseLocations);
+    drawWarehousePath(warehouseLocations, trolleyIndex, trolleyCount);
 }
 
 /**
  * Draws a path composed of WarehouseLocations.
  */
-function drawWarehousePath(warehouseLocations) {
+function drawWarehousePath(warehouseLocations, trolleyIndex, trolleyCount) {
     const ctx = getWarehouseCanvasContext();
     const startLocation = warehouseLocations[0];
     const startShelving = SHELVINGS_MAP.get(startLocation.shelvingId);
     const startPoint = location2Point(startShelving, startLocation.side, startLocation.row);
+    let lastPoint = startPoint;
+    let lastShelving = startShelving;
+    let lastSide = startLocation.side;
+    let lastRow = startLocation.row;
 
     ctx.beginPath();
     ctx.moveTo(startPoint.x, startPoint.y);
     ctx.arc(startPoint.x, startPoint.y, 5, 0, 2 * Math.PI);
+
     for (let i = 1; i < warehouseLocations.length; i++) {
         const location = warehouseLocations[i];
         const shelving = SHELVINGS_MAP.get(location.shelvingId);
-        const point = location2Point(shelving, location.side, location.row);
-        ctx.lineTo(point.x, point.y);
+        const side = location.side;
+        const row = location.row;
+        const point = location2Point(shelving, location.side, location.row, trolleyIndex, trolleyCount);
+        drawWarehousePathBetweenShelves(ctx, trolleyIndex, trolleyCount, lastShelving, lastSide, lastRow, lastPoint,
+                shelving, side, row, point);
         ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
-
+        lastPoint = point;
+        lastShelving = shelving;
+        lastSide = side;
+        lastRow = row;
     }
     ctx.stroke();
     ctx.closePath();
+
+    ctx.fillStyle = "#000000";
+    for (let i = 0; i < warehouseLocations.length; i++) {
+        const location = warehouseLocations[i];
+        const shelving = SHELVINGS_MAP.get(location.shelvingId);
+        const point = location2Point(shelving, location.side, location.row, trolleyIndex, trolleyCount);
+
+        ctx.fillText((i + 1).toString(10), point.x, point.y);
+    }
+}
+
+/**
+ * Draw a path around shelves connecting two WarehouseLocations
+ */
+function drawWarehousePathBetweenShelves(ctx, trolleyIndex, trolleyCount,
+        startShelving, startSide, startRow, startPoint,
+        endShelving, endSide, endRow, endPoint) {
+    ctx.moveTo(startPoint.x, startPoint.y);
+    if (startShelving === endShelving) {
+        if (startSide === endSide) {
+            // Two points on the same shelf and same side
+            ctx.lineTo(endPoint.x, endPoint.y);
+        } else {
+            // Two points on the same shelf but different sides
+            const isAbove = startRow + endRow < 2*SHELVING_ROWS - startRow - endRow;
+            const aisleChangeStartPoint = location2AisleLane(startShelving, startSide, isAbove, trolleyIndex, trolleyCount);
+            const aisleChangeEndPoint = location2AisleLane(endShelving, endSide, isAbove, trolleyIndex, trolleyCount);
+            ctx.lineTo(aisleChangeStartPoint.x, aisleChangeStartPoint.y);
+            ctx.lineTo(aisleChangeEndPoint.x, aisleChangeEndPoint.y);
+            ctx.lineTo(endPoint.x, endPoint.y);
+        }
+    } else if (startShelving.x === endShelving.x) {
+        if (startSide === endSide) {
+            // Same Aisle, different rows
+            ctx.lineTo(endPoint.x, endPoint.y);
+        } else {
+            // Different Aisle
+            if (startShelving.y < endShelving.y) {
+                // Going up
+                const aisleChangeStartPoint = location2AisleLane(endShelving, startSide, false, trolleyIndex, trolleyCount);
+                const aisleChangeEndPoint = location2AisleLane(endShelving, endSide, false, trolleyIndex, trolleyCount);
+                ctx.lineTo(aisleChangeStartPoint.x, aisleChangeStartPoint.y);
+                ctx.lineTo(aisleChangeEndPoint.x, aisleChangeEndPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+            } else {
+                // Going down
+                const aisleChangeStartPoint = location2AisleLane(endShelving, startSide, true, trolleyIndex, trolleyCount);
+                const aisleChangeEndPoint = location2AisleLane(endShelving, endSide, true, trolleyIndex, trolleyCount);
+                ctx.lineTo(aisleChangeStartPoint.x, aisleChangeStartPoint.y);
+                ctx.lineTo(aisleChangeEndPoint.x, aisleChangeEndPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+            }
+        }
+    } else if (startShelving.y === endShelving.y) {
+        const startColumn = shelvingToColumn(startShelving);
+        const endColumn = shelvingToColumn(endShelving);
+        if (startSide === LEFT) {
+            if (endSide === RIGHT && endColumn === startColumn - 1) {
+                // Same Aisle, different shelving
+                ctx.lineTo(endPoint.x, startPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+            } else {
+                drawWarehousePathBetweenColumns(ctx, trolleyIndex, trolleyCount,
+                        startShelving, startSide, startRow, startPoint,
+                        endShelving, endSide, endRow, endPoint);
+            }
+        } else {
+            if (endSide === LEFT && endColumn === startColumn + 1) {
+                // Same Aisle, different shelving
+                ctx.lineTo(endPoint.x, startPoint.y);
+                ctx.lineTo(endPoint.x, endPoint.y);
+            } else {
+                drawWarehousePathBetweenColumns(ctx, trolleyIndex, trolleyCount,
+                        startShelving, startSide, startRow, startPoint,
+                        endShelving, endSide, endRow, endPoint);
+            }
+        }
+    } else {
+        drawWarehousePathBetweenColumns(ctx, trolleyIndex, trolleyCount,
+                startShelving, startSide, startRow, startPoint,
+                endShelving, endSide, endRow, endPoint);
+    }
+}
+
+/**
+ * Draws a path between shelvings in two different columns
+ */
+function drawWarehousePathBetweenColumns(ctx, trolleyIndex, trolleyCount,
+        startShelving, startSide, startRow, startPoint,
+        endShelving, endSide, endRow, endPoint) {
+    if (startShelving.y === endShelving.y) {
+        const isAbove = startRow + endRow < 2*SHELVING_ROWS - startRow - endRow;
+        const aisleChangeStartPoint = location2AisleLane(startShelving, startSide, isAbove, trolleyIndex, trolleyCount);
+        const aisleChangeEndPoint = location2AisleLane(endShelving, endSide, isAbove, trolleyIndex, trolleyCount);
+        ctx.lineTo(aisleChangeStartPoint.x, aisleChangeStartPoint.y);
+        ctx.lineTo(aisleChangeEndPoint.x, aisleChangeEndPoint.y);
+        ctx.lineTo(endPoint.x, endPoint.y);
+    } else {
+        const isAbove = endShelving.y > startShelving.y;
+        const aisleChangeStartPoint = location2AisleLane(startShelving, startSide, isAbove, trolleyIndex, trolleyCount);
+        const aisleChangeEndPoint = location2AisleLane(endShelving, endSide, isAbove, trolleyIndex, trolleyCount);
+        ctx.lineTo(aisleChangeStartPoint.x, aisleChangeStartPoint.y);
+        ctx.lineTo(aisleChangeEndPoint.x, aisleChangeStartPoint.y);
+        ctx.lineTo(aisleChangeEndPoint.x, aisleChangeEndPoint.y);
+        ctx.lineTo(endPoint.x, endPoint.y);
+    }
 }
 
 /**
  * Transforms a WarehouseLocation into an absolute Point in the canvas.
  */
-function location2Point(shelving, side, row) {
+function location2Point(shelving, side, row, trolleyIndex, trolleyCount) {
     let x;
     let y;
     if (side === LEFT) {
-        x = shelving.x;
+        x = shelving.x - SHELVING_LINE_WIDTH - ((0.5 * SHELVING_PADDING) / trolleyCount) * trolleyIndex;
     } else {
-        x = shelving.x + shelving.width;
+        x = shelving.x + shelving.width + SHELVING_LINE_WIDTH + ((0.5 * SHELVING_PADDING) / trolleyCount) * trolleyIndex;
     }
     const rowWidth = shelving.height / SHELVING_ROWS;
     y = shelving.y + row * rowWidth;
     return new Point(x, y);
 }
 
+/**
+ * Get location for the aisle lane above or below a shelving side
+ */
+function location2AisleLane(shelving, side, isAbove, trolleyIndex, trolleyCount) {
+    let x;
+    let y;
+    if (side === LEFT) {
+        x = shelving.x - SHELVING_LINE_WIDTH - ((0.5 * SHELVING_PADDING) / trolleyCount) * trolleyIndex;
+    } else {
+        x = shelving.x + SHELVING_LINE_WIDTH + shelving.width + ((0.5 * SHELVING_PADDING) / trolleyCount) * trolleyIndex;
+    }
 
+    if (isAbove) {
+        y = shelving.y - 0.25 * SHELVING_PADDING - (((0.25 * SHELVING_PADDING) / trolleyCount) * trolleyIndex);
+    } else {
+        y = shelving.y + shelving.height + 0.25 * SHELVING_PADDING + (((0.25 * SHELVING_PADDING) / trolleyCount) * trolleyIndex);
+    }
+
+    return new Point(x, y);
+}
+
+/**
+ * Get the column number of a shelving
+ */
+function shelvingToColumn(shelving) {
+    const COLUMN_WIDTH = SHELVING_WIDTH + SHELVING_PADDING;
+    return (shelving.x - WAREHOUSE_PADDING_LEFT) / COLUMN_WIDTH;
+}
