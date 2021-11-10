@@ -93,10 +93,16 @@ function refreshSchedule() {
                 content: jobGroupElement.html()
             });
             byJobItemDataSet.add({
-                  id: job.id + "_readyDueBackground", group: job.id,
-                  start: job.readyDate, end: job.dueDate,
+                  id: job.id + "_readyToIdealEnd", group: job.id,
+                  start: job.readyDate, end: job.idealEndDate,
                   type: "background",
                   style: "background-color: #8AE23433"
+            });
+            byJobItemDataSet.add({
+                  id: job.id + "_idealEndToDue", group: job.id,
+                  start: job.idealEndDate, end: job.dueDate,
+                  type: "background",
+                  style: "background-color: #FCAF3E33"
             });
 
             if (job.crew == null || job.startDate == null) {

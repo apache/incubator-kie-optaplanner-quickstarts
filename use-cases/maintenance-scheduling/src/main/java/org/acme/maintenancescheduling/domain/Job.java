@@ -16,7 +16,6 @@
 
 package org.acme.maintenancescheduling.domain;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.util.Set;
 import javax.persistence.ElementCollection;
@@ -42,9 +41,10 @@ public class Job {
     private Long id;
 
     private String name;
+    private int durationInDays;
     private LocalDate readyDate; // Inclusive
     private LocalDate dueDate; // Exclusive
-    private int durationInDays;
+    private LocalDate idealEndDate; // Exclusive
 
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> mutuallyExclusiveTagSet;
@@ -63,24 +63,27 @@ public class Job {
     public Job() {
     }
 
-    public Job(String name, LocalDate readyDate, LocalDate dueDate, int durationInDays, Set<String> mutuallyExclusiveTagSet) {
+    public Job(String name, int durationInDays, LocalDate readyDate, LocalDate dueDate, LocalDate idealEndDate, Set<String> mutuallyExclusiveTagSet) {
         this.name = name;
+        this.durationInDays = durationInDays;
         this.readyDate = readyDate;
         this.dueDate = dueDate;
-        this.durationInDays = durationInDays;
+        this.idealEndDate = idealEndDate;
         this.mutuallyExclusiveTagSet = mutuallyExclusiveTagSet;
     }
 
-    public Job(Long id, String name, LocalDate readyDate, LocalDate dueDate, int durationInDays, Set<String> mutuallyExclusiveTagSet,
+    public Job(Long id, String name, int durationInDays, LocalDate readyDate, LocalDate dueDate, LocalDate idealEndDate, Set<String> mutuallyExclusiveTagSet,
             Crew crew, LocalDate startDate) {
         this.id = id;
         this.name = name;
+        this.durationInDays = durationInDays;
         this.readyDate = readyDate;
         this.dueDate = dueDate;
-        this.durationInDays = durationInDays;
+        this.idealEndDate = idealEndDate;
         this.mutuallyExclusiveTagSet = mutuallyExclusiveTagSet;
         this.crew = crew;
-        setStartDate(startDate);
+        this.startDate = startDate;
+        this.endDate = EndDateUpdatingVariableListener.calculateEndDate(startDate, durationInDays);
     }
 
     @Override
@@ -101,6 +104,10 @@ public class Job {
         return name;
     }
 
+    public int getDurationInDays() {
+        return durationInDays;
+    }
+
     public LocalDate getReadyDate() {
         return readyDate;
     }
@@ -109,8 +116,8 @@ public class Job {
         return dueDate;
     }
 
-    public int getDurationInDays() {
-        return durationInDays;
+    public LocalDate getIdealEndDate() {
+        return idealEndDate;
     }
 
     public Set<String> getMutuallyExclusiveTagSet() {

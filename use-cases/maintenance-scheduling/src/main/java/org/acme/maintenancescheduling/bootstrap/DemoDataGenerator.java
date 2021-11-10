@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -35,6 +34,7 @@ import org.acme.maintenancescheduling.domain.WorkCalendar;
 import org.acme.maintenancescheduling.persistence.CrewRepository;
 import org.acme.maintenancescheduling.persistence.JobRepository;
 import org.acme.maintenancescheduling.persistence.WorkCalendarRepository;
+import org.acme.maintenancescheduling.solver.EndDateUpdatingVariableListener;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.runtime.StartupEvent;
@@ -98,18 +98,15 @@ public class DemoDataGenerator {
             int readyDueBetweenWorkdays = durationInDays + 5 // at least 5 days of flexibility
                     + random.nextInt(workdayTotal - (durationInDays + 5));
             int readyWorkdayOffset = random.nextInt(workdayTotal - readyDueBetweenWorkdays + 1);
-            LocalDate readyDate = plusWorkdays(fromDate, readyWorkdayOffset);
-            LocalDate dueDate = plusWorkdays(readyDate, readyDueBetweenWorkdays);
+            int readyIdealEndBetweenWorkdays = readyDueBetweenWorkdays - 1 - random.nextInt(4);
+            LocalDate readyDate = EndDateUpdatingVariableListener.calculateEndDate(fromDate, readyWorkdayOffset);
+            LocalDate dueDate = EndDateUpdatingVariableListener.calculateEndDate(readyDate, readyDueBetweenWorkdays);
+            LocalDate idealEndDate = EndDateUpdatingVariableListener.calculateEndDate(readyDate, readyIdealEndBetweenWorkdays);
             Set<String> mutuallyExclusiveTagSet = random.nextDouble() < 0.1 ? Set.of(jobArea, "Subway") : Set.of(jobArea);
-            jobList.add(new Job(jobArea + " " + jobTarget, readyDate, dueDate, durationInDays, mutuallyExclusiveTagSet));
+            jobList.add(new Job(jobArea + " " + jobTarget, durationInDays, readyDate, dueDate, idealEndDate, mutuallyExclusiveTagSet));
         }
 
         jobRepository.persist(jobList);
-    }
-
-    private static LocalDate plusWorkdays(LocalDate date, int workdays) {
-        int weekendPadding = 2 * ((workdays + (date.getDayOfWeek().getValue() - 1)) / 5);
-        return date.plusDays(workdays + weekendPadding);
     }
 
 }

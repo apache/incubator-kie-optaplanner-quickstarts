@@ -44,55 +44,87 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void crewConflict() {
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::crewConflict)
                 .given(ALPHA_CREW,
-                        new Job(1L, "Downtown tunnel", null, null, 1, null, ALPHA_CREW, DAY_1),
-                        new Job(2L, "Uptown bridge", null, null, 1, null, ALPHA_CREW, DAY_1))
+                        new Job(1L, "Downtown tunnel", 1, null, null, null, null, ALPHA_CREW, DAY_1),
+                        new Job(2L, "Uptown bridge", 1, null, null, null, null, ALPHA_CREW, DAY_1))
                 .penalizesBy(1);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::crewConflict)
                 .given(ALPHA_CREW,
-                        new Job(1L, "Downtown tunnel", null, null, 1, null, ALPHA_CREW, DAY_1),
-                        new Job(2L, "Uptown bridge", null, null, 1, null, ALPHA_CREW, DAY_2))
+                        new Job(1L, "Downtown tunnel", 1, null, null, null, null, ALPHA_CREW, DAY_1),
+                        new Job(2L, "Uptown bridge", 1, null, null, null, null, ALPHA_CREW, DAY_2))
                 .penalizesBy(0);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::crewConflict)
                 .given(ALPHA_CREW,
-                        new Job(1L, "Downtown tunnel", null, null, 3, null, ALPHA_CREW, DAY_1),
-                        new Job(2L, "Uptown bridge", null, null, 3, null, ALPHA_CREW, DAY_2))
+                        new Job(1L, "Downtown tunnel", 3, null, null, null, null, ALPHA_CREW, DAY_1),
+                        new Job(2L, "Uptown bridge", 3, null, null, null, null, ALPHA_CREW, DAY_2))
                 .penalizesBy(2);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::crewConflict)
                 .given(ALPHA_CREW, BETA_CREW,
-                        new Job(1L, "Downtown tunnel", null, null, 1, null, ALPHA_CREW, DAY_1),
-                        new Job(2L, "Uptown bridge", null, null, 1, null, BETA_CREW, DAY_1))
+                        new Job(1L, "Downtown tunnel", 1, null, null, null, null, ALPHA_CREW, DAY_1),
+                        new Job(2L, "Uptown bridge", 1, null, null, null, null, BETA_CREW, DAY_1))
                 .penalizesBy(0);
     }
 
     @Test
     public void readyDate() {
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::readyDate)
-                .given(new Job(1L, "Downtown tunnel", DAY_2, null, 1, null, ALPHA_CREW, DAY_2))
+                .given(new Job(1L, "Downtown tunnel", 1, DAY_2, null, null, null, ALPHA_CREW, DAY_2))
                 .penalizesBy(0);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::readyDate)
-                .given(new Job(1L, "Downtown tunnel", DAY_1, null, 1, null, ALPHA_CREW, DAY_3))
+                .given(new Job(1L, "Downtown tunnel", 1, DAY_1, null, null, null, ALPHA_CREW, DAY_3))
                 .penalizesBy(0);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::readyDate)
-                .given(new Job(1L, "Downtown tunnel", DAY_3, null, 1, null, ALPHA_CREW, DAY_1))
+                .given(new Job(1L, "Downtown tunnel", 1, DAY_3, null, null, null, ALPHA_CREW, DAY_1))
                 .penalizesBy(2);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::readyDate)
-                .given(new Job(1L, "Downtown tunnel", DAY_3, null, 4, null, ALPHA_CREW, DAY_1))
+                .given(new Job(1L, "Downtown tunnel", 4, DAY_3, null, null, null, ALPHA_CREW, DAY_1))
                 .penalizesBy(2);
     }
 
     @Test
     public void dueDate() {
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::dueDate)
-                .given(new Job(1L, "Downtown tunnel", null, DAY_2, 1, null, ALPHA_CREW, DAY_2))
+                .given(new Job(1L, "Downtown tunnel", 1, null, DAY_2, null, null, ALPHA_CREW, DAY_2))
                 .penalizesBy(1);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::dueDate)
-                .given(new Job(1L, "Downtown tunnel", null, DAY_1, 1, null, ALPHA_CREW, DAY_3))
+                .given(new Job(1L, "Downtown tunnel", 1, null, DAY_1, null, null, ALPHA_CREW, DAY_3))
                 .penalizesBy(3);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::dueDate)
-                .given(new Job(1L, "Downtown tunnel", null, DAY_3, 1, null, ALPHA_CREW, DAY_1))
+                .given(new Job(1L, "Downtown tunnel", 1, null, DAY_3, null, null, ALPHA_CREW, DAY_1))
                 .penalizesBy(0);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::dueDate)
-                .given(new Job(1L, "Downtown tunnel", null, DAY_3, 4, null, ALPHA_CREW, DAY_1))
+                .given(new Job(1L, "Downtown tunnel", 4, null, DAY_3, null, null, ALPHA_CREW, DAY_1))
+                .penalizesBy(2);
+    }
+
+    @Test
+    public void beforeIdealEndDate() {
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::beforeIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 0, null, null, DAY_2, null, ALPHA_CREW, DAY_2))
+                .penalizesBy(0);
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::beforeIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 0, null, null, DAY_1, null, ALPHA_CREW, DAY_3))
+                .penalizesBy(0);
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::beforeIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 0, null, null, DAY_3, null, ALPHA_CREW, DAY_1))
+                .penalizesBy(2);
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::beforeIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 0, null, null, DAY_3, null, ALPHA_CREW, DAY_1))
+                .penalizesBy(2);
+    }
+
+    @Test
+    public void afterIdealEndDate() {
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::afterIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 1, null, null, DAY_2, null, ALPHA_CREW, DAY_2))
+                .penalizesBy(1);
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::afterIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 1, null, null, DAY_1, null, ALPHA_CREW, DAY_3))
+                .penalizesBy(3);
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::afterIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 1, null, null, DAY_3, null, ALPHA_CREW, DAY_1))
+                .penalizesBy(0);
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::afterIdealEndDate)
+                .given(new Job(1L, "Downtown tunnel", 4, null, null, DAY_3, null, ALPHA_CREW, DAY_1))
                 .penalizesBy(2);
     }
 
@@ -100,28 +132,28 @@ public class MaintenanceSchedulingConstraintProviderTest {
     public void mutuallyExclusiveTag() {
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
                 .given(
-                        new Job(1L, "Downtown tunnel", null, null, 1, Set.of("Downtown"), ALPHA_CREW, DAY_1),
-                        new Job(2L, "Downtown bridge", null, null, 1, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_3))
+                        new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown"), ALPHA_CREW, DAY_1),
+                        new Job(2L, "Downtown bridge", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_3))
                 .penalizesBy(0);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
                 .given(
-                        new Job(1L, "Downtown tunnel", null, null, 1, Set.of("Downtown"), ALPHA_CREW, DAY_1),
-                        new Job(2L, "Downtown bridge", null, null, 1, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_1))
+                        new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown"), ALPHA_CREW, DAY_1),
+                        new Job(2L, "Downtown bridge", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_1))
                 .penalizesBy(1);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
                 .given(
-                        new Job(1L, "Downtown tunnel", null, null, 1, Set.of("Downtown"), ALPHA_CREW, DAY_1),
-                        new Job(2L, "Uptown bridge", null, null, 1, Set.of("Uptown", "Crane"), ALPHA_CREW, DAY_1))
+                        new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown"), ALPHA_CREW, DAY_1),
+                        new Job(2L, "Uptown bridge", 1, null, null, null, Set.of("Uptown", "Crane"), ALPHA_CREW, DAY_1))
                 .penalizesBy(0);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
                 .given(
-                        new Job(1L, "Downtown tunnel", null, null, 1, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2),
-                        new Job(2L, "Downtown bridge", null, null, 1, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2))
+                        new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2),
+                        new Job(2L, "Downtown bridge", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2))
                 .penalizesBy(2);
         constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
                 .given(
-                        new Job(1L, "Downtown tunnel", null, null, 5, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_1),
-                        new Job(2L, "Downtown bridge", null, null, 3, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2))
+                        new Job(1L, "Downtown tunnel", 5, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_1),
+                        new Job(2L, "Downtown bridge", 3, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2))
                 .penalizesBy(2 * 3);
     }
 

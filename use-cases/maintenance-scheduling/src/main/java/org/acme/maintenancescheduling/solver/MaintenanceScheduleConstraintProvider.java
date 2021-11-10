@@ -45,6 +45,8 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                 readyDate(constraintFactory),
                 dueDate(constraintFactory),
                 // Soft constraints
+                beforeIdealEndDate(constraintFactory),
+                afterIdealEndDate(constraintFactory),
                 mutuallyExclusiveTag(constraintFactory),
         };
     }
@@ -77,9 +79,29 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
     public Constraint dueDate(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getDueDate() != null
-                        && job.getDueDate().isBefore(job.getEndDate()))
+                        && job.getEndDate().isAfter(job.getDueDate()))
                 .penalizeLong("Due date", HardSoftLongScore.ONE_HARD,
                         job -> DAYS.between(job.getDueDate(), job.getEndDate()));
+    }
+
+    // ************************************************************************
+    // Soft constraints
+    // ************************************************************************
+
+    public Constraint beforeIdealEndDate(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEach(Job.class)
+                .filter(job -> job.getIdealEndDate() != null
+                        && job.getEndDate().isBefore(job.getIdealEndDate()))
+                .penalizeLong("Before ideal end date", HardSoftLongScore.ofSoft(1),
+                        job -> DAYS.between(job.getEndDate(), job.getIdealEndDate()));
+    }
+
+    public Constraint afterIdealEndDate(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEach(Job.class)
+                .filter(job -> job.getIdealEndDate() != null
+                        && job.getEndDate().isAfter(job.getIdealEndDate()))
+                .penalizeLong("After ideal end date", HardSoftLongScore.ofSoft(1_000_000),
+                        job -> DAYS.between(job.getIdealEndDate(), job.getEndDate()));
     }
     
     public Constraint mutuallyExclusiveTag(ConstraintFactory constraintFactory) {
@@ -89,7 +111,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                         // TODO Use intersecting() when available https://issues.redhat.com/browse/PLANNER-2558
                         filtering((job1, job2) -> !Collections.disjoint(
                                 job1.getMutuallyExclusiveTagSet(), job2.getMutuallyExclusiveTagSet())))
-                .penalizeLong("Mutually exclusive tag", HardSoftLongScore.ONE_SOFT,
+                .penalizeLong("Mutually exclusive tag", HardSoftLongScore.ofSoft(1_000),
                         (job1, job2) -> {
                             Set<String> intersection = new HashSet<>(job1.getMutuallyExclusiveTagSet());
                             intersection.retainAll(job2.getMutuallyExclusiveTagSet());
@@ -101,9 +123,5 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                             return intersection.size() * overlap;
                         });
     }
-
-    // ************************************************************************
-    // Soft constraints
-    // ************************************************************************
 
 }
