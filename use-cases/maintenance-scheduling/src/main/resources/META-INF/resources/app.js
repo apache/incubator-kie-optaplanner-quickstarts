@@ -75,6 +75,7 @@ function refreshSchedule() {
 
         const unassignedJobs = $("#unassignedJobs");
         unassignedJobs.children().remove();
+        var unassignedJobsCount = 0;
         byCrewGroupDataSet.clear();
         byJobGroupDataSet.clear();
         byCrewItemDataSet.clear();
@@ -106,6 +107,7 @@ function refreshSchedule() {
             });
 
             if (job.crew == null || job.startDate == null) {
+                unassignedJobsCount++;
                 const unassignedJobElement = $(`<div class="card-body p-2"/>`)
                     .append($(`<h5 class="card-title mb-1"/>`).text(job.name))
                     .append($(`<p class="card-text ml-2 mb-0"/>`).text(`${job.durationInDays} workdays`))
@@ -158,6 +160,9 @@ function refreshSchedule() {
                 });
             }
         });
+        if (unassignedJobsCount === 0) {
+            unassignedJobs.append($(`<p/>`).text(`There are no unassigned jobs.`));
+        }
         byCrewTimeline.setWindow(schedule.workCalendar.fromDate, schedule.workCalendar.toDate);
         byJobTimeline.setWindow(schedule.workCalendar.fromDate, schedule.workCalendar.toDate);
     });
