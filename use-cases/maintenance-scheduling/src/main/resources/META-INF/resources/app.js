@@ -115,10 +115,10 @@ function refreshSchedule() {
                     .append($(`<p class="card-text ml-2 mb-0"/>`).text(`Due: ${job.dueDate}`));
                 const byJobJobElement = $(`<div/>`)
                   .append($(`<h5 class="card-title mb-1"/>`).text(`Unassigned`));
-                $.each(job.mutuallyExclusiveTagSet, (index, mutuallyExclusiveTag) => {
-                    const color = pickColor(mutuallyExclusiveTag);
-                    unassignedJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(mutuallyExclusiveTag));
-                    byJobJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(mutuallyExclusiveTag));
+                $.each(job.tagSet, (index, tag) => {
+                    const color = pickColor(tag);
+                    unassignedJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
+                    byJobJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
                 });
                 unassignedJobs.append($(`<div class="card"/>`).append(unassignedJobElement));
                 byJobItemDataSet.add({
@@ -143,10 +143,10 @@ function refreshSchedule() {
                     byCrewJobElement.append($(`<p class="badge badge-danger mb-0"/>`).text(`After due (too late)`));
                     byJobJobElement.append($(`<p class="badge badge-danger mb-0"/>`).text(`After due (too late)`));
                 }
-                $.each(job.mutuallyExclusiveTagSet, (index, mutuallyExclusiveTag) => {
-                    const color = pickColor(mutuallyExclusiveTag);
-                    byCrewJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(mutuallyExclusiveTag));
-                    byJobJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(mutuallyExclusiveTag));
+                $.each(job.tagSet, (index, tag) => {
+                    const color = pickColor(tag);
+                    byCrewJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
+                    byJobJobElement.append($(`<span class="badge mr-1" style="background-color: ${color}"/>`).text(tag));
                 });
                 byCrewItemDataSet.add({
                     id : job.id, group: job.crew.id,

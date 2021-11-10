@@ -47,7 +47,7 @@ public class Job {
     private LocalDate idealEndDate; // Exclusive
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> mutuallyExclusiveTagSet;
+    private Set<String> tagSet;
 
     @PlanningVariable(valueRangeProviderRefs = {"crewRange"})
     @ManyToOne
@@ -63,16 +63,16 @@ public class Job {
     public Job() {
     }
 
-    public Job(String name, int durationInDays, LocalDate readyDate, LocalDate dueDate, LocalDate idealEndDate, Set<String> mutuallyExclusiveTagSet) {
+    public Job(String name, int durationInDays, LocalDate readyDate, LocalDate dueDate, LocalDate idealEndDate, Set<String> tagSet) {
         this.name = name;
         this.durationInDays = durationInDays;
         this.readyDate = readyDate;
         this.dueDate = dueDate;
         this.idealEndDate = idealEndDate;
-        this.mutuallyExclusiveTagSet = mutuallyExclusiveTagSet;
+        this.tagSet = tagSet;
     }
 
-    public Job(Long id, String name, int durationInDays, LocalDate readyDate, LocalDate dueDate, LocalDate idealEndDate, Set<String> mutuallyExclusiveTagSet,
+    public Job(Long id, String name, int durationInDays, LocalDate readyDate, LocalDate dueDate, LocalDate idealEndDate, Set<String> tagSet,
             Crew crew, LocalDate startDate) {
         this.id = id;
         this.name = name;
@@ -80,7 +80,7 @@ public class Job {
         this.readyDate = readyDate;
         this.dueDate = dueDate;
         this.idealEndDate = idealEndDate;
-        this.mutuallyExclusiveTagSet = mutuallyExclusiveTagSet;
+        this.tagSet = tagSet;
         this.crew = crew;
         this.startDate = startDate;
         this.endDate = EndDateUpdatingVariableListener.calculateEndDate(startDate, durationInDays);
@@ -120,8 +120,8 @@ public class Job {
         return idealEndDate;
     }
 
-    public Set<String> getMutuallyExclusiveTagSet() {
-        return mutuallyExclusiveTagSet;
+    public Set<String> getTagSet() {
+        return tagSet;
     }
 
     public Crew getCrew() {

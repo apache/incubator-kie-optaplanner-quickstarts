@@ -129,28 +129,28 @@ public class MaintenanceSchedulingConstraintProviderTest {
     }
 
     @Test
-    public void mutuallyExclusiveTag() {
-        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
+    public void tagConflict() {
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::tagConflict)
                 .given(
                         new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown"), ALPHA_CREW, DAY_1),
                         new Job(2L, "Downtown bridge", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_3))
                 .penalizesBy(0);
-        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::tagConflict)
                 .given(
                         new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown"), ALPHA_CREW, DAY_1),
                         new Job(2L, "Downtown bridge", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_1))
                 .penalizesBy(1);
-        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::tagConflict)
                 .given(
                         new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown"), ALPHA_CREW, DAY_1),
                         new Job(2L, "Uptown bridge", 1, null, null, null, Set.of("Uptown", "Crane"), ALPHA_CREW, DAY_1))
                 .penalizesBy(0);
-        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::tagConflict)
                 .given(
                         new Job(1L, "Downtown tunnel", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2),
                         new Job(2L, "Downtown bridge", 1, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2))
                 .penalizesBy(2);
-        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::mutuallyExclusiveTag)
+        constraintVerifier.verifyThat(MaintenanceScheduleConstraintProvider::tagConflict)
                 .given(
                         new Job(1L, "Downtown tunnel", 5, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_1),
                         new Job(2L, "Downtown bridge", 3, null, null, null, Set.of("Downtown", "Crane"), ALPHA_CREW, DAY_2))

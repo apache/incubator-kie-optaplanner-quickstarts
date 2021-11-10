@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static java.time.temporal.ChronoUnit.WEEKS;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
 import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sumDuration;
 import static org.optaplanner.core.api.score.stream.Joiners.equal;
@@ -47,7 +46,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                 // Soft constraints
                 beforeIdealEndDate(constraintFactory),
                 afterIdealEndDate(constraintFactory),
-                mutuallyExclusiveTag(constraintFactory),
+                tagConflict(constraintFactory),
         };
     }
 
@@ -109,18 +108,18 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                         job -> DAYS.between(job.getIdealEndDate(), job.getEndDate()));
     }
     
-    public Constraint mutuallyExclusiveTag(ConstraintFactory constraintFactory) {
+    public Constraint tagConflict(ConstraintFactory constraintFactory) {
         // Avoid overlapping maintenance jobs with the same tag (for example road maintenance in the same area).
         return constraintFactory
                 .forEachUniquePair(Job.class,
                         overlapping(Job::getStartDate, Job::getEndDate),
                         // TODO Use intersecting() when available https://issues.redhat.com/browse/PLANNER-2558
                         filtering((job1, job2) -> !Collections.disjoint(
-                                job1.getMutuallyExclusiveTagSet(), job2.getMutuallyExclusiveTagSet())))
-                .penalizeLong("Mutually exclusive tag", HardSoftLongScore.ofSoft(1_000),
+                                job1.getTagSet(), job2.getTagSet())))
+                .penalizeLong("Tag conflict", HardSoftLongScore.ofSoft(1_000),
                         (job1, job2) -> {
-                            Set<String> intersection = new HashSet<>(job1.getMutuallyExclusiveTagSet());
-                            intersection.retainAll(job2.getMutuallyExclusiveTagSet());
+                            Set<String> intersection = new HashSet<>(job1.getTagSet());
+                            intersection.retainAll(job2.getTagSet());
                             long overlap = DAYS.between(
                                     job1.getStartDate().isAfter(job2.getStartDate())
                                             ? job1.getStartDate()  : job2.getStartDate(),
