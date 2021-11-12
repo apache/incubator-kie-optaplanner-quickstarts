@@ -54,7 +54,7 @@
                     <a class="nav-link active" id="solutionTab" data-toggle="tab" href="#solutionTabDiv" role="tab" aria-controls="solutionPanel" aria-selected="true">Picking plan</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="mapTab" data-toggle="tab" href="#mapTabDiv" role="tab" aria-controls="mapPanel" aria-selected="false">Map</a>
+                    <a class="nav-link" id="mapTab" data-toggle="tab" href="#mapTabDiv" role="tab" aria-controls="mapPanel" aria-selected="false" onclick="window.setTimeout(() => refreshSolution(), 500);">Map</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="unassignedEntitiesTab" data-toggle="tab" href="#unassignedEntitiesTabDiv" role="tab" aria-controls="unassignedEntitiesPanel" aria-selected="false">Unassigned</a>
@@ -88,9 +88,9 @@
                 <div id="mapActionsContainer">
                     <!-- Filled in by app.js -->
                 </div>
-                <div id="mapCanvasContainer" style="padding-top: 20px; padding-left: 15px;">
+                <div id="mapCanvasContainer" style="width: 75%; height: 75%; padding-top: 20px; padding-left: 15px;">
                     <!-- Canvas drawing by app.js -->
-                    <canvas height="1200px;" width="1300px;" id="warehouseCanvas"></canvas>
+                    <canvas id="warehouseCanvas" style="position: absolute"></canvas>
                 </div>
                 <div>
                     *Shelving dimension is of 2 meters width x 10 meters height.

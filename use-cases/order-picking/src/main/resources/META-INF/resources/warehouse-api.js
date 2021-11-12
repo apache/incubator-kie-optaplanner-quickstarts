@@ -28,7 +28,7 @@ const SHELVING_WIDTH = 150;
 const SHELVING_HEIGHT = 300;
 const SHELVING_ROWS = 10;
 
-const SHELVING_LINE_WIDTH = 15;
+const SHELVING_LINE_WIDTH = 5;
 const SHELVING_STROKE_STYLE = 'green';
 const SHELVING_LINE_JOIN = 'bevel';
 
@@ -92,7 +92,19 @@ function getWarehouseCanvasContext() {
 function clearWarehouseCanvas() {
     const canvas = document.getElementById('warehouseCanvas');
     const ctx = canvas.getContext('2d');
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const parentWidth = canvas.parentElement.clientWidth;
+    const parentHeight = canvas.parentElement.clientHeight;
+    const contentWidth = 2 * WAREHOUSE_PADDING_LEFT + (SHELVING_WIDTH + SHELVING_PADDING) * WAREHOUSE_COLUMNS.length;
+    const contentHeight = 2 * WAREHOUSE_PADDING_TOP + (SHELVING_HEIGHT + SHELVING_PADDING) * WAREHOUSE_ROWS.length;
+    const minToFillParent = Math.min(parentWidth / contentWidth, parentHeight / contentHeight);
+    const xOffset = (parentWidth - (contentWidth * minToFillParent)) / 2;
+    const yOffset = (parentHeight - (contentHeight * minToFillParent)) / 2;
+    canvas.width = parentWidth;
+    canvas.height = parentHeight;
+    ctx.translate(xOffset, yOffset);
+    ctx.scale(minToFillParent, minToFillParent);
 }
 
 /**
@@ -125,7 +137,10 @@ function drawShelving(ctx, shelving) {
     ctx.font = '30px serif';
     ctx.textAlign = 'center';
     ctx.fillStyle = SHELVING_STROKE_STYLE
-    ctx.fillText(shelving.id, shelving.x + shelving.width / 2, shelving.y + shelving.height / 2);
+
+    const shelvingTextParts = shelving.id.split(',');
+    ctx.fillText(shelvingTextParts[0].substring(1) + shelvingTextParts[1].substring(0, shelvingTextParts[1].length - 1),
+               shelving.x + shelving.width / 2, shelving.y + shelving.height / 2);
 }
 
 /**
@@ -146,7 +161,7 @@ function drawWarehousePath(warehouseLocations, trolleyIndex, trolleyCount) {
     const ctx = getWarehouseCanvasContext();
     const startLocation = warehouseLocations[0];
     const startShelving = SHELVINGS_MAP.get(startLocation.shelvingId);
-    const startPoint = location2Point(startShelving, startLocation.side, startLocation.row);
+    const startPoint = location2Point(startShelving, startLocation.side, startLocation.row, trolleyIndex, trolleyCount);
     let lastPoint = startPoint;
     let lastShelving = startShelving;
     let lastSide = startLocation.side;
@@ -179,7 +194,7 @@ function drawWarehousePath(warehouseLocations, trolleyIndex, trolleyCount) {
         const shelving = SHELVINGS_MAP.get(location.shelvingId);
         const point = location2Point(shelving, location.side, location.row, trolleyIndex, trolleyCount);
 
-        ctx.fillText((i + 1).toString(10), point.x, point.y);
+        ctx.fillText(i.toString(10), point.x, point.y);
     }
 }
 
@@ -270,7 +285,7 @@ function drawWarehousePathBetweenColumns(ctx, trolleyIndex, trolleyCount,
         ctx.lineTo(aisleChangeEndPoint.x, aisleChangeEndPoint.y);
         ctx.lineTo(endPoint.x, endPoint.y);
     } else {
-        const isAbove = endShelving.y > startShelving.y;
+        const isAbove = endShelving.y < startShelving.y;
         const aisleChangeStartPoint = location2AisleLane(startShelving, startSide, isAbove, trolleyIndex, trolleyCount);
         const aisleChangeEndPoint = location2AisleLane(endShelving, endSide, isAbove, trolleyIndex, trolleyCount);
         ctx.lineTo(aisleChangeStartPoint.x, aisleChangeStartPoint.y);
@@ -293,6 +308,7 @@ function location2Point(shelving, side, row, trolleyIndex, trolleyCount) {
     }
     const rowWidth = shelving.height / SHELVING_ROWS;
     y = shelving.y + row * rowWidth;
+
     return new Point(x, y);
 }
 

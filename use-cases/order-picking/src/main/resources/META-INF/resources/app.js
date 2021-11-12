@@ -2,6 +2,7 @@ const TROLLEY_PATHS = new Map();
 let TROLLEY_TRAVEL_DISTANCE = new Map();
 let autoRefreshIntervalId = null;
 
+
 function refreshSolution() {
     $.getJSON("/orderPicking", (orderPickingPlanning) => {
         TROLLEY_TRAVEL_DISTANCE = new Map(Object.entries(orderPickingPlanning.distanceToTravelByTrolley));
@@ -16,6 +17,10 @@ function refreshSolution() {
                 showError("An error was produced during solution refresh.", err);
             });
 }
+
+// refresh solution to resize the canvas
+window.addEventListener('resize', e => refreshSolution());
+refreshSolution();
 
 function printSolutionScore(orderPickingSolution) {
     const score = orderPickingSolution.score;
