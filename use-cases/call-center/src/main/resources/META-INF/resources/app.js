@@ -33,36 +33,30 @@ function printCallTable(callCenterData) {
   const callTable = $('#callTable');
   callTable.children().remove();
   printHeader(callTable, 10);
-  const tableBody = $('<tbody>').appendTo(callTable);
+  const tableBody = $('<tbody/>').appendTo(callTable);
   callCenterData.agents.forEach((agent) => {
     printAgent(tableBody, agent);
   });
 }
 
 function printHeader(callTable, calls) {
-  const thead = $('<thead>').appendTo(callTable);
-  const headerRow = $('<tr>').appendTo(thead);
+  const thead = $('<thead/>').appendTo(callTable);
+  const headerRow = $('<tr/>').appendTo(thead);
   headerRow.append($('<th style="width:10%;"><h2>Agent</h2></th>'));
   headerRow.append($('<th colspan="' + calls + '" style="text-align:center"><h2>Incoming calls</h2></th>'))
 }
 
 function printAgent(tableBody, agent) {
-  const tableRow = $('<tr class="agent-row">').appendTo(tableBody);
-  const td = $('<td>').appendTo(tableRow);
+  const tableRow = $('<tr class="agent-row"/>').appendTo(tableBody);
+  const td = $('<td/>').appendTo(tableRow);
   const agentCard = $('<div class="card" style="background-color:#f7ecd5">').appendTo(td);
-  const agentCardBody = $('<div class="card-body p-1">').appendTo(agentCard);
-  const agentCardRow = $(`<div class="row flex-nowrap">
-                <div class="col-4">
-                    <i class="fas fa-user-alt"></i>
-                </div>
-                <div class="col-8">
-                    <span style="font-size:1.2em">${agent.name}</span>
-                </div>
-        </div>`).appendTo(agentCardBody);
+  const agentCardBody = $('<div class="card-body p-2"/>')
+    .append($(`<h5 class="card-title mb-2"><i class="fas fa-user-alt mr-1"></i> ${agent.name}</h5>`));
 
   printSkills(agentCardBody, agent.skills);
+  agentCardBody.appendTo(agentCard);
 
-  const callsTd = $('<td style="flex-flow:row; display: flex;">').appendTo(tableRow);
+  const callsTd = $('<td style="flex-flow:row; display: flex;"/>').appendTo(tableRow);
 
   agent.calls.forEach((call) => {
     printCall(callsTd, call);
@@ -72,29 +66,24 @@ function printAgent(tableBody, agent) {
 function printCall(callsTd, call) {
   const callColor = (call.pinned) ? pinnedCallColor : waitingCallColor;
 
-  const callCard = $(`<div class="card" style="float:left; width: 14rem; background-color: ${callColor}"/>`).appendTo(callsTd);
-  const pinIcon = (call.pinned) ? '<i class="fas fa-thumbtack"></i>' : '';
+  const callCard = $(`<div class="card mr-1" style="float:left; width: 14rem; background-color: ${callColor}"/>`);
+  const callButtons = $(`<div class="float-right"/>`);
+  callButtons.append($(`<div><button class="btn btn-sm btn-outline-danger"><i class="fas fa-phone-slash"></i></button></div>`)
+    .click(() => removeCall(call)));
+  const callCardBody = $('<div class="card-body p-2"/>')
+    .append(callButtons)
+    .append($(`<h5 class="card-title mb-2"/>)`)
+      .append((call.pinned) ? $(`<i class="fas fa-phone-volume mr-1"></i>`) : $(`<i class="fas fa-phone mr-1"></i>`))
+      .append(call.phoneNumber))
+    .append();
 
-  const callCardContainer = $('<div class="container">').appendTo(callCard);
-  callCardContainer
-    .append($('<div class="row flex-nowrap" style="padding-top:10px">')
-      .append($(`<div class="col-1">${pinIcon}</div>`))
-      .append($(`<div class="col-8" style="padding-right:0px">
-                           <span class="card-title">${call.phoneNumber}</span>
-                       </div>`))
-      .append($('<div class="col-xs-2">')
-        .append($(`<button class="btn call-btn btn-sm">
-                             <i class="fas fa-phone-slash"></i>
-                         </button>`)
-          .click(() => removeCall(call)))
-      )
-    );
-
-  printTimes(callCardContainer, call);
-  printSkills(callCardContainer, call.requiredSkills);
+  printTimes(callCardBody, callButtons, call);
+  printSkills(callCardBody, call.requiredSkills);
+  callCard.append(callCardBody);
+  callCard.appendTo(callsTd);
 }
 
-function printTimes(callCardContainer, call) {
+function printTimes(callCard, callButtons, call) {
   const LocalTime = JSJoda.LocalTime;
   const Duration = JSJoda.Duration;
 
@@ -103,18 +92,16 @@ function printTimes(callCardContainer, call) {
     const pickedUpTime = LocalTime.parse(call.pickUpTime);
     const waitingTillPickedUpTime = formatDuration(Duration.between(startedTime, pickedUpTime));
     const inProgressTime = formatDuration(Duration.between(LocalTime.parse(call.pickUpTime), LocalTime.now()));
-    $(`<span style="font-size:0.8em">Waiting: ${waitingTillPickedUpTime}</span><br/>`).appendTo(callCardContainer);
-    $(`<span style="font-size:0.8em">In progress: ${inProgressTime}</span>`).appendTo(callCardContainer);
+    $(`<p class="card-text mb-1" style="font-size:0.8em">Waiting: ${waitingTillPickedUpTime}</p>`).appendTo(callCard);
+    $(`<p class="card-text mb-1" style="font-size:0.8em">In progress: ${inProgressTime}</p>`).appendTo(callCard);
 
-    callCardContainer.append($(`<button class="btn btn-sm btn-dark float-right" style="height:1.1rem; padding:0px 4px 0px 4px">
-                                       <span style="font-size:0.8em">+ 1m</span>
-                                    </button>`).click(() => prolongCall(call)));
+    callButtons.append($(`<div class="mt-1"><button class="btn btn-sm btn-outline-primary py-0 px-1">+ 1m</button></div>`).click(() => prolongCall(call)));
   } else {
     const waiting = formatDuration(Duration.between(startedTime, LocalTime.now()));
     const estimatedWaiting = formatDuration(Duration.ofSeconds(Math.floor(call.estimatedWaiting)));
-    $(`<span style="font-size:0.8em">Waiting: ${waiting}</span><br/>`).appendTo(callCardContainer);
-    $(`<span style="font-size:0.8em">Estimated waiting: ${estimatedWaiting}</span>`)
-      .appendTo(callCardContainer);
+    $(`<p class="card-text mb-1" style="font-size:0.8em">Waiting: ${waiting}</p>`).appendTo(callCard);
+    $(`<p class="card-text mb-1" style="font-size:0.8em">Estimated waiting: ${estimatedWaiting}</p>`)
+      .appendTo(callCard);
   }
 }
 
@@ -131,15 +118,11 @@ function formatDuration(duration) {
 }
 
 function printSkills(container, skills) {
-  const skillRow = $('<div class="row" style="margin:4px 2px 4px 0px">');
+  const skillRow = $('<div/>');
   container.append(skillRow);
   skills.forEach((skill) => {
     let color = skillToColorMap.get(skill);
-    skillRow.append($(`
-            <div class="col-xs-1 card" style="background-color:${color};margin:2px;padding:2px">
-                <span style="font-size:0.8em">${skill}</span>
-            </div>`)
-    );
+    skillRow.append($(`<span class="badge mr-1 mt-1" style="background-color:${color}">${skill}</span>`));
   });
 }
 

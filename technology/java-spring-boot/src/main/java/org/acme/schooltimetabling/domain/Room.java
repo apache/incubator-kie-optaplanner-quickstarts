@@ -36,7 +36,7 @@ public class Room {
     }
 
     public Room(String name) {
-        this.name = name.trim();
+        this.name = name;
     }
 
     public Room(long id, String name) {
