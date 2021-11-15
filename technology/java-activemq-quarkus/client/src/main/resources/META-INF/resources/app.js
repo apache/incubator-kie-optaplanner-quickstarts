@@ -94,7 +94,7 @@ function refreshTimeTable() {
 
     $.each(timeTable.lessonList, (index, lesson) => {
       const color = pickColor(lesson.subject);
-      const lessonElementWithoutDelete = $(`<div class="card lesson" style="background-color: ${color}"/>`)
+      const lessonElementWithoutDelete = $(`<div class="card" style="background-color: ${color}"/>`)
         .append($(`<div class="card-body p-2"/>`)
           .append($(`<h5 class="card-title mb-1"/>`).text(lesson.subject))
           .append($(`<p class="card-text ml-2 mb-1"/>`)

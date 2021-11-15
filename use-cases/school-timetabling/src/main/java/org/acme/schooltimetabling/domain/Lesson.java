@@ -50,9 +50,9 @@ public class Lesson {
     }
 
     public Lesson(String subject, String teacher, String studentGroup) {
-        this.subject = subject.trim();
-        this.teacher = teacher.trim();
-        this.studentGroup = studentGroup.trim();
+        this.subject = subject;
+        this.teacher = teacher;
+        this.studentGroup = studentGroup;
     }
 
     public Lesson(long id, String subject, String teacher, String studentGroup, Timeslot timeslot, Room room) {

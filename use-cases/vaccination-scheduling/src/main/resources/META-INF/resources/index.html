@@ -20,7 +20,7 @@
     <h1>Vaccination scheduler</h1>
     <p>Generate the optimal schedule to inject a country with COVID-19 vaccines.</p>
 
-    <div style="margin-bottom: .5rem">
+    <div class="mb-2">
         <button id="refreshButton" type="button" class="btn btn-secondary">
             <span class="fas fa-refresh"></span> Refresh
         </button>
@@ -60,9 +60,9 @@
             <div id="leafletMap" style="width: 100%; height: 850px;"></div>
         </div>
         <div class="tab-pane fade" id="unassignedTabDiv" role="tabpanel" aria-labelledby="unassignedTab">
-            <p>There are <span id="assignedPersonCount">0</span> assigned persons
+            <p class="mb-4">There are <span id="assignedPersonCount">0</span> assigned persons
                 and <span id="unassignedPersonCount">0</span> unassigned persons.</p>
-            <h2 style="margin-top: 2rem">Unassigned persons</h2>
+            <h2>Unassigned persons</h2>
             <div id="unassignedPersons" class="card-columns"></div>
         </div>
     </div>
