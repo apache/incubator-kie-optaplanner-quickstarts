@@ -38,6 +38,8 @@ $ ./run.sh
 
 . Click on the *Solve* button.
 
+In case of any error, please check the log files located in `java-activemq-quarkus/target`.
+
 Then try _live coding_:
 
 . Make some changes in the source code.
