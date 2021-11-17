@@ -1,6 +1,8 @@
 import org.kie.jenkins.jobdsl.templates.KogitoJobTemplate
 import org.kie.jenkins.jobdsl.KogitoJobUtils
 
+BUILDCHAIN_CONFIG_BRANCH = '%{process.env.GITHUB_BASE_REF.replace(/(\\d*)\\.(.*)\\.(.*)/g, (m, n1, n2, n3) => `\\${+n1-7}.\\${n2}.\\${n3}`).replace("development", "main")}'
+
 def getDefaultJobParams(String repoName = 'optaplanner-quickstarts') {
     return KogitoJobTemplate.getDefaultJobParams(this, repoName)
 }
@@ -20,6 +22,7 @@ Map getMultijobPRConfig() {
                     DISABLE_SONARCLOUD: true,
                     // DISABLE_SONARCLOUD: !Utils.isMainBranch(this),
                     OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: '-Dfull',
+                    BUILDCHAIN_CONFIG_BRANCH: BUILDCHAIN_CONFIG_BRANCH
                 ]
             ]
         ],
