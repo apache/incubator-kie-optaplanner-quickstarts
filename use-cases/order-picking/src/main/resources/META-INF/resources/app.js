@@ -478,7 +478,7 @@ function trolleyColor(trolleyId) {
 function printSelectedTrolleys() {
     clearWarehouseCanvas();
     drawWarehouse();
-    const it = TROLLEY_PATHS.entries();
+    let it = TROLLEY_PATHS.entries();
     let trolleyIndex = 0;
     for (const trolleyEntry of it) {
         const trolleyCheck = document.getElementById('trolleyPath_' + trolleyEntry[0]);
@@ -488,11 +488,13 @@ function printSelectedTrolleys() {
         }
         trolleyIndex++;
     }
+    it = TROLLEY_PATHS.entries();
+    trolleyIndex = 0;
     for (const trolleyEntry of it) {
         const trolleyCheck = document.getElementById('trolleyPath_' + trolleyEntry[0]);
         if (trolleyCheck.checked) {
             const color = trolleyColor(trolleyEntry[0]);
-            drawTrolleyText(color, trolleyEntry[1], trolleyIndex, TROLLEY_PATHS.size);
+            drawTrolleyText(color, trolleyEntry[1], trolleyIndex + TROLLEY_PATHS.size, TROLLEY_PATHS.size);
         }
         trolleyIndex++;
     }
