@@ -396,7 +396,14 @@ function printTrolleysMap(orderPickingSolution) {
     let trolleyIndex = 0;
     for (const trolley of orderPickingSolution.trolleyList) {
         if (trolley.nextElement != null) {
-            printTrolleyPath(trolley, trolleyIndex, orderPickingSolution.trolleyList.length);
+            printTrolleyPath(trolley, trolleyIndex, orderPickingSolution.trolleyList.length, false);
+            trolleyCheckBoxes.push(trolley.id);
+        }
+        trolleyIndex++;
+    }
+    for (const trolley of orderPickingSolution.trolleyList) {
+        if (trolley.nextElement != null) {
+            printTrolleyPath(trolley, trolleyIndex, orderPickingSolution.trolleyList.length, true);
             trolleyCheckBoxes.push(trolley.id);
         }
         trolleyIndex++;
@@ -409,7 +416,7 @@ function printTrolleysMap(orderPickingSolution) {
     }
 }
 
-function printTrolleyPath(trolley, trolleyIndex, trolleyCount) {
+function printTrolleyPath(trolley, trolleyIndex, trolleyCount, writeText) {
     const trolleySteps = extractTrolleySteps(trolley);
     const trolleyPath = [];
     const trolleyLocation = trolley.location;
@@ -425,11 +432,15 @@ function printTrolleyPath(trolley, trolleyIndex, trolleyCount) {
     const color = trolleyColor(trolley.id);
     let trolleyCheckboxEnabled = false;
     if (trolleyPath.length > 2) {
-        drawTrolleyPath(color, trolleyPath, trolleyIndex, trolleyCount);
-        trolleyCheckboxEnabled = true;
+        if (writeText) {
+            drawTrolleyText(color, trolleyPath, trolleyIndex, trolleyCount);
+        } else {
+            drawTrolleyPath(color, trolleyPath, trolleyIndex, trolleyCount);
+            trolleyCheckboxEnabled = true;
+            const travelDistance = TROLLEY_TRAVEL_DISTANCE.get(trolley.id);
+            printTrolleyCheckbox(trolley, trolleySteps.length, travelDistance, color, trolleyCheckboxEnabled);
+        }
     }
-    const travelDistance = TROLLEY_TRAVEL_DISTANCE.get(trolley.id);
-    printTrolleyCheckbox(trolley, trolleySteps.length, travelDistance, color, trolleyCheckboxEnabled);
 }
 
 function printTrolleyCheckbox(trolley, stepsLength, travelDistance, color, enabled) {
@@ -474,6 +485,14 @@ function printSelectedTrolleys() {
         if (trolleyCheck.checked) {
             const color = trolleyColor(trolleyEntry[0]);
             drawTrolleyPath(color, trolleyEntry[1], trolleyIndex, TROLLEY_PATHS.size);
+        }
+        trolleyIndex++;
+    }
+    for (const trolleyEntry of it) {
+        const trolleyCheck = document.getElementById('trolleyPath_' + trolleyEntry[0]);
+        if (trolleyCheck.checked) {
+            const color = trolleyColor(trolleyEntry[0]);
+            drawTrolleyText(color, trolleyEntry[1], trolleyIndex, TROLLEY_PATHS.size);
         }
         trolleyIndex++;
     }

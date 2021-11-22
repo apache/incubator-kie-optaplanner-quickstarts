@@ -154,6 +154,14 @@ function drawTrolleyPath(strokeStyle, warehouseLocations, trolleyIndex, trolleyC
     drawWarehousePath(warehouseLocations, trolleyIndex, trolleyCount);
 }
 
+function drawTrolleyText(strokeStyle, warehouseLocations, trolleyIndex, trolleyCount) {
+    const ctx = getWarehouseCanvasContext();
+    ctx.lineJoin = TROLLEY_PATH_LINE_JOIN;
+    ctx.lineWidth = TROLLEY_PATH_LINE_WIDTH;
+    ctx.strokeStyle = strokeStyle;
+    drawTextForTrolley(strokeStyle, warehouseLocations, trolleyIndex, trolleyCount);
+}
+
 /**
  * Draws a path composed of WarehouseLocations.
  */
@@ -187,15 +195,52 @@ function drawWarehousePath(warehouseLocations, trolleyIndex, trolleyCount) {
     }
     ctx.stroke();
     ctx.closePath();
+}
 
-    ctx.fillStyle = "#000000";
+function drawTextForTrolley(strokeStyle, warehouseLocations, trolleyIndex, trolleyCount) {
+    const ctx = getWarehouseCanvasContext();
+
+    ctx.fillStyle = strokeStyle;
+    ctx.strokeStyle = "#000000";
+    let overlappingOrderTextList = [];
+    const SHELVING_ROW_HEIGHT = SHELVING_HEIGHT / SHELVING_ROWS;
+    const TEXT_SEPERATOR_HEIGHT = SHELVING_ROW_HEIGHT * 4;
+    const SEPERATION_PER_TROLLEY = TEXT_SEPERATOR_HEIGHT / trolleyCount;
     for (let i = 0; i < warehouseLocations.length; i++) {
         const location = warehouseLocations[i];
         const shelving = SHELVINGS_MAP.get(location.shelvingId);
         const point = location2Point(shelving, location.side, location.row, trolleyIndex, trolleyCount);
+        const pointFlooredRow = Math.floor(point.y / TEXT_SEPERATOR_HEIGHT) * TEXT_SEPERATOR_HEIGHT;
 
-        ctx.fillText(i.toString(10), point.x, point.y);
+        point.y = pointFlooredRow + SEPERATION_PER_TROLLEY * trolleyIndex;
+        addToOverlap(overlappingOrderTextList, i.toString(10), point);
     }
+
+    for (let i = 0; i < overlappingOrderTextList.length; i++) {
+        const overlappingOrders = overlappingOrderTextList[i];
+        const text = '(' + overlappingOrders.orders.join(', ') + ')';
+
+        ctx.strokeText(text, overlappingOrders.x, overlappingOrders.y);
+        ctx.fillText(text, overlappingOrders.x, overlappingOrders.y);
+    }
+}
+
+function addToOverlap(overlappingOrderTextList, orderText, orderPoint) {
+    const SHELVING_ROW_HEIGHT = SHELVING_HEIGHT / SHELVING_ROWS;
+    for (let i = 0; i < overlappingOrderTextList.length; i++) {
+        const overlappingOrderText = overlappingOrderTextList[i];
+        const distance = Math.abs(orderPoint.x - overlappingOrderText.x) + Math.abs(orderPoint.y - overlappingOrderText.y);
+        if (distance < 2 * SHELVING_ROW_HEIGHT) {
+            overlappingOrderText.orders.push(orderText);
+            return;
+        }
+    }
+    const newOverlappingOrderText = {
+        orders: [orderText],
+        x: orderPoint.x,
+        y: orderPoint.y,
+    };
+    overlappingOrderTextList.push(newOverlappingOrderText);
 }
 
 /**
