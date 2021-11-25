@@ -36,10 +36,13 @@ import javax.transaction.Transactional;
 import org.acme.employeescheduling.domain.Availability;
 import org.acme.employeescheduling.domain.AvailabilityType;
 import org.acme.employeescheduling.domain.Employee;
+import org.acme.employeescheduling.domain.ScheduleState;
 import org.acme.employeescheduling.domain.Shift;
 import org.acme.employeescheduling.persistence.AvailabilityRepository;
 import org.acme.employeescheduling.persistence.EmployeeRepository;
+import org.acme.employeescheduling.persistence.ScheduleStateRepository;
 import org.acme.employeescheduling.persistence.ShiftRepository;
+import org.acme.employeescheduling.rest.EmployeeScheduleResource;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.runtime.StartupEvent;
@@ -56,23 +59,36 @@ public class DemoDataGenerator {
         LARGE
     }
 
+    final String[] SKILLS = { "Anaesthetics", "Cardiology"};
+
     @Inject
     EmployeeRepository employeeRepository;
     @Inject
     AvailabilityRepository availabilityRepository;
     @Inject
     ShiftRepository shiftRepository;
+    @Inject
+    ScheduleStateRepository scheduleStateRepository;
 
     @Transactional
     public void generateDemoData(@Observes StartupEvent startupEvent) {
+        final int INITIAL_ROSTER_LENGTH_IN_DAYS = 14;
+        final LocalDate START_DATE = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
+
+        ScheduleState scheduleState = new ScheduleState();
+        scheduleState.setFirstDraftDate(START_DATE);
+        scheduleState.setDraftLength(INITIAL_ROSTER_LENGTH_IN_DAYS);
+        scheduleState.setPublishNotice(7);
+        scheduleState.setLastHistoricDate(START_DATE.minusDays(7));
+        scheduleState.setTenantId(EmployeeScheduleResource.SINGLETON_SCHEDULE_ID);
+
+        scheduleStateRepository.persist(scheduleState);
+
         if (demoData == DemoData.NONE) {
             return;
         }
         final String[] FIRST_NAMES = {"Amy", "Beth", "Chad", "Dan", "Elsa", "Flo", "Gus", "Hugo", "Ivy", "Jay"};
         final String[] LAST_NAMES = {"Cole", "Fox", "Green", "Jones", "King", "Li", "Poe", "Rye", "Smith", "Watt"};
-        final String[] SKILLS = { "Anaesthetics", "Cardiology"};
-        final int INITIAL_ROSTER_LENGTH_IN_DAYS = 14;
-        final LocalDate START_DATE = LocalDate.now().with(TemporalAdjusters.nextOrSame(DayOfWeek.MONDAY));
 
         Random random = new Random(0);
         List<String> namePermutations = joinAllCombinations(FIRST_NAMES, LAST_NAMES);
@@ -161,6 +177,22 @@ public class DemoDataGenerator {
             out.add(item.toString());
         }
         return out;
+    }
+
+    public void generateDraftShifts(ScheduleState scheduleState) {
+        List<Employee> employeeList = employeeRepository.listAll();
+        Random random = new Random(0);
+
+        for (int i = 0; i < scheduleState.getDraftLength(); i++) {
+            Set<Employee> employeesWithAvailabitiesOnDay = pickSubset(employeeList, random, 4, 3, 2, 1);
+            LocalDate date = scheduleState.getFirstDraftDate().plusDays(i);
+            for (Employee employee : employeesWithAvailabitiesOnDay) {
+                AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
+                availabilityRepository.persist(new Availability(employee, date, availabilityType));
+            }
+
+            generateShiftsForDay(date, SKILLS, random);
+        }
     }
 
 }

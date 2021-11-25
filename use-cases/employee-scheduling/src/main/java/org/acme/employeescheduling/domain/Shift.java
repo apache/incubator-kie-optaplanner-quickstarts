@@ -12,7 +12,7 @@ import org.optaplanner.core.api.domain.lookup.PlanningId;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 
 @Entity
-@PlanningEntity
+@PlanningEntity(pinningFilter = ShiftPinningFilter.class)
 public class Shift {
     @Id
     @PlanningId

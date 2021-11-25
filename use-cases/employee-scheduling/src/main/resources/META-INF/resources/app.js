@@ -34,6 +34,43 @@ let unassignedGroupDataSet = new vis.DataSet();
 let unassignedItemDataSet = new vis.DataSet();
 let unassignedTimeline = new vis.Timeline(unassignedPanel, unassignedItemDataSet, unassignedGroupDataSet, unassignedTimelineOptions);
 
+const today = new Date();
+byEmployeeTimeline.addCustomTime(today, 'published');
+byEmployeeTimeline.setCustomTimeMarker('Published Shifts', 'published', false);
+byEmployeeTimeline.setCustomTimeTitle('Published Shifts', 'published');
+
+byEmployeeTimeline.addCustomTime(today, 'draft');
+byEmployeeTimeline.setCustomTimeMarker('Draft Shifts', 'draft', false);
+byEmployeeTimeline.setCustomTimeTitle('Draft Shifts', 'draft');
+
+byEmployeeTimeline.addCustomTime(today, 'historic');
+byEmployeeTimeline.setCustomTimeMarker('Historic Shifts', 'historic', false);
+byEmployeeTimeline.setCustomTimeTitle('Historic Shifts', 'historic');
+
+byLocationTimeline.addCustomTime(today, 'published');
+byLocationTimeline.setCustomTimeMarker('Published Shifts', 'published', false);
+byLocationTimeline.setCustomTimeTitle('Published Shifts', 'published');
+
+byLocationTimeline.addCustomTime(today, 'draft');
+byLocationTimeline.setCustomTimeMarker('Draft Shifts', 'draft', false);
+byLocationTimeline.setCustomTimeTitle('Draft Shifts', 'draft');
+
+byLocationTimeline.addCustomTime(today, 'historic');
+byLocationTimeline.setCustomTimeMarker('Historic Shifts', 'historic', false);
+byLocationTimeline.setCustomTimeTitle('Historic Shifts', 'historic');
+
+unassignedTimeline.addCustomTime(today, 'published');
+unassignedTimeline.setCustomTimeMarker('Published Shifts', 'published', false);
+unassignedTimeline.setCustomTimeTitle('Published Shifts', 'published');
+
+unassignedTimeline.addCustomTime(today, 'draft');
+unassignedTimeline.setCustomTimeMarker('Draft Shifts', 'draft', false);
+unassignedTimeline.setCustomTimeTitle('Draft Shifts', 'draft');
+
+unassignedTimeline.addCustomTime(today, 'historic');
+unassignedTimeline.setCustomTimeMarker('Historic Shifts', 'historic', false);
+unassignedTimeline.setCustomTimeTitle('Historic Shifts', 'historic');
+
 $(document).ready(function () {
     $.ajaxSetup({
         headers: {
@@ -67,6 +104,9 @@ $(document).ready(function () {
     });
     $("#stopSolvingButton").click(function () {
         stopSolving();
+    });
+    $("#publish").click(function () {
+        publish();
     });
     // HACK to allow vis-timeline to work within Bootstrap tabs
     $("#byEmployeePanelTab").on('shown.bs.tab', function (event) {
@@ -127,6 +167,15 @@ function refreshSchedule() {
         byEmployeeItemDataSet.clear();
         byLocationItemDataSet.clear();
         unassignedItemDataSet.clear();
+
+        byEmployeeTimeline.setCustomTime(schedule.scheduleState.lastHistoricDate, 'published');
+        byEmployeeTimeline.setCustomTime(schedule.scheduleState.firstDraftDate, 'draft');
+
+        byLocationTimeline.setCustomTime(schedule.scheduleState.lastHistoricDate, 'published');
+        byLocationTimeline.setCustomTime(schedule.scheduleState.firstDraftDate, 'draft');
+
+        unassignedTimeline.setCustomTime(schedule.scheduleState.lastHistoricDate, 'published');
+        unassignedTimeline.setCustomTime(schedule.scheduleState.firstDraftDate, 'draft');
 
         schedule.availabilityList.forEach((availability, index) => {
             const availabilityDate = JSJoda.LocalDate.parse(availability.date);
@@ -218,6 +267,14 @@ function solve() {
         refreshSolvingButtons(true);
     }).fail(function (xhr, ajaxOptions, thrownError) {
         showError("Start solving failed.", xhr);
+    });
+}
+
+function publish() {
+    $.post("/schedule/publish", function () {
+        refreshSolvingButtons(true);
+    }).fail(function (xhr, ajaxOptions, thrownError) {
+        showError("Publish failed.", xhr);
     });
 }
 
