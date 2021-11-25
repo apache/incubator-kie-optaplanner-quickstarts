@@ -82,6 +82,35 @@ $(document).ready(function () {
     refreshSchedule();
 });
 
+
+function getAvailabilityColor(availabilityType) {
+    switch (availabilityType) {
+        case 'DESIRED':
+            return ' #73d216'; // Tango Chameleon
+
+        case 'UNDESIRED':
+            return ' #f57900'; // Tango Orange
+
+        case 'UNAVAILABLE':
+            return ' #cc0000'; // Tango Scarlet Red
+
+
+        default:
+            throw new Error('Unknown availability type: ' + availabilityType);
+    }
+}
+
+
+function getShiftColor(shift, availabilityMap) {
+    const shiftDate = JSJoda.LocalDateTime.parse(shift.start).toLocalDate().toString();
+    const mapKey = shift.employee.name + '-' + shiftDate;
+    if (availabilityMap.has(mapKey)) {
+        return getAvailabilityColor(availabilityMap.get(mapKey));
+    } else {
+        return " #729fcf"; // Tango Sky Blue
+    }
+}
+
 function refreshSchedule() {
     $.getJSON("/schedule", function (schedule) {
         refreshSolvingButtons(schedule.solverStatus != null && schedule.solverStatus !== "NOT_SOLVING");
@@ -89,6 +118,7 @@ function refreshSchedule() {
 
         const unassignedShifts = $("#unassignedShifts");
         const groups = [];
+        const availabilityMap = new Map();
         unassignedShifts.children().remove();
         let unassignedShiftsCount = 0;
         byEmployeeGroupDataSet.clear();
@@ -97,6 +127,24 @@ function refreshSchedule() {
         byEmployeeItemDataSet.clear();
         byLocationItemDataSet.clear();
         unassignedItemDataSet.clear();
+
+        schedule.availabilityList.forEach((availability, index) => {
+            const availabilityDate = JSJoda.LocalDate.parse(availability.date);
+            const start = availabilityDate.atStartOfDay().toString();
+            const end = availabilityDate.plusDays(1).atStartOfDay().toString();
+            const byEmployeeShiftElement = $(`<div/>`)
+                    .append($(`<h5 class="card-title mb-1"/>`).text(availability.availabilityType));
+            const mapKey = availability.employee.name + '-' + availabilityDate.toString();
+            availabilityMap.set(mapKey, availability.availabilityType);
+            byEmployeeItemDataSet.add({
+                id : 'availability-' + index, group: availability.employee.name,
+                content: byEmployeeShiftElement.html(),
+                start: start, end: end,
+                type: "background",
+                style: "background-color: " + getAvailabilityColor(availability.availabilityType),
+            });
+        });
+
 
         schedule.employeeList.forEach((employee, index) => {
             byEmployeeGroupDataSet.add({id : employee.name, content: employee.name});
@@ -117,23 +165,18 @@ function refreshSchedule() {
 
             if (shift.employee == null) {
                 unassignedShiftsCount++;
-                const unassignedShiftElement = $(`<div class="card-body p-2"/>`)
-                    .append($(`<h5 class="card-title mb-1"/>`).text(shift.location))
-                    .append($(`<h5 class="card-content mb-1"/>`).text(shift.requiredSkill))
-                    .append($(`<h5 class="card-content mb-1"/>`).text(shift.start + " - " + shift.end))
 
                 const byLocationShiftElement = $(`<div/>`)
                   .append($(`<h5 class="card-title mb-1"/>`).text(`Unassigned`));
 
-                unassignedShifts.append($(`<div class="card"/>`).append(unassignedShiftElement));
                 byLocationItemDataSet.add({
-                    id : shift.id, group: shift.location,
+                    id : 'shift-' + index, group: shift.location,
                     content: byLocationShiftElement.html(),
                     start: shift.start, end: shift.end,
                     style: "background-color: #EF292999"
                 });
                 unassignedItemDataSet.add({
-                    id : shift.id, group: shift.location,
+                    id : 'shift-' + index, group: shift.location,
                     content: byLocationShiftElement.html(),
                     start: shift.start, end: shift.end,
                     style: "background-color: #EF292999"
@@ -143,20 +186,26 @@ function refreshSchedule() {
                     .append($(`<h5 class="card-title mb-1"/>`).text(shift.location));
                 const byLocationShiftElement = $(`<div/>`)
                     .append($(`<h5 class="card-title mb-1"/>`).text(shift.employee.name));
+                const shiftColor =  getShiftColor(shift, availabilityMap);
                 byEmployeeItemDataSet.add({
-                    id : shift.id, group: shift.employee.name,
+                    id : 'shift-' + index, group: shift.employee.name,
                     content: byEmployeeShiftElement.html(),
                     start: shift.start, end: shift.end
                 });
                 byLocationItemDataSet.add({
-                    id : shift.id, group: shift.location,
+                    id : 'shift-' + index, group: shift.location,
                     content: byLocationShiftElement.html(),
-                    start: shift.start, end: shift.end
+                    start: shift.start, end: shift.end,
+                    style: "background-color: " + shiftColor
                 });
             }
         });
+
+
         if (unassignedShiftsCount === 0) {
             unassignedShifts.append($(`<p/>`).text(`There are no unassigned shifts.`));
+        } else {
+            unassignedShifts.append($(`<p/>`).text(`There are ${unassignedShiftsCount} unassigned shifts.`));
         }
         byEmployeeTimeline.setWindow(schedule.fromDate, schedule.toDate);
         byLocationTimeline.setWindow(schedule.fromDate, schedule.toDate);
