@@ -16,16 +16,21 @@
 
 package org.acme.employeescheduling.rest;
 
+import java.time.LocalDate;
+
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
+import org.acme.employeescheduling.bootstrap.DemoDataGenerator;
 import org.acme.employeescheduling.domain.EmployeeSchedule;
+import org.acme.employeescheduling.domain.ScheduleState;
 import org.acme.employeescheduling.domain.Shift;
 import org.acme.employeescheduling.persistence.AvailabilityRepository;
 import org.acme.employeescheduling.persistence.EmployeeRepository;
+import org.acme.employeescheduling.persistence.ScheduleStateRepository;
 import org.acme.employeescheduling.persistence.ShiftRepository;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
@@ -45,6 +50,11 @@ public class EmployeeScheduleResource {
     EmployeeRepository employeeRepository;
     @Inject
     ShiftRepository shiftRepository;
+    @Inject
+    ScheduleStateRepository scheduleStateRepository;
+
+    @Inject
+    DemoDataGenerator dataGenerator;
 
     @Inject
     SolverManager<EmployeeSchedule, Long> solverManager;
@@ -77,6 +87,23 @@ public class EmployeeScheduleResource {
     }
 
     @POST
+    @Transactional
+    @Path("publish")
+    public void publish() {
+        if (!getSolverStatus().equals(SolverStatus.NOT_SOLVING)) {
+            throw new IllegalStateException("Cannot publish a schedule while solving is in progress.");
+        }
+        ScheduleState scheduleState = scheduleStateRepository.findById(SINGLETON_SCHEDULE_ID);
+        LocalDate newHistoricDate = scheduleState.getFirstDraftDate();
+        LocalDate newDraftDate = scheduleState.getFirstDraftDate().plusDays(scheduleState.getDraftLength());
+
+        scheduleState.setLastHistoricDate(newHistoricDate);
+        scheduleState.setFirstDraftDate(newDraftDate);
+
+        dataGenerator.generateDraftShifts(scheduleState);
+    }
+
+    @POST
     @Path("stopSolving")
     public void stopSolving() {
         solverManager.terminateEarly(SINGLETON_SCHEDULE_ID);
@@ -88,6 +115,7 @@ public class EmployeeScheduleResource {
             throw new IllegalStateException("There is no schedule with id (" + id + ").");
         }
         return new EmployeeSchedule(
+                scheduleStateRepository.findById(SINGLETON_SCHEDULE_ID),
                 availabilityRepository.listAll(Sort.by("date").and("id")),
                 employeeRepository.listAll(Sort.by("name")),
                 shiftRepository.listAll(Sort.by("location").and("start").and("id")));

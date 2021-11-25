@@ -29,14 +29,25 @@ public class EmployeeSchedule {
     LocalDate fromDate;
     LocalDate toDate;
 
+    ScheduleState scheduleState;
+
     SolverStatus solverStatus;
 
     public EmployeeSchedule() {}
 
-    public EmployeeSchedule(List<Availability> availabilityList, List<Employee> employeeList, List<Shift> shiftList) {
+    public EmployeeSchedule(ScheduleState scheduleState, List<Availability> availabilityList, List<Employee> employeeList, List<Shift> shiftList) {
+        this.scheduleState = scheduleState;
         this.availabilityList = availabilityList;
         this.employeeList = employeeList;
         this.shiftList = shiftList;
+    }
+
+    public ScheduleState getScheduleState() {
+        return scheduleState;
+    }
+
+    public void setScheduleState(ScheduleState scheduleState) {
+        this.scheduleState = scheduleState;
     }
 
     public List<Availability> getAvailabilityList() {
