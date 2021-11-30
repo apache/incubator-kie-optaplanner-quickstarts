@@ -70,7 +70,6 @@ public class EmployeeScheduleResource {
         EmployeeSchedule solution = findById(SINGLETON_SCHEDULE_ID);
         scoreManager.updateScore(solution); // Sets the score
         solution.setSolverStatus(solverStatus);
-        solution.computeFromAndToDates();
         return solution;
     }
 
@@ -95,7 +94,7 @@ public class EmployeeScheduleResource {
         }
         ScheduleState scheduleState = scheduleStateRepository.findById(SINGLETON_SCHEDULE_ID);
         LocalDate newHistoricDate = scheduleState.getFirstDraftDate();
-        LocalDate newDraftDate = scheduleState.getFirstDraftDate().plusDays(scheduleState.getDraftLength());
+        LocalDate newDraftDate = scheduleState.getFirstDraftDate().plusDays(scheduleState.getPublishLength());
 
         scheduleState.setLastHistoricDate(newHistoricDate);
         scheduleState.setFirstDraftDate(newDraftDate);

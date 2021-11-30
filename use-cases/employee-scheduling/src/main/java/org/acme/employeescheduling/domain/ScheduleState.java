@@ -15,7 +15,7 @@ public class ScheduleState {
     @Id
     Long tenantId;
 
-    Integer publishNotice; // In number of days
+    Integer publishLength; // In number of days
 
     Integer draftLength; // In number of days
 
@@ -58,14 +58,8 @@ public class ScheduleState {
         return lastHistoricDate.plusDays(1);
     }
 
-    @JsonIgnore
     public LocalDate getFirstUnplannedDate() {
         return firstDraftDate.plusDays(draftLength);
-    }
-
-    @JsonIgnore
-    public LocalDate getPublishDeadline() {
-        return firstDraftDate.minusDays(publishNotice);
     }
 
     // Simple getters/setters
@@ -78,12 +72,12 @@ public class ScheduleState {
         this.tenantId = tenantId;
     }
 
-    public Integer getPublishNotice() {
-        return publishNotice;
+    public Integer getPublishLength() {
+        return publishLength;
     }
 
-    public void setPublishNotice(Integer publishNotice) {
-        this.publishNotice = publishNotice;
+    public void setPublishLength(Integer publishNotice) {
+        this.publishLength = publishNotice;
     }
 
     public Integer getDraftLength() {

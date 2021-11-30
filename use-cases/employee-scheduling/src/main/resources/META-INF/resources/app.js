@@ -1,4 +1,6 @@
 let autoRefreshIntervalId = null;
+const zoomMin = 2 * 1000 * 60 * 60 * 24 // 2 day in milliseconds
+const zoomMax = 4 * 7 * 1000 * 60 * 60 * 24 // 4 weeks in milliseconds
 
 const byEmployeePanel = document.getElementById("byEmployeePanel");
 const byEmployeeTimelineOptions = {
@@ -6,7 +8,8 @@ const byEmployeeTimelineOptions = {
     orientation: {axis: "top"},
     stack: false,
     xss: {disabled: true}, // Items are XSS safe through JQuery
-    zoomMin: 7 * 1000 * 60 * 60 * 24 // Seven day in milliseconds
+    zoomMin: zoomMin,
+    zoomMax: zoomMax,
 };
 let byEmployeeGroupDataSet = new vis.DataSet();
 let byEmployeeItemDataSet = new vis.DataSet();
@@ -17,24 +20,17 @@ const byLocationTimelineOptions = {
     timeAxis: {scale: "day"},
     orientation: {axis: "top"},
     xss: {disabled: true}, // Items are XSS safe through JQuery
-    zoomMin: 7 * 1000 * 60 * 60 * 24 // Seven day in milliseconds
+    zoomMin: zoomMin,
+    zoomMax: zoomMax,
 };
 let byLocationGroupDataSet = new vis.DataSet();
 let byLocationItemDataSet = new vis.DataSet();
 let byLocationTimeline = new vis.Timeline(byLocationPanel, byLocationItemDataSet, byLocationGroupDataSet, byLocationTimelineOptions);
 
-const unassignedPanel = document.getElementById("unassignedPanel");
-const unassignedTimelineOptions = {
-    timeAxis: {scale: "day"},
-    orientation: {axis: "top"},
-    xss: {disabled: true}, // Items are XSS safe through JQuery
-    zoomMin: 7 * 1000 * 60 * 60 * 24 // Seven day in milliseconds
-};
-let unassignedGroupDataSet = new vis.DataSet();
-let unassignedItemDataSet = new vis.DataSet();
-let unassignedTimeline = new vis.Timeline(unassignedPanel, unassignedItemDataSet, unassignedGroupDataSet, unassignedTimelineOptions);
-
 const today = new Date();
+let windowStart = JSJoda.LocalDate.now().toString();
+let windowEnd = JSJoda.LocalDate.parse(windowStart).plusDays(7).toString();
+
 byEmployeeTimeline.addCustomTime(today, 'published');
 byEmployeeTimeline.setCustomTimeMarker('Published Shifts', 'published', false);
 byEmployeeTimeline.setCustomTimeTitle('Published Shifts', 'published');
@@ -43,10 +39,6 @@ byEmployeeTimeline.addCustomTime(today, 'draft');
 byEmployeeTimeline.setCustomTimeMarker('Draft Shifts', 'draft', false);
 byEmployeeTimeline.setCustomTimeTitle('Draft Shifts', 'draft');
 
-byEmployeeTimeline.addCustomTime(today, 'historic');
-byEmployeeTimeline.setCustomTimeMarker('Historic Shifts', 'historic', false);
-byEmployeeTimeline.setCustomTimeTitle('Historic Shifts', 'historic');
-
 byLocationTimeline.addCustomTime(today, 'published');
 byLocationTimeline.setCustomTimeMarker('Published Shifts', 'published', false);
 byLocationTimeline.setCustomTimeTitle('Published Shifts', 'published');
@@ -54,22 +46,6 @@ byLocationTimeline.setCustomTimeTitle('Published Shifts', 'published');
 byLocationTimeline.addCustomTime(today, 'draft');
 byLocationTimeline.setCustomTimeMarker('Draft Shifts', 'draft', false);
 byLocationTimeline.setCustomTimeTitle('Draft Shifts', 'draft');
-
-byLocationTimeline.addCustomTime(today, 'historic');
-byLocationTimeline.setCustomTimeMarker('Historic Shifts', 'historic', false);
-byLocationTimeline.setCustomTimeTitle('Historic Shifts', 'historic');
-
-unassignedTimeline.addCustomTime(today, 'published');
-unassignedTimeline.setCustomTimeMarker('Published Shifts', 'published', false);
-unassignedTimeline.setCustomTimeTitle('Published Shifts', 'published');
-
-unassignedTimeline.addCustomTime(today, 'draft');
-unassignedTimeline.setCustomTimeMarker('Draft Shifts', 'draft', false);
-unassignedTimeline.setCustomTimeTitle('Draft Shifts', 'draft');
-
-unassignedTimeline.addCustomTime(today, 'historic');
-unassignedTimeline.setCustomTimeMarker('Historic Shifts', 'historic', false);
-unassignedTimeline.setCustomTimeTitle('Historic Shifts', 'historic');
 
 $(document).ready(function () {
     $.ajaxSetup({
@@ -115,9 +91,6 @@ $(document).ready(function () {
     $("#byLocationPanelTab").on('shown.bs.tab', function (event) {
         byLocationTimeline.redraw();
     })
-    $("#unassignedPanelTab").on('shown.bs.tab', function (event) {
-        unassignedTimeline.redraw();
-    })
 
     refreshSchedule();
 });
@@ -132,7 +105,7 @@ function getAvailabilityColor(availabilityType) {
             return ' #f57900'; // Tango Orange
 
         case 'UNAVAILABLE':
-            return ' #cc0000'; // Tango Scarlet Red
+            return ' #ef2929 '; // Tango Scarlet Red
 
 
         default:
@@ -159,23 +132,27 @@ function refreshSchedule() {
         const unassignedShifts = $("#unassignedShifts");
         const groups = [];
         const availabilityMap = new Map();
+
+        // Show only first 7 days of draft
+        const scheduleStart = schedule.scheduleState.firstDraftDate;
+        const scheduleEnd = JSJoda.LocalDate.parse(scheduleStart).plusDays(7).toString();
+
+        windowStart = scheduleStart;
+        windowEnd = scheduleEnd;
+
         unassignedShifts.children().remove();
         let unassignedShiftsCount = 0;
         byEmployeeGroupDataSet.clear();
         byLocationGroupDataSet.clear();
-        unassignedGroupDataSet.clear();
+
         byEmployeeItemDataSet.clear();
         byLocationItemDataSet.clear();
-        unassignedItemDataSet.clear();
 
         byEmployeeTimeline.setCustomTime(schedule.scheduleState.lastHistoricDate, 'published');
         byEmployeeTimeline.setCustomTime(schedule.scheduleState.firstDraftDate, 'draft');
 
         byLocationTimeline.setCustomTime(schedule.scheduleState.lastHistoricDate, 'published');
         byLocationTimeline.setCustomTime(schedule.scheduleState.firstDraftDate, 'draft');
-
-        unassignedTimeline.setCustomTime(schedule.scheduleState.lastHistoricDate, 'published');
-        unassignedTimeline.setCustomTime(schedule.scheduleState.firstDraftDate, 'draft');
 
         schedule.availabilityList.forEach((availability, index) => {
             const availabilityDate = JSJoda.LocalDate.parse(availability.date);
@@ -190,13 +167,18 @@ function refreshSchedule() {
                 content: byEmployeeShiftElement.html(),
                 start: start, end: end,
                 type: "background",
-                style: "background-color: " + getAvailabilityColor(availability.availabilityType),
+                style: "opacity: 0.5; background-color: " + getAvailabilityColor(availability.availabilityType),
             });
         });
 
 
         schedule.employeeList.forEach((employee, index) => {
-            byEmployeeGroupDataSet.add({id : employee.name, content: employee.name});
+            const employeeGroupElement = $('<div class="card-body p-2"/>')
+                    .append($(`<h5 class="card-title mb-2"/>)`)
+                            .append(employee.name))
+                    .append($('<div/>')
+                            .append($(employee.skillSet.map(skill => `<span class="badge mr-1 mt-1" style="background-color:#d3d7cf">${skill}</span>`).join(''))));
+            byEmployeeGroupDataSet.add({id : employee.name, content: employeeGroupElement.html()});
         });
 
         schedule.shiftList.forEach((shift, index) => {
@@ -206,17 +188,16 @@ function refreshSchedule() {
                     id : shift.location,
                     content: shift.location,
                 });
-                unassignedGroupDataSet.add({
-                    id : shift.location,
-                    content: shift.location,
-                });
             }
 
             if (shift.employee == null) {
                 unassignedShiftsCount++;
 
-                const byLocationShiftElement = $(`<div/>`)
-                  .append($(`<h5 class="card-title mb-1"/>`).text(`Unassigned`));
+                const byLocationShiftElement = $('<div class="card-body p-2"/>')
+                        .append($(`<h5 class="card-title mb-2"/>)`)
+                                .append("Unassigned"))
+                        .append($('<div/>')
+                                .append($(`<span class="badge mr-1 mt-1" style="background-color:#d3d7cf">${shift.requiredSkill}</span>`)));
 
                 byLocationItemDataSet.add({
                     id : 'shift-' + index, group: shift.location,
@@ -224,22 +205,25 @@ function refreshSchedule() {
                     start: shift.start, end: shift.end,
                     style: "background-color: #EF292999"
                 });
-                unassignedItemDataSet.add({
-                    id : 'shift-' + index, group: shift.location,
-                    content: byLocationShiftElement.html(),
-                    start: shift.start, end: shift.end,
-                    style: "background-color: #EF292999"
-                });
             } else {
-                const byEmployeeShiftElement = $(`<div/>`)
-                    .append($(`<h5 class="card-title mb-1"/>`).text(shift.location));
-                const byLocationShiftElement = $(`<div/>`)
-                    .append($(`<h5 class="card-title mb-1"/>`).text(shift.employee.name));
+                const skillColor = (shift.employee.skillSet.indexOf(shift.requiredSkill) === -1? '#ef2929' : '#8ae234');
+                const byEmployeeShiftElement = $('<div class="card-body p-2"/>')
+                        .append($(`<h5 class="card-title mb-2"/>)`)
+                                .append(shift.location))
+                        .append($('<div/>')
+                                .append($(`<span class="badge mr-1 mt-1" style="background-color:${skillColor}">${shift.requiredSkill}</span>`)));
+                const byLocationShiftElement = $('<div class="card-body p-2"/>')
+                        .append($(`<h5 class="card-title mb-2"/>)`)
+                                .append(shift.employee.name))
+                        .append($('<div/>')
+                                .append($(`<span class="badge mr-1 mt-1" style="background-color:${skillColor}">${shift.requiredSkill}</span>`)));
+
                 const shiftColor =  getShiftColor(shift, availabilityMap);
                 byEmployeeItemDataSet.add({
                     id : 'shift-' + index, group: shift.employee.name,
                     content: byEmployeeShiftElement.html(),
-                    start: shift.start, end: shift.end
+                    start: shift.start, end: shift.end,
+                    style: "background-color: " + shiftColor
                 });
                 byLocationItemDataSet.add({
                     id : 'shift-' + index, group: shift.location,
@@ -256,9 +240,8 @@ function refreshSchedule() {
         } else {
             unassignedShifts.append($(`<p/>`).text(`There are ${unassignedShiftsCount} unassigned shifts.`));
         }
-        byEmployeeTimeline.setWindow(schedule.fromDate, schedule.toDate);
-        byLocationTimeline.setWindow(schedule.fromDate, schedule.toDate);
-        unassignedTimeline.setWindow(schedule.fromDate, schedule.toDate);
+        byEmployeeTimeline.setWindow(scheduleStart, scheduleEnd);
+        byLocationTimeline.setWindow(scheduleStart, scheduleEnd);
     });
 }
 
