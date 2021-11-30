@@ -64,30 +64,23 @@
 
         <div class="float-right">
             <ul class="nav nav-pills" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link" id="unassignedPanelTab" data-toggle="tab" href="#unassignedPanel" role="tab"
-                       aria-controls="unassignedPanel" aria-selected="false">Unassigned</a>
+                <li class="nav-item active">
+                    <a class="nav-link" id="byLocationPanelTab" data-toggle="tab" href="#byLocationPanel" role="tab"
+                       aria-controls="byLocationPanel" aria-selected="true">By location</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" id="byEmployeePanelTab" data-toggle="tab" href="#byEmployeePanel" role="tab"
-                        aria-controls="byCrewPanel" aria-selected="false">By employee</a>
-                </li>
-                <li class="nav-item active">
-                    <a class="nav-link" id="byLocationPanelTab" data-toggle="tab" href="#byLocationPanel" role="tab"
-                        aria-controls="byJobPanel" aria-selected="true">By location</a>
+                        aria-controls="byEmployeePanel" aria-selected="false">By employee</a>
                 </li>
             </ul>
         </div>
     </div>
     <div class="mb-4 tab-content" id="myTabContent">
-        <div class="tab-pane fade" id="unassignedPanel" role="tabpanel" aria-labelledby="unassignedPanelTab">
-            <div id="unassignedVisualization"></div>
+        <div class="tab-pane fade show active" id="byLocationPanel" role="tabpanel" aria-labelledby="byLocationPanelTab">
+            <div id="locationVisualization"></div>
         </div>
         <div class="tab-pane fade" id="byEmployeePanel" role="tabpanel" aria-labelledby="byEmployeePanelTab">
             <div id="employeeVisualization"></div>
-        </div>
-        <div class="tab-pane fade show active" id="byLocationPanel" role="tabpanel" aria-labelledby="byLocationPanelTab">
-            <div id="locationVisualization"></div>
         </div>
     </div>
 </div>

@@ -59,7 +59,8 @@ public class DemoDataGenerator {
         LARGE
     }
 
-    final String[] SKILLS = { "Anaesthetics", "Cardiology"};
+    final String[] REQUIRED_SKILLS = { "Doctor", "Nurse"};
+    final String[] OPTIONAL_SKILLS = { "Anaesthetics", "Cardiology"};
 
     @Inject
     EmployeeRepository employeeRepository;
@@ -78,7 +79,7 @@ public class DemoDataGenerator {
         ScheduleState scheduleState = new ScheduleState();
         scheduleState.setFirstDraftDate(START_DATE);
         scheduleState.setDraftLength(INITIAL_ROSTER_LENGTH_IN_DAYS);
-        scheduleState.setPublishNotice(7);
+        scheduleState.setPublishLength(7);
         scheduleState.setLastHistoricDate(START_DATE.minusDays(7));
         scheduleState.setTenantId(EmployeeScheduleResource.SINGLETON_SCHEDULE_ID);
 
@@ -96,7 +97,8 @@ public class DemoDataGenerator {
 
         List<Employee> employeeList = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
-            Set<String> skills = pickSubset(List.of(SKILLS), random, 3, 1);
+            Set<String> skills = pickSubset(List.of(OPTIONAL_SKILLS), random, 3, 1);
+            skills.add(pickRandom(REQUIRED_SKILLS, random));
             Employee employee = new Employee(namePermutations.get(i), skills);
             employeeRepository.persist(employee);
             employeeList.add(employee);
@@ -110,32 +112,44 @@ public class DemoDataGenerator {
                 availabilityRepository.persist(new Availability(employee, date, availabilityType));
             }
 
-            generateShiftsForDay(date, SKILLS, random);
+            generateShiftsForDay(date, random);
         }
     }
 
-    private void generateShiftsForDay(LocalDate date, String[] skills, Random random) {
+    private void generateShiftsForDay(LocalDate date, Random random) {
+        LocalDateTime morningStartTime = date.atTime(LocalTime.of(6, 0));
+        LocalDateTime morningEndTime = date.atTime(LocalTime.of(14, 0));
+
         LocalDateTime dayStartTime = date.atTime(LocalTime.of(9, 0));
         LocalDateTime dayEndTime = date.atTime(LocalTime.of(17, 0));
-        LocalDateTime afternoonStartTime = date.atTime(LocalTime.of(13, 0));
-        LocalDateTime afternoonEndTime = date.atTime(LocalTime.of(21, 0));
 
+        LocalDateTime afternoonStartTime = date.atTime(LocalTime.of(14, 0));
+        LocalDateTime afternoonEndTime = date.atTime(LocalTime.of(22, 0));
+
+        LocalDateTime nightStartTime = date.atTime(LocalTime.of(22, 0));
+        LocalDateTime nightEndTime = date.plusDays(1).atTime(LocalTime.of(6, 0));
+
+        generateShiftForTimeslot(morningStartTime, morningEndTime, random);
+        generateShiftForTimeslot(dayStartTime, dayEndTime, random);
+        generateShiftForTimeslot(afternoonStartTime, afternoonEndTime, random);
+        generateShiftForTimeslot(nightStartTime, nightEndTime, random);
+    }
+
+    private void generateShiftForTimeslot(LocalDateTime timeslotStart, LocalDateTime timeslotEnd, Random random) {
         String[] LOCATIONS = { "Ambulatory care", "Critical care", "Pediatric care"};
 
-        int dayShiftCount = 1 + random.nextInt(4);
-        int afternoonShiftCount = 1 + random.nextInt(4);
+        int shiftCount = 1 + random.nextInt(2);
 
-        for (int i = 0; i < dayShiftCount; i++) {
-            String requiredSkill = pickRandom(skills, random);
+        for (int i = 0; i < shiftCount; i++) {
+            String requiredSkill;
+            if (random.nextBoolean()) {
+                requiredSkill = pickRandom(REQUIRED_SKILLS, random);
+            } else {
+                requiredSkill = pickRandom(OPTIONAL_SKILLS, random);
+            }
             String location = pickRandom(LOCATIONS, random);
 
-            shiftRepository.persist(new Shift(dayStartTime, dayEndTime, location, requiredSkill));
-        }
-        for (int i = 0; i < afternoonShiftCount; i++) {
-            String requiredSkill = pickRandom(skills, random);
-            String location = pickRandom(LOCATIONS, random);
-
-            shiftRepository.persist(new Shift(afternoonStartTime, afternoonEndTime, location, requiredSkill));
+            shiftRepository.persist(new Shift(timeslotStart, timeslotEnd, location, requiredSkill));
         }
     }
 
@@ -183,15 +197,15 @@ public class DemoDataGenerator {
         List<Employee> employeeList = employeeRepository.listAll();
         Random random = new Random(0);
 
-        for (int i = 0; i < scheduleState.getDraftLength(); i++) {
+        for (int i = 0; i < scheduleState.getPublishLength(); i++) {
             Set<Employee> employeesWithAvailabitiesOnDay = pickSubset(employeeList, random, 4, 3, 2, 1);
-            LocalDate date = scheduleState.getFirstDraftDate().plusDays(i);
+            LocalDate date = scheduleState.getFirstDraftDate().plusDays(scheduleState.getPublishLength() + i);
             for (Employee employee : employeesWithAvailabitiesOnDay) {
                 AvailabilityType availabilityType = pickRandom(AvailabilityType.values(), random);
                 availabilityRepository.persist(new Availability(employee, date, availabilityType));
             }
 
-            generateShiftsForDay(date, SKILLS, random);
+            generateShiftsForDay(date, random);
         }
     }
 

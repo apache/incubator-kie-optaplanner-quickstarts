@@ -1,6 +1,5 @@
 package org.acme.employeescheduling.domain;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty;
@@ -25,9 +24,6 @@ public class EmployeeSchedule {
 
     @PlanningScore
     HardSoftScore score;
-
-    LocalDate fromDate;
-    LocalDate toDate;
 
     ScheduleState scheduleState;
 
@@ -88,43 +84,5 @@ public class EmployeeSchedule {
 
     public void setSolverStatus(SolverStatus solverStatus) {
         this.solverStatus = solverStatus;
-    }
-
-    public LocalDate getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(LocalDate fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public LocalDate getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(LocalDate toDate) {
-        this.toDate = toDate;
-    }
-
-    public void computeFromAndToDates() {
-        if (shiftList == null || shiftList.isEmpty()) {
-            fromDate = null;
-            toDate = null;
-            return;
-        }
-        fromDate = shiftList.get(0).getStart().toLocalDate();
-        toDate = shiftList.get(0).getEnd().toLocalDate();
-        for (Shift shift : shiftList.subList(1, shiftList.size())) {
-            LocalDate shiftStart = shift.getStart().toLocalDate();
-            LocalDate shiftEnd = shift.getEnd().toLocalDate();
-
-            if (shiftStart.isBefore(fromDate)) {
-                fromDate = shiftStart;
-            }
-
-            if (shiftEnd.isAfter(toDate)) {
-                toDate = shiftEnd;
-            }
-        }
     }
 }
