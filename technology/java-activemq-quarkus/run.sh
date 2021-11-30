@@ -48,6 +48,12 @@ if [ ! -d target ]; then
   mkdir target
 fi
 
+# Check if docker-compose is available.
+if ! docker-compose --version &> /dev/null ; then
+  echo "docker-compose was not detected. Please make sure that docker-compose has been properly installed."
+  exit 1
+fi
+
 # Run docker-compose to start ActiveMQ broker.
 docker-compose up > target/activemq.log 2>&1 &
 readonly PID_DOCKER_AMQ=$!
@@ -68,4 +74,12 @@ readonly URL="http://localhost:8080"
 wait_for_url "$URL" 60
 echo "Application available at $URL"
 echo "Press [Ctrl+C] to exit."
+
+echo
+if [ "$1" = "-v" ]; then
+  echo "--------------- SOLVER output ---------------"
+  tail -f target/solver.log
+else
+  echo "To display output of the solver, invoke this script with the '-v' option. Complete logs are available in the 'target' directory."
+fi
 wait
