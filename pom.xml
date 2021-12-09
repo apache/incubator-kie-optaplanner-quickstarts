@@ -11,6 +11,7 @@
   </parent>
   <!-- IMPORTANT: the individual quickstarts have no parent pom. -->
 
+
   <artifactId>optaplanner-quickstarts-parent</artifactId>
   <packaging>pom</packaging>
   <name>OptaPlanner Quickstarts</name>
