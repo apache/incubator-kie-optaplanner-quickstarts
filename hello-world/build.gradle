@@ -3,7 +3,7 @@ plugins {
     id "application"
 }
 
-def optaplannerVersion = "8.14.1.Final"
+def optaplannerVersion = "8.14.0.Final"
 def logbackVersion = "1.2.3"
 
 group = "org.acme"
