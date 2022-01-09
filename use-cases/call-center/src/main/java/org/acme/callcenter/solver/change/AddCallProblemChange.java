@@ -16,30 +16,21 @@
 
 package org.acme.callcenter.solver.change;
 
-import java.time.LocalTime;
-
 import org.acme.callcenter.domain.Call;
 import org.acme.callcenter.domain.CallCenter;
-import org.optaplanner.core.api.score.director.ScoreDirector;
-import org.optaplanner.core.api.solver.ProblemFactChange;
+import org.optaplanner.core.api.solver.change.ProblemChange;
+import org.optaplanner.core.api.solver.change.ProblemChangeDirector;
 
-public class PinCallProblemFactChange implements ProblemFactChange<CallCenter> {
+public class AddCallProblemChange implements ProblemChange<CallCenter> {
 
     private final Call call;
 
-    public PinCallProblemFactChange(Call call) {
+    public AddCallProblemChange(Call call) {
         this.call = call;
     }
 
     @Override
-    public void doChange(ScoreDirector<CallCenter> scoreDirector) {
-        Call workingCall = scoreDirector.lookUpWorkingObjectOrReturnNull(call);
-        if (workingCall != null) {
-            scoreDirector.beforeProblemPropertyChanged(workingCall);
-            workingCall.setPinned(true);
-            workingCall.setPickUpTime(LocalTime.now());
-            scoreDirector.afterProblemPropertyChanged(workingCall);
-            scoreDirector.triggerVariableListeners();
-        }
+    public void doChange(CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
+        problemChangeDirector.addEntity(call, workingCallCenter.getCalls()::add);
     }
 }

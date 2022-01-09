@@ -19,36 +19,31 @@ package org.acme.callcenter.solver.change;
 import org.acme.callcenter.domain.Call;
 import org.acme.callcenter.domain.CallCenter;
 import org.acme.callcenter.domain.PreviousCallOrAgent;
-import org.optaplanner.core.api.score.director.ScoreDirector;
-import org.optaplanner.core.api.solver.ProblemFactChange;
+import org.optaplanner.core.api.solver.change.ProblemChange;
+import org.optaplanner.core.api.solver.change.ProblemChangeDirector;
 
-public class RemoveCallProblemFactChange implements ProblemFactChange<CallCenter> {
+public class RemoveCallProblemChange implements ProblemChange<CallCenter> {
 
     private final long callId;
 
-    public RemoveCallProblemFactChange(long callId) {
+    public RemoveCallProblemChange(long callId) {
         this.callId = callId;
     }
 
     @Override
-    public void doChange(ScoreDirector<CallCenter> scoreDirector) {
-        CallCenter callCenter = scoreDirector.getWorkingSolution();
+    public void doChange(CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
         Call call = new Call(callId, null);
-        Call workingCall = scoreDirector.lookUpWorkingObjectOrReturnNull(call);
+        Call workingCall = problemChangeDirector.lookUpWorkingObjectOrReturnNull(call);
         if (workingCall != null) {
             PreviousCallOrAgent previousCallOrAgent = workingCall.getPreviousCallOrAgent();
 
             Call nextCall = workingCall.getNextCall();
             if (nextCall != null) {
-                scoreDirector.beforeVariableChanged(nextCall, "previousCallOrAgent");
-                nextCall.setPreviousCallOrAgent(previousCallOrAgent);
-                scoreDirector.afterVariableChanged(nextCall, "previousCallOrAgent");
+                problemChangeDirector.changeVariable(nextCall, "previousCallOrAgent",
+                        workingNextCall -> workingNextCall.setPreviousCallOrAgent(previousCallOrAgent));
             }
 
-            scoreDirector.beforeEntityRemoved(workingCall);
-            callCenter.getCalls().remove(workingCall);
-            scoreDirector.afterEntityRemoved(workingCall);
-            scoreDirector.triggerVariableListeners();
+            problemChangeDirector.removeEntity(workingCall, workingCallCenter.getCalls()::remove);
         }
     }
 }
