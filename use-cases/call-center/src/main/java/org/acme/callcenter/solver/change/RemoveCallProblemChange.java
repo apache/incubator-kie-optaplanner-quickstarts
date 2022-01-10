@@ -16,6 +16,8 @@
 
 package org.acme.callcenter.solver.change;
 
+import java.util.Optional;
+
 import org.acme.callcenter.domain.Call;
 import org.acme.callcenter.domain.CallCenter;
 import org.acme.callcenter.domain.PreviousCallOrAgent;
@@ -33,8 +35,8 @@ public class RemoveCallProblemChange implements ProblemChange<CallCenter> {
     @Override
     public void doChange(CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
         Call call = new Call(callId, null);
-        Call workingCall = problemChangeDirector.lookUpWorkingObjectOrReturnNull(call);
-        if (workingCall != null) {
+        Optional<Call> workingCallOptional = problemChangeDirector.lookUpWorkingObjectOptionally(call);
+        workingCallOptional.ifPresent(workingCall -> {
             PreviousCallOrAgent previousCallOrAgent = workingCall.getPreviousCallOrAgent();
 
             Call nextCall = workingCall.getNextCall();
@@ -44,6 +46,6 @@ public class RemoveCallProblemChange implements ProblemChange<CallCenter> {
             }
 
             problemChangeDirector.removeEntity(workingCall, workingCallCenter.getCalls()::remove);
-        }
+        });
     }
 }
