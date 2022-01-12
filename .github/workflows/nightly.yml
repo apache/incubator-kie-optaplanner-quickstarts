@@ -42,7 +42,7 @@ jobs:
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'Email address of the user who owns the API key mentioned above'
+          email: ${{ secrets.ZULIP_EMAIL }}
           organization-url: 'https://kie.zulipchat.com'
           to: 'optaplanner-dev'
           type: 'stream'
