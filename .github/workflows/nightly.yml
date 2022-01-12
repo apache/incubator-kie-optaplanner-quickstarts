@@ -17,7 +17,7 @@ jobs:
         java-version: [11]
       fail-fast: true
     runs-on: ${{ matrix.os }}
-    name: Maven Build
+    name: ${{ matrix.os }} - Java ${{ matrix.java-version }} - Maven
     steps:
       - name: Support long paths
         if: ${{ matrix.os == 'windows-latest' }}
