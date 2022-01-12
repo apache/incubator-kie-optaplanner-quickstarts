@@ -47,4 +47,4 @@ jobs:
           to: 'the name or integer ID of the stream'
           type: 'private for a private message and stream for a stream message'
           topic: 'Only required for stream messages (type="stream"), ignored otherwise'
-          content: {{ env.zulip_message }}
+          content: ${{ env.zulip_message }}
