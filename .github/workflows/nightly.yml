@@ -33,18 +33,18 @@ jobs:
         run: mvn -B clean install --file pom.xml dependency:tree -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
       - name: Set failure message
         if: ${{ failure() }}
-        run: echo "zulip_message='The content of the message. Maximum message size of 10000 bytes'" >> $GITHUB_ENV  
+        run: echo "zulip_message='The ${{github.repository}} ${GITHUB_REF#refs/heads/} branch has failed.'" >> $GITHUB_ENV  
       - name: Set success message
         if: ${{ success() }}
-        run: echo "zulip_message='The content of the message. Maximum message size of 10000 bytes'" >> $GITHUB_ENV  
+        run: echo "zulip_message='The ${{github.repository}} ${GITHUB_REF#refs/heads/} branch was successfully tested.'" >> $GITHUB_ENV  
       - name: Send a stream message
         if: ${{ always() }}
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: 'Email address of the user who owns the API key mentioned above'
-          organization-url: 'Zulip organization canonical URL'
-          to: 'the name or integer ID of the stream'
-          type: 'private for a private message and stream for a stream message'
-          topic: 'Only required for stream messages (type="stream"), ignored otherwise'
+          organization-url: 'https://kie.zulipchat.com'
+          to: 'optaplanner-dev'
+          type: 'stream'
+          topic: 'status of ${{github.repository}} - ${GITHUB_REF#refs/heads/} '
           content: ${{ env.zulip_message }}
