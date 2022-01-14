@@ -4,7 +4,7 @@ plugins {
     id "java"
 }
 
-def optaplannerVersion = "8.16.0-SNAPSHOT"
+def optaplannerVersion = "8.16.0.Final"
 
 group = "org.acme"
 version = "1.0-SNAPSHOT"
