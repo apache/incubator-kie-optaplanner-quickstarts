@@ -1,8 +1,8 @@
-= Maintenance Scheduling (Java, Quarkus, Maven)
+= Employee Scheduling (Java, Quarkus, Maven)
 
-Schedule maintenance jobs to crews over time to reduce both premature and overdue maintenance.
+Schedule shifts to employees, accounting for employee availabilities.
 
-image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-maintenance-scheduling-screenshot.png[]
+image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-employee-scheduling-screenshot.png[]
 
 
 == Run the application with live coding
@@ -13,7 +13,7 @@ image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/sc
 ----
 $ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
 ...
-$ cd optaplanner-quickstarts/use-cases/maintenance-scheduling
+$ cd optaplanner-quickstarts/use-cases/employee-scheduling
 ----
 
 . Start the application with Maven:
