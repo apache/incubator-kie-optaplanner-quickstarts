@@ -1,11 +1,11 @@
 package org.acme.employeescheduling.solver;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 
 import org.acme.employeescheduling.domain.Availability;
 import org.acme.employeescheduling.domain.AvailabilityType;
 import org.acme.employeescheduling.domain.Shift;
-import org.apache.commons.lang3.ObjectUtils;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -18,8 +18,12 @@ public class EmployeeSchedulingConstraintProvider implements ConstraintProvider 
         // The overlap of two timeslot occurs in the range common to both timeslots.
         // Both timeslots are active after the higher of their two start times,
         // and before the lower of their two end times.
-        return (int) Duration.between(ObjectUtils.max(shift1.getStart(), shift2.getStart()),
-                                      ObjectUtils.min(shift1.getEnd(), shift2.getEnd())).toMinutes();
+        LocalDateTime shift1Start = shift1.getStart();
+        LocalDateTime shift1End = shift1.getEnd();
+        LocalDateTime shift2Start = shift2.getStart();
+        LocalDateTime shift2End = shift2.getEnd();
+        return (int) Duration.between((shift1Start.compareTo(shift2Start) > 0) ? shift1Start : shift2Start,
+                                      (shift1End.compareTo(shift2End) < 0) ? shift1End : shift2End).toMinutes();
     }
 
     private static int getShiftDurationInMinutes(Shift shift) {

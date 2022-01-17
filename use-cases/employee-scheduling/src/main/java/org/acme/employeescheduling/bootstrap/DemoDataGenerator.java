@@ -59,8 +59,10 @@ public class DemoDataGenerator {
         LARGE
     }
 
-    final String[] REQUIRED_SKILLS = { "Doctor", "Nurse"};
-    final String[] OPTIONAL_SKILLS = { "Anaesthetics", "Cardiology"};
+    static final String[] FIRST_NAMES = {"Amy", "Beth", "Chad", "Dan", "Elsa", "Flo", "Gus", "Hugo", "Ivy", "Jay"};
+    static final String[] LAST_NAMES = {"Cole", "Fox", "Green", "Jones", "King", "Li", "Poe", "Rye", "Smith", "Watt"};
+    static final String[] REQUIRED_SKILLS = { "Doctor", "Nurse"};
+    static final String[] OPTIONAL_SKILLS = { "Anaesthetics", "Cardiology"};
 
     @Inject
     EmployeeRepository employeeRepository;
@@ -88,8 +90,6 @@ public class DemoDataGenerator {
         if (demoData == DemoData.NONE) {
             return;
         }
-        final String[] FIRST_NAMES = {"Amy", "Beth", "Chad", "Dan", "Elsa", "Flo", "Gus", "Hugo", "Ivy", "Jay"};
-        final String[] LAST_NAMES = {"Cole", "Fox", "Green", "Jones", "King", "Li", "Poe", "Rye", "Smith", "Watt"};
 
         Random random = new Random(0);
         List<String> namePermutations = joinAllCombinations(FIRST_NAMES, LAST_NAMES);
