@@ -42,7 +42,7 @@ public class VehicleRoutingSolution {
     @ValueRangeProvider(id = "vehicleRange")
     private List<Vehicle> vehicleList;
 
-    @PlanningEntityCollectionProperty
+    @ProblemFactCollectionProperty
     @ValueRangeProvider(id = "customerRange")
     private List<Customer> customerList;
 

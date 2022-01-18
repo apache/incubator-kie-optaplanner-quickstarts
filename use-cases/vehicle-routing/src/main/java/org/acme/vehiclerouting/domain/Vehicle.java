@@ -21,16 +21,19 @@ import java.util.Collections;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.optaplanner.core.api.domain.entity.PlanningEntity;
+import org.optaplanner.core.api.domain.variable.PlanningListVariable;
 
+@PlanningEntity
 @JsonIgnoreProperties({ "nextCustomer" })
-public class Vehicle implements Standstill {
+public class Vehicle {
 
     private long id;
     private int capacity;
     private Depot depot;
 
-    // Shadow variable
-    private Customer nextCustomer;
+    @PlanningListVariable(valueRangeProviderRefs = "customerRange")
+    private List<Customer> customerList;
 
     public Vehicle() {
     }
@@ -39,6 +42,7 @@ public class Vehicle implements Standstill {
         this.id = id;
         this.capacity = capacity;
         this.depot = depot;
+        this.customerList = new ArrayList<>();
     }
 
     public long getId() {
@@ -65,19 +69,12 @@ public class Vehicle implements Standstill {
         this.depot = depot;
     }
 
-    @Override
-    public Customer getNextCustomer() {
-        return nextCustomer;
+    public List<Customer> getCustomerList() {
+        return customerList;
     }
 
-    @Override
-    public void setNextCustomer(Customer nextCustomer) {
-        this.nextCustomer = nextCustomer;
-    }
-
-    @Override
-    public Location getLocation() {
-        return depot.getLocation();
+    public void setCustomerList(List<Customer> customerList) {
+        this.customerList = customerList;
     }
 
     // ************************************************************************
@@ -88,21 +85,16 @@ public class Vehicle implements Standstill {
      * @return route of the vehicle
      */
     public List<Location> getRoute() {
-        if (getNextCustomer() == null) {
+        if (customerList.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<Location> route = new ArrayList<Location>();
 
         route.add(depot.getLocation());
-
-        // add list of customer location
-        Customer customer = getNextCustomer();
-        while (customer != null) {
+        for (Customer customer : customerList) {
             route.add(customer.getLocation());
-            customer = customer.getNextCustomer();
         }
-
         route.add(depot.getLocation());
 
         return route;
@@ -110,26 +102,22 @@ public class Vehicle implements Standstill {
 
     public int getTotalDemand() {
         int totalDemand = 0;
-        Customer customer = getNextCustomer();
-        while (customer != null) {
+        for (Customer customer : customerList) {
             totalDemand += customer.getDemand();
-            customer = customer.getNextCustomer();
         }
         return totalDemand;
     }
 
     public long getTotalDistanceMeters() {
         long totalDistance = 0L;
-        Customer customer = getNextCustomer();
-        Customer lastCustomer = null;
-        while (customer != null) {
-            totalDistance += customer.getDistanceFromPreviousStandstill();
-            lastCustomer = customer;
-            customer = customer.getNextCustomer();
+        Location lastLocation = depot.getLocation();
+        for (Customer customer : customerList) {
+            totalDistance += customer.getLocation().getDistanceTo(lastLocation);
+            lastLocation = customer.getLocation();
         }
 
-        if (lastCustomer != null) {
-            totalDistance += lastCustomer.getDistanceToDepot();
+        if (lastLocation != depot.getLocation()) {
+            totalDistance += depot.getLocation().getDistanceTo(lastLocation);
         }
         return totalDistance;
     }
