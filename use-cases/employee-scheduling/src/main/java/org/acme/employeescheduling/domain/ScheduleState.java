@@ -62,7 +62,9 @@ public class ScheduleState {
         return firstDraftDate.plusDays(draftLength);
     }
 
-    // Simple getters/setters
+    // ************************************************************************
+    // Getters and setters
+    // ************************************************************************
 
     public Long getTenantId() {
         return tenantId;

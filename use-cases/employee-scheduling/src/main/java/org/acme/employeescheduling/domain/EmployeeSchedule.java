@@ -29,6 +29,7 @@ public class EmployeeSchedule {
 
     SolverStatus solverStatus;
 
+    // No-arg constructor required for OptaPlanner
     public EmployeeSchedule() {}
 
     public EmployeeSchedule(ScheduleState scheduleState, List<Availability> availabilityList, List<Employee> employeeList, List<Shift> shiftList) {

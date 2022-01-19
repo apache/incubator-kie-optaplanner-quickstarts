@@ -12,12 +12,12 @@ import org.optaplanner.core.api.domain.lookup.PlanningId;
 @Entity
 public class Availability {
 
-    @Id
     @PlanningId
+    @Id
     @GeneratedValue
     Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     Employee employee;
 
     LocalDate date;
@@ -67,11 +67,6 @@ public class Availability {
 
     @Override
     public String toString() {
-        return "Availability{" +
-                "id=" + id +
-                ", employee=" + employee +
-                ", date=" + date +
-                ", availabilityType=" + availabilityType +
-                '}';
+        return availabilityType + "(" + employee + ", " + date + ")";
     }
 }

@@ -17,14 +17,17 @@
 package org.acme.employeescheduling.bootstrap;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -63,6 +66,20 @@ public class DemoDataGenerator {
     static final String[] LAST_NAMES = {"Cole", "Fox", "Green", "Jones", "King", "Li", "Poe", "Rye", "Smith", "Watt"};
     static final String[] REQUIRED_SKILLS = { "Doctor", "Nurse"};
     static final String[] OPTIONAL_SKILLS = { "Anaesthetics", "Cardiology"};
+    static final String[] LOCATIONS = { "Ambulatory care", "Critical care", "Pediatric care"};
+    static final Duration SHIFT_LENGTH = Duration.ofHours(8);
+    static final LocalTime MORNING_SHIFT_START_TIME = LocalTime.of(6, 0);
+    static final LocalTime DAY_SHIFT_START_TIME = LocalTime.of(9, 0);
+    static final LocalTime AFTERNOON_SHIFT_START_TIME = LocalTime.of(14, 0);
+    static final LocalTime NIGHT_SHIFT_START_TIME = LocalTime.of(22, 0);
+
+    static final LocalTime[][] SHIFT_START_TIMES_COMBOS = {
+            {MORNING_SHIFT_START_TIME, AFTERNOON_SHIFT_START_TIME},
+            {MORNING_SHIFT_START_TIME, AFTERNOON_SHIFT_START_TIME, NIGHT_SHIFT_START_TIME},
+            {MORNING_SHIFT_START_TIME, DAY_SHIFT_START_TIME, AFTERNOON_SHIFT_START_TIME, NIGHT_SHIFT_START_TIME},
+    };
+
+    Map<String,List<LocalTime>> locationToShiftStartTimeListMap = new HashMap<>();
 
     @Inject
     EmployeeRepository employeeRepository;
@@ -87,11 +104,17 @@ public class DemoDataGenerator {
 
         scheduleStateRepository.persist(scheduleState);
 
+        Random random = new Random(0);
+
+        int shiftTemplateIndex = 0;
+        for (String location : LOCATIONS) {
+            locationToShiftStartTimeListMap.put(location, List.of(SHIFT_START_TIMES_COMBOS[shiftTemplateIndex]));
+            shiftTemplateIndex = (shiftTemplateIndex + 1) % SHIFT_START_TIMES_COMBOS.length;
+        }
+
         if (demoData == DemoData.NONE) {
             return;
         }
-
-        Random random = new Random(0);
         List<String> namePermutations = joinAllCombinations(FIRST_NAMES, LAST_NAMES);
         Collections.shuffle(namePermutations, random);
 
@@ -117,28 +140,24 @@ public class DemoDataGenerator {
     }
 
     private void generateShiftsForDay(LocalDate date, Random random) {
-        LocalDateTime morningStartTime = date.atTime(LocalTime.of(6, 0));
-        LocalDateTime morningEndTime = date.atTime(LocalTime.of(14, 0));
-
-        LocalDateTime dayStartTime = date.atTime(LocalTime.of(9, 0));
-        LocalDateTime dayEndTime = date.atTime(LocalTime.of(17, 0));
-
-        LocalDateTime afternoonStartTime = date.atTime(LocalTime.of(14, 0));
-        LocalDateTime afternoonEndTime = date.atTime(LocalTime.of(22, 0));
-
-        LocalDateTime nightStartTime = date.atTime(LocalTime.of(22, 0));
-        LocalDateTime nightEndTime = date.plusDays(1).atTime(LocalTime.of(6, 0));
-
-        generateShiftForTimeslot(morningStartTime, morningEndTime, random);
-        generateShiftForTimeslot(dayStartTime, dayEndTime, random);
-        generateShiftForTimeslot(afternoonStartTime, afternoonEndTime, random);
-        generateShiftForTimeslot(nightStartTime, nightEndTime, random);
+        for (String location : LOCATIONS) {
+            List<LocalTime> shiftStartTimeList = locationToShiftStartTimeListMap.get(location);
+            for (LocalTime shiftStartTime : shiftStartTimeList) {
+                LocalDateTime shiftStartDateTime = date.atTime(shiftStartTime);
+                LocalDateTime shiftEndDateTime = shiftStartDateTime.plus(SHIFT_LENGTH);
+                generateShiftForTimeslot(shiftStartDateTime, shiftEndDateTime, location, random);
+            }
+        }
     }
 
-    private void generateShiftForTimeslot(LocalDateTime timeslotStart, LocalDateTime timeslotEnd, Random random) {
-        String[] LOCATIONS = { "Ambulatory care", "Critical care", "Pediatric care"};
+    private void generateShiftForTimeslot(LocalDateTime timeslotStart, LocalDateTime timeslotEnd, String location,
+                                          Random random) {
+        int shiftCount = 1;
 
-        int shiftCount = 1 + random.nextInt(2);
+        if (random.nextDouble() > 0.9) {
+            // generate an extra shift
+            shiftCount++;
+        }
 
         for (int i = 0; i < shiftCount; i++) {
             String requiredSkill;
@@ -147,8 +166,6 @@ public class DemoDataGenerator {
             } else {
                 requiredSkill = pickRandom(OPTIONAL_SKILLS, random);
             }
-            String location = pickRandom(LOCATIONS, random);
-
             shiftRepository.persist(new Shift(timeslotStart, timeslotEnd, location, requiredSkill));
         }
     }
