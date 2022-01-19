@@ -99,13 +99,6 @@ public class Shift {
 
     @Override
     public String toString() {
-        return "Shift{" +
-                "id=" + id +
-                ", start=" + start +
-                ", end=" + end +
-                ", location='" + location + '\'' +
-                ", requiredSkill='" + requiredSkill + '\'' +
-                ", employee=" + employee +
-                '}';
+        return location + " " + start + "-" + end;
     }
 }

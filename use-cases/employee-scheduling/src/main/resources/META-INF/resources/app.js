@@ -4,7 +4,7 @@ const zoomMax = 4 * 7 * 1000 * 60 * 60 * 24 // 4 weeks in milliseconds
 
 const byEmployeePanel = document.getElementById("byEmployeePanel");
 const byEmployeeTimelineOptions = {
-    timeAxis: {scale: "day"},
+    timeAxis: {scale: "hour", step: 6},
     orientation: {axis: "top"},
     stack: false,
     xss: {disabled: true}, // Items are XSS safe through JQuery
@@ -17,7 +17,7 @@ let byEmployeeTimeline = new vis.Timeline(byEmployeePanel, byEmployeeItemDataSet
 
 const byLocationPanel = document.getElementById("byLocationPanel");
 const byLocationTimelineOptions = {
-    timeAxis: {scale: "day"},
+    timeAxis: {scale: "hour", step: 6},
     orientation: {axis: "top"},
     xss: {disabled: true}, // Items are XSS safe through JQuery
     zoomMin: zoomMin,
