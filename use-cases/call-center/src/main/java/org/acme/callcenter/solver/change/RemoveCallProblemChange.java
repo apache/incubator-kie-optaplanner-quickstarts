@@ -35,7 +35,7 @@ public class RemoveCallProblemChange implements ProblemChange<CallCenter> {
     @Override
     public void doChange(CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
         Call call = new Call(callId, null);
-        Optional<Call> workingCallOptional = problemChangeDirector.lookUpWorkingObjectOptionally(call);
+        Optional<Call> workingCallOptional = problemChangeDirector.lookUpWorkingObject(call);
         workingCallOptional.ifPresent(workingCall -> removeCall(workingCall, workingCallCenter, problemChangeDirector));
     }
 
