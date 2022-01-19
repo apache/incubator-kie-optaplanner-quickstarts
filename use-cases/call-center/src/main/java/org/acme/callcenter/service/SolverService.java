@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
@@ -62,13 +61,12 @@ public class SolverService {
     }
 
     private void pinCallAssignedToAgents(List<Call> calls) {
-        List<ProblemChange<CallCenter>> pinCallProblemChanges = calls.stream()
+        calls.stream()
                 .filter(call -> !call.isPinned()
                         && call.getPreviousCallOrAgent() != null
                         && call.getPreviousCallOrAgent() instanceof Agent)
                 .map(PinCallProblemChange::new)
-                .collect(Collectors.toList());
-        solver.addProblemChanges(pinCallProblemChanges);
+                .forEach(solver::addProblemChange);
     }
 
     public void startSolving(CallCenter inputProblem,
