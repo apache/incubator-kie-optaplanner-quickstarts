@@ -5,6 +5,7 @@ plugins {
 
 def optaplannerVersion = "8.17.0-SNAPSHOT"
 def logbackVersion = "1.2.9"
+def junitJupiterVersion = "5.8.2"
 
 group = "org.acme"
 version = "1.0-SNAPSHOT"
@@ -24,6 +25,7 @@ dependencies {
     implementation platform("org.optaplanner:optaplanner-bom:${optaplannerVersion}")
     implementation "org.optaplanner:optaplanner-core"
     testImplementation "org.optaplanner:optaplanner-test"
+    testImplementation "org.junit.jupiter:junit-jupiter:${junitJupiterVersion}"
 
     runtimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
 }
@@ -51,4 +53,6 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
+
+    useJUnitPlatform()
 }
