@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Default;
@@ -33,14 +32,14 @@ import javax.inject.Inject;
 import org.acme.callcenter.domain.Agent;
 import org.acme.callcenter.domain.Call;
 import org.acme.callcenter.domain.CallCenter;
-import org.acme.callcenter.solver.change.AddCallProblemFactChange;
-import org.acme.callcenter.solver.change.PinCallProblemFactChange;
-import org.acme.callcenter.solver.change.ProlongCallByMinuteProblemFactChange;
-import org.acme.callcenter.solver.change.RemoveCallProblemFactChange;
+import org.acme.callcenter.solver.change.AddCallProblemChange;
+import org.acme.callcenter.solver.change.PinCallProblemChange;
+import org.acme.callcenter.solver.change.ProlongCallByMinuteProblemChange;
+import org.acme.callcenter.solver.change.RemoveCallProblemChange;
 import org.eclipse.microprofile.context.ManagedExecutor;
-import org.optaplanner.core.api.solver.ProblemFactChange;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
+import org.optaplanner.core.api.solver.change.ProblemChange;
 import org.optaplanner.core.api.solver.event.BestSolutionChangedEvent;
 
 @ApplicationScoped
@@ -53,7 +52,7 @@ public class SolverService {
 
     private AtomicBoolean solving = new AtomicBoolean(false);
     private CompletableFuture<?> completableSolverFuture;
-    private final BlockingQueue<ProblemFactChange<CallCenter>> waitingProblemFactChanges = new LinkedBlockingQueue<>();
+    private final BlockingQueue<ProblemChange<CallCenter>> waitingProblemChanges = new LinkedBlockingQueue<>();
 
     @Inject
     public SolverService(SolverFactory<CallCenter> solverFactory, @Default ManagedExecutor executorService) {
@@ -62,13 +61,12 @@ public class SolverService {
     }
 
     private void pinCallAssignedToAgents(List<Call> calls) {
-        List<ProblemFactChange<CallCenter>> pinCallProblemFactChanges = calls.stream()
+        calls.stream()
                 .filter(call -> !call.isPinned()
                         && call.getPreviousCallOrAgent() != null
                         && call.getPreviousCallOrAgent() instanceof Agent)
-                .map(PinCallProblemFactChange::new)
-                .collect(Collectors.toList());
-        solver.addProblemFactChanges(pinCallProblemFactChanges);
+                .map(PinCallProblemChange::new)
+                .forEach(solver::addProblemChange);
     }
 
     public void startSolving(CallCenter inputProblem,
@@ -77,7 +75,7 @@ public class SolverService {
         completableSolverFuture = managedExecutor.runAsync(() -> {
 
             solver.addEventListener(event -> {
-                if (event.isEveryProblemFactChangeProcessed() && event.getNewBestScore().isSolutionInitialized()) {
+                if (event.isEveryProblemChangeProcessed() && event.getNewBestScore().isSolutionInitialized()) {
                     pinCallAssignedToAgents(event.getNewBestSolution().getCalls());
                     bestSolutionChangedEventConsumer.accept(event);
                 }
@@ -88,7 +86,7 @@ public class SolverService {
             } catch (Throwable throwable) {
                 errorHandler.accept(throwable);
             }
-            solver.addProblemFactChanges(new ArrayList<>(waitingProblemFactChanges));
+            solver.addProblemChanges(new ArrayList<>(waitingProblemChanges));
         });
     }
 
@@ -113,23 +111,23 @@ public class SolverService {
     }
 
     public void addCall(Call call) {
-        registerProblemFactChange(new AddCallProblemFactChange(call));
+        registerProblemChange(new AddCallProblemChange(call));
     }
 
     public void removeCall(long callId) {
-        registerProblemFactChange(new RemoveCallProblemFactChange(callId));
+        registerProblemChange(new RemoveCallProblemChange(callId));
     }
 
     public void prolongCall(long callId) {
-        registerProblemFactChange(new ProlongCallByMinuteProblemFactChange(callId));
+        registerProblemChange(new ProlongCallByMinuteProblemChange(callId));
     }
 
-    private void registerProblemFactChange(ProblemFactChange<CallCenter> problemFactChange) {
+    private void registerProblemChange(ProblemChange<CallCenter> problemChange) {
         if (isSolving()) {
             assertSolverIsAlive();
-            solver.addProblemFactChange(problemFactChange);
+            solver.addProblemChange(problemChange);
         } else {
-            waitingProblemFactChanges.add(problemFactChange);
+            waitingProblemChanges.add(problemChange);
         }
     }
 
