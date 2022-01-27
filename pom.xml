@@ -13,7 +13,7 @@
 
   <artifactId>optaplanner-quickstarts-parent</artifactId>
   <packaging>pom</packaging>
-  <name>OptaPlanner Quickstarts</name>
+  <name>OptaPlanner Quickstarts test</name>
 
   <modules>
     <module>hello-world</module>
