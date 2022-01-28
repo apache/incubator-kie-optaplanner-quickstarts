@@ -16,25 +16,27 @@
 
 package org.acme.callcenter.solver.change;
 
+import java.time.Duration;
+
 import org.acme.callcenter.domain.Call;
 import org.acme.callcenter.domain.CallCenter;
-import org.optaplanner.core.api.score.director.ScoreDirector;
-import org.optaplanner.core.api.solver.ProblemFactChange;
+import org.optaplanner.core.api.solver.change.ProblemChange;
+import org.optaplanner.core.api.solver.change.ProblemChangeDirector;
 
-public class AddCallProblemFactChange implements ProblemFactChange<CallCenter> {
+public class ProlongCallByMinuteProblemChange implements ProblemChange<CallCenter> {
 
-    private final Call call;
+    private static final Duration PROLONGATION = Duration.ofMinutes(1L);
+    private final long callId;
 
-    public AddCallProblemFactChange(Call call) {
-        this.call = call;
+    public ProlongCallByMinuteProblemChange(long callId) {
+        this.callId = callId;
     }
 
     @Override
-    public void doChange(ScoreDirector<CallCenter> scoreDirector) {
-        CallCenter callCenter = scoreDirector.getWorkingSolution();
-        scoreDirector.beforeEntityAdded(call);
-        callCenter.getCalls().add(call);
-        scoreDirector.afterEntityAdded(call);
-        scoreDirector.triggerVariableListeners();
+    public void doChange(CallCenter workingSolution, ProblemChangeDirector problemChangeDirector) {
+        Call call = new Call(callId, null);
+
+        problemChangeDirector.changeProblemProperty(call,
+                workingCall -> workingCall.setDuration(workingCall.getDuration().plus(PROLONGATION)));
     }
 }

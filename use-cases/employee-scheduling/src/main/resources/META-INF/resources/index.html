@@ -1,0 +1,95 @@
+<!--
+  ~ Copyright 2020 Red Hat, Inc. and/or its affiliates.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~      http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<html lang="en">
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Employee scheduling - OptaPlanner Quarkus</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vis-timeline@7.4.9/styles/vis-timeline-graph2d.min.css"
+          integrity="sha256-VzPuX2N5f+QlIAqqWaRTrh8oY/Ecry74lBiCrweCzyA=" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/webjars/font-awesome/css/all.css"/>
+    <style>
+        .vis-time-axis .vis-grid.vis-saturday,
+        .vis-time-axis .vis-grid.vis-sunday {
+            background: #D3D7CFFF;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="https://www.optaplanner.org">
+            <img src="optaPlannerLogo200px.png" alt="OptaPlanner logo">
+        </a>
+    </nav>
+    <div class="sticky-top d-flex justify-content-center align-items-center" aria-live="polite" aria-atomic="true">
+        <div id="notificationPanel" style="position: absolute; top: .5rem;"></div>
+    </div>
+    <h1>Employee scheduling solver</h1>
+    <p>Generate the optimal schedule for your employees.</p>
+
+    <div class="mb-4">
+        <button id="refreshButton" type="button" class="btn btn-secondary">
+            <span class="fas fa-refresh"></span> Refresh
+        </button>
+        <button id="solveButton" type="button" class="btn btn-success">
+            <span class="fas fa-play"></span> Solve
+        </button>
+        <button id="stopSolvingButton" type="button" class="btn btn-danger">
+            <span class="fas fa-stop"></span> Stop solving
+        </button>
+        <button id="publish" type="button" class="btn btn-secondary">
+            <span class="fas fa-refresh"></span> Publish
+        </button>
+        <span id="unassignedShifts" class="ml-2 align-middle font-weight-bold"></span>
+        <span id="score" class="score ml-2 align-middle font-weight-bold">Score: ?</span>
+
+        <div class="float-right">
+            <ul class="nav nav-pills" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="byLocationPanelTab" data-toggle="tab" href="#byLocationPanel" role="tab"
+                       aria-controls="byLocationPanel" aria-selected="true">By location</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="byEmployeePanelTab" data-toggle="tab" href="#byEmployeePanel" role="tab"
+                        aria-controls="byEmployeePanel" aria-selected="false">By employee</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="mb-4 tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="byLocationPanel" role="tabpanel" aria-labelledby="byLocationPanelTab">
+            <div id="locationVisualization"></div>
+        </div>
+        <div class="tab-pane fade" id="byEmployeePanel" role="tabpanel" aria-labelledby="byEmployeePanelTab">
+            <div id="employeeVisualization"></div>
+        </div>
+    </div>
+</div>
+
+<script src="/webjars/jquery/jquery.min.js"></script>
+<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script src="/webjars/js-joda/dist/js-joda.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.4.9/dist/vis-timeline-graph2d.min.js"
+        integrity="sha256-agfOCSC6BGv4gGu8aHt1UycGlgL4FRWtH79N70HP5ng=" crossorigin="anonymous"></script>
+<script src="/app.js"></script>
+</body>
+</html>

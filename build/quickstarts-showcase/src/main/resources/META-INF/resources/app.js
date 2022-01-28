@@ -164,6 +164,9 @@ $(document).ready(function () {
   $("#order-picking-launch").click(function () {
     launchQuickstart("order-picking");
   });
+  $("#employee-scheduling-launch").click(function () {
+    launchQuickstart("employee-scheduling");
+  });
   $("#exit").click(function () {
     exit();
   });
