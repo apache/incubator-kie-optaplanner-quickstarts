@@ -15,6 +15,10 @@
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <quarkus.platform.version>2.2.3.Final</quarkus.platform.version>
 
+    <optaplanner.bom.artifact-id>optaplanner-bom</optaplanner.bom.artifact-id>
+    <optaplanner.bom.group-id>org.optaplanner</optaplanner.bom.group-id>
+    <optaplanner.bom.version>${version.org.optaplanner}</optaplanner.bom.version>
+
     <version.org.optaplanner>8.11.2-SNAPSHOT</version.org.optaplanner>
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
@@ -24,9 +28,9 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.optaplanner</groupId>
-        <artifactId>optaplanner-bom</artifactId>
-        <version>${version.org.optaplanner}</version>
+        <groupId>${optaplanner.bom.group-id}</groupId>
+        <artifactId>${optaplanner.bom.artifact-id}</artifactId>
+        <version>${optaplanner.bom.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
