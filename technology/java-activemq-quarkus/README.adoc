@@ -108,7 +108,7 @@ First, https://quarkus.io/guides/building-native-image#configuring-graalvm[insta
 [source, shell]
 ----
 $ cd solver
-$ mvn package -Dnative -DskipTests -Dquarkus.profile=native
+$ mvn package -Dnative -DskipTests
 ----
 +
 . Run the native executable:

@@ -71,13 +71,8 @@ To run it on port 8081 instead, add `-Dquarkus.http.port=8081`.
 +
 [source, shell]
 ----
-$ mvn package -Dnative -DskipTests    -Dquarkus.profile=native
+$ mvn package -Dnative -DskipTests
 ----
-+
-[WARNING]
-====
-The `-Dquarkus.profile=native` is a temporary workaround for https://github.com/quarkusio/quarkus/issues/13341[an issue in Quarkus 1.10].
-====
 
 . Run a database. By default, `application.properties` is configured for H2:
 .. Download the http://www.h2database.com/html/download.html[H2 database] (Platform-independent zip) and unzip it.
