@@ -4,9 +4,12 @@ Assign lessons to timeslots and rooms to produce a better schedule for teachers 
 
 image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-school-timetabling-screenshot.png[]
 
-== Run the application with live coding
+* <<run,Run the application>>
 
-. Git clone the optaplanner-quickstarts repo:
+[[run]]
+== Run the application
+
+. Git clone the optaplanner-quickstarts repo and navigate to this directory:
 +
 [source, shell]
 ----
