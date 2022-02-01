@@ -90,7 +90,7 @@
           <version>${compiler-plugin.version}</version>
         </plugin>
         <plugin>
-          <groupId>io.quarkus</groupId>
+          <groupId>${quarkus.platform.group-id}</groupId>
           <artifactId>quarkus-maven-plugin</artifactId>
           <version>${quarkus.platform.version}</version>
           <executions>
