@@ -18,7 +18,7 @@ image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/sc
 ----
 $ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
 ...
-$ cd optaplanner-quickstarts/use-cases/maintenance-scheduling
+$ cd optaplanner-quickstarts/use-cases/employee-scheduling
 ----
 
 . Start the application with Maven:
