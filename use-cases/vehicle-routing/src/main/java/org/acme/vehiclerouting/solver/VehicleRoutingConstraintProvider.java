@@ -16,9 +16,6 @@
 
 package org.acme.vehiclerouting.solver;
 
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
-
-import org.acme.vehiclerouting.domain.Customer;
 import org.acme.vehiclerouting.domain.Vehicle;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;

@@ -50,7 +50,6 @@ class VehicleRoutingConstraintProviderTest {
     void vehicleCapacityUnpenalized() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
-        customer1.setVehicle(vehicleA);
         vehicleA.getCustomerList().add(customer1);
 
         constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::vehicleCapacity)
@@ -62,11 +61,9 @@ class VehicleRoutingConstraintProviderTest {
     void vehicleCapacityPenalized() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
-        customer1.setVehicle(vehicleA);
         vehicleA.getCustomerList().add(customer1);
 
         Customer customer2 = new Customer(3L, location3, 40);
-        customer2.setVehicle(vehicleA);
         vehicleA.getCustomerList().add(customer2);
 
         constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::vehicleCapacity)
@@ -78,10 +75,8 @@ class VehicleRoutingConstraintProviderTest {
     void totalDistance() {
         Vehicle vehicleA = new Vehicle(1L, 100, new Depot(1L, location1));
         Customer customer1 = new Customer(2L, location2, 80);
-        customer1.setVehicle(vehicleA);
         vehicleA.getCustomerList().add(customer1);
         Customer customer2 = new Customer(3L, location3, 40);
-        customer2.setVehicle(vehicleA);
         vehicleA.getCustomerList().add(customer2);
 
         constraintVerifier.verifyThat(VehicleRoutingConstraintProvider::totalDistance)

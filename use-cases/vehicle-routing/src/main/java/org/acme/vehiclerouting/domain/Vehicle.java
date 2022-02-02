@@ -112,12 +112,12 @@ public class Vehicle {
         long totalDistance = 0L;
         Location lastLocation = depot.getLocation();
         for (Customer customer : customerList) {
-            totalDistance += customer.getLocation().getDistanceTo(lastLocation);
+            totalDistance += lastLocation.getDistanceTo(customer.getLocation());
             lastLocation = customer.getLocation();
         }
 
         if (lastLocation != depot.getLocation()) {
-            totalDistance += depot.getLocation().getDistanceTo(lastLocation);
+            totalDistance += lastLocation.getDistanceTo(depot.getLocation());
         }
         return totalDistance;
     }

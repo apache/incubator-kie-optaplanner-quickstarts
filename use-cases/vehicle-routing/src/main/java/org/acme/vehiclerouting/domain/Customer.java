@@ -17,19 +17,13 @@
 package org.acme.vehiclerouting.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.optaplanner.core.api.domain.entity.PlanningEntity;
-import org.optaplanner.core.api.domain.variable.InverseRelationShadowVariable;
 
-//@PlanningEntity
 @JsonIgnoreProperties({ "previousStandstill", "nextCustomer" })
 public class Customer {
 
     private long id;
     private Location location;
     private int demand;
-
-    //@InverseRelationShadowVariable(sourceVariableName = "customerList")
-    Vehicle vehicle;
 
     public Customer() {
     }
@@ -62,14 +56,6 @@ public class Customer {
 
     public void setDemand(int demand) {
         this.demand = demand;
-    }
-
-    public Vehicle getVehicle() {
-        return vehicle;
-    }
-
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
     }
 
     // ************************************************************************
