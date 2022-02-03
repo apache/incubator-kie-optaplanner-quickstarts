@@ -2,6 +2,7 @@ package org.acme.employeescheduling.solver;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.acme.employeescheduling.domain.Availability;
 import org.acme.employeescheduling.domain.AvailabilityType;
@@ -35,6 +36,7 @@ public class EmployeeSchedulingConstraintProvider implements ConstraintProvider 
         return new Constraint[] {
                 requiredSkill(constraintFactory),
                 noOverlappingShifts(constraintFactory),
+                atLeast10HoursBetweenTwoShifts(constraintFactory),
                 oneShiftPerDay(constraintFactory),
                 unavailableEmployee(constraintFactory),
                 desiredDayForEmployee(constraintFactory),
@@ -53,6 +55,17 @@ public class EmployeeSchedulingConstraintProvider implements ConstraintProvider 
                                                    Joiners.overlapping(Shift::getStart, Shift::getEnd))
                 .penalize("Overlapping shift", HardSoftScore.ONE_HARD,
                           EmployeeSchedulingConstraintProvider::getMinuteOverlap);
+    }
+
+    Constraint atLeast10HoursBetweenTwoShifts(ConstraintFactory constraintFactory) {
+        return constraintFactory.forEachUniquePair(Shift.class,
+                                                   Joiners.equal(Shift::getEmployee),
+                                                   Joiners.lessThanOrEqual(Shift::getEnd, Shift::getStart))
+                .filter((firstShift, secondShift) -> firstShift.getEnd().until(secondShift.getStart(), ChronoUnit.HOURS) < 10)
+                .penalize("At least 10 hours between 2 shifts", HardSoftScore.ONE_HARD, (firstShift, secondShift) -> {
+                              int breakLength = (int) firstShift.getEnd().until(secondShift.getStart(), ChronoUnit.MINUTES);
+                              return (10 * 60) - breakLength;
+                          });
     }
 
     Constraint oneShiftPerDay(ConstraintFactory constraintFactory) {
