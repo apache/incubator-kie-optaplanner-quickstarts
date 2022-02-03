@@ -116,6 +116,37 @@ public class EmployeeSchedulingConstraintProviderTest {
     }
 
     @Test
+    public void testAtLeast10HoursBetweenConsecutiveShifts() {
+        Employee employee1 = new Employee("Amy", Set.of("Skill"));
+        Employee employee2 = new Employee("Beth", Set.of("Skill"));
+        constraintVerifier.verifyThat(EmployeeSchedulingConstraintProvider::atLeast10HoursBetweenTwoShifts)
+                .given(employee1,
+                       new Shift(1L, DAY_START_TIME, DAY_END_TIME, "Location", "Skill", employee1),
+                       new Shift(2L, AFTERNOON_END_TIME, DAY_START_TIME.plusDays(1), "Location 2", "Skill", employee1))
+                .penalizesBy(360);
+        constraintVerifier.verifyThat(EmployeeSchedulingConstraintProvider::atLeast10HoursBetweenTwoShifts)
+                .given(employee1,
+                       new Shift(1L, DAY_START_TIME, DAY_END_TIME, "Location", "Skill", employee1),
+                       new Shift(2L, DAY_END_TIME, DAY_START_TIME.plusDays(1), "Location 2", "Skill", employee1))
+                .penalizesBy(600);
+        constraintVerifier.verifyThat(EmployeeSchedulingConstraintProvider::atLeast10HoursBetweenTwoShifts)
+                .given(employee1,
+                       new Shift(1L, DAY_START_TIME, DAY_END_TIME, "Location", "Skill", employee1),
+                       new Shift(2L, DAY_END_TIME.plusHours(10), DAY_START_TIME.plusDays(1), "Location 2", "Skill", employee1))
+                .penalizes(0);
+        constraintVerifier.verifyThat(EmployeeSchedulingConstraintProvider::atLeast10HoursBetweenTwoShifts)
+                .given(employee1,
+                       new Shift(1L, DAY_START_TIME, DAY_END_TIME, "Location", "Skill", employee1),
+                       new Shift(2L, AFTERNOON_END_TIME, DAY_START_TIME.plusDays(1), "Location 2", "Skill", employee2))
+                .penalizes(0);
+        constraintVerifier.verifyThat(EmployeeSchedulingConstraintProvider::noOverlappingShifts)
+                .given(employee1,
+                       new Shift(1L, DAY_START_TIME, DAY_END_TIME, "Location", "Skill", employee1),
+                       new Shift(2L, DAY_START_TIME.plusDays(1), DAY_END_TIME.plusDays(1), "Location 2", "Skill", employee1))
+                .penalizes(0);
+    }
+
+    @Test
     public void testUnavailableEmployee() {
         Employee employee1 = new Employee("Amy", Set.of("Skill"));
         Employee employee2 = new Employee("Beth", Set.of("Skill"));
