@@ -16,9 +16,7 @@
 
 package org.acme.vehiclerouting.solver;
 
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
-
-import org.acme.vehiclerouting.domain.Customer;
+import org.acme.vehiclerouting.domain.Vehicle;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 import org.optaplanner.core.api.score.stream.Constraint;
 import org.optaplanner.core.api.score.stream.ConstraintFactory;
@@ -30,8 +28,8 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     public Constraint[] defineConstraints(ConstraintFactory factory) {
         return new Constraint[] {
                 vehicleCapacity(factory),
-                distanceFromPreviousStandstill(factory),
-                distanceFromLastCustomerToDepot(factory) };
+                totalDistance(factory),
+        };
     }
 
     // ************************************************************************
@@ -39,33 +37,23 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     // ************************************************************************
 
     protected Constraint vehicleCapacity(ConstraintFactory factory) {
-        return factory.forEach(Customer.class)
-                .groupBy(Customer::getVehicle, sum(Customer::getDemand))
-                .filter((vehicle, demand) -> demand > vehicle.getCapacity())
+        return factory.forEach(Vehicle.class)
+                .filter(vehicle -> vehicle.getTotalDemand() > vehicle.getCapacity())
                 .penalizeLong(
                         "vehicleCapacity",
                         HardSoftLongScore.ONE_HARD,
-                        (vehicle, demand) -> demand - vehicle.getCapacity());
+                        vehicle -> vehicle.getTotalDemand() - vehicle.getCapacity());
     }
 
     // ************************************************************************
     // Soft constraints
     // ************************************************************************
 
-    protected Constraint distanceFromPreviousStandstill(ConstraintFactory factory) {
-        return factory.forEach(Customer.class)
+    protected Constraint totalDistance(ConstraintFactory factory) {
+        return factory.forEach(Vehicle.class)
                 .penalizeLong(
                         "distanceFromPreviousStandstill",
                         HardSoftLongScore.ONE_SOFT,
-                        Customer::getDistanceFromPreviousStandstill);
-    }
-
-    protected Constraint distanceFromLastCustomerToDepot(ConstraintFactory factory) {
-        return factory.forEach(Customer.class)
-                .filter(Customer::isLast)
-                .penalizeLong(
-                        "distanceFromLastCustomerToDepot",
-                        HardSoftLongScore.ONE_SOFT,
-                        Customer::getDistanceToDepot);
+                        Vehicle::getTotalDistanceMeters);
     }
 }

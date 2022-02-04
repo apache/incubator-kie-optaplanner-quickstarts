@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
-@JsonIgnoreProperties({ "id", "name" })
+@JsonIgnoreProperties({ "id" })
 public class Location {
 
     private final long id;

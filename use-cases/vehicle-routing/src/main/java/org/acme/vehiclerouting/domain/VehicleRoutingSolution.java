@@ -39,10 +39,9 @@ public class VehicleRoutingSolution {
     private List<Depot> depotList;
 
     @PlanningEntityCollectionProperty
-    @ValueRangeProvider(id = "vehicleRange")
     private List<Vehicle> vehicleList;
 
-    @PlanningEntityCollectionProperty
+    @ProblemFactCollectionProperty
     @ValueRangeProvider(id = "customerRange")
     private List<Customer> customerList;
 
