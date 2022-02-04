@@ -16,9 +16,6 @@
 
 package org.acme.vehiclerouting.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-@JsonIgnoreProperties({ "previousStandstill", "nextCustomer" })
 public class Customer {
 
     private long id;

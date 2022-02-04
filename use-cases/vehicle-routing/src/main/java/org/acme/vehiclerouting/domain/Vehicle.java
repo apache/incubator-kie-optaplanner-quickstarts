@@ -20,12 +20,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.variable.PlanningListVariable;
 
 @PlanningEntity
-@JsonIgnoreProperties({ "nextCustomer" })
 public class Vehicle {
 
     private long id;
@@ -109,16 +107,19 @@ public class Vehicle {
     }
 
     public long getTotalDistanceMeters() {
-        long totalDistance = 0L;
-        Location lastLocation = depot.getLocation();
-        for (Customer customer : customerList) {
-            totalDistance += lastLocation.getDistanceTo(customer.getLocation());
-            lastLocation = customer.getLocation();
+        if (customerList.isEmpty()) {
+            return 0;
         }
 
-        if (lastLocation != depot.getLocation()) {
-            totalDistance += lastLocation.getDistanceTo(depot.getLocation());
+        long totalDistance = 0;
+        Location previousLocation = depot.getLocation();
+
+        for (Customer customer : customerList) {
+            totalDistance += previousLocation.getDistanceTo(customer.getLocation());
+            previousLocation = customer.getLocation();
         }
+        totalDistance += previousLocation.getDistanceTo(depot.getLocation());
+
         return totalDistance;
     }
 
