@@ -2,7 +2,6 @@ package org.acme.employeescheduling.solver;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import org.acme.employeescheduling.domain.Availability;
 import org.acme.employeescheduling.domain.AvailabilityType;
@@ -61,9 +60,9 @@ public class EmployeeSchedulingConstraintProvider implements ConstraintProvider 
         return constraintFactory.forEachUniquePair(Shift.class,
                                                    Joiners.equal(Shift::getEmployee),
                                                    Joiners.lessThanOrEqual(Shift::getEnd, Shift::getStart))
-                .filter((firstShift, secondShift) -> firstShift.getEnd().until(secondShift.getStart(), ChronoUnit.HOURS) < 10)
+                .filter((firstShift, secondShift) -> Duration.between(firstShift.getEnd(), secondShift.getStart()).toHours() < 10)
                 .penalize("At least 10 hours between 2 shifts", HardSoftScore.ONE_HARD, (firstShift, secondShift) -> {
-                              int breakLength = (int) firstShift.getEnd().until(secondShift.getStart(), ChronoUnit.MINUTES);
+                              int breakLength = (int) Duration.between(firstShift.getEnd(), secondShift.getStart()).toMinutes();
                               return (10 * 60) - breakLength;
                           });
     }
