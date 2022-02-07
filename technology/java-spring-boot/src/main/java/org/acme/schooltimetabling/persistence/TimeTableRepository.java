@@ -16,6 +16,8 @@
 
 package org.acme.schooltimetabling.persistence;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,9 +52,20 @@ public class TimeTableRepository {
     }
 
     public void save(TimeTable timeTable) {
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException ex) {
+            // nothing
+        }
         for (Lesson lesson : timeTable.getLessonList()) {
             // TODO this is awfully naive: optimistic locking causes issues if called by the SolverManager
             lessonRepository.save(lesson);
+
+//            Optional<Lesson> attachedLesson = lessonRepository.findById(lesson.getId());
+//            if (attachedLesson.isPresent()) {
+//                attachedLesson.get().setTimeslot(lesson.getTimeslot());
+//                attachedLesson.get().setRoom(lesson.getRoom());
+//            }
         }
     }
 

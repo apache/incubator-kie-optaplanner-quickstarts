@@ -21,7 +21,11 @@ import java.util.List;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 import org.acme.schooltimetabling.domain.Lesson;
+import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.transaction.annotation.Transactional;
 
+@RestResource(exported = false)
+@Transactional
 public interface LessonRepository extends PagingAndSortingRepository<Lesson, Long> {
 
     @Override

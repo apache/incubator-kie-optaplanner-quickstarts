@@ -57,13 +57,6 @@ public class ProblemChangedRepositoryEventListener {
         assertNotSolving();
     }
 
-    @HandleBeforeCreate
-    @HandleBeforeSave
-    @HandleBeforeDelete
-    private void lessonCreateSaveDelete(Lesson lesson) {
-        assertNotSolving();
-    }
-
     public void assertNotSolving() {
         // TODO Race condition: if a timeTableSolverService.solve() call arrives concurrently,
         // the solver might start before the CRUD transaction completes. That's not very harmful, though.
