@@ -127,7 +127,7 @@ To deploy the application on OpenShift using the native build:
 +
 [source, shell]
 ----
-$ mvn clean package -DskipTests -Dopenshift -Dquarkus.kubernetes.deploy=true -Dquarkus.native.container-build=true
+$ mvn clean package -DskipTests -Dopenshift-native -Dquarkus.kubernetes.deploy=true -Dquarkus.native.container-build=true
 ----
 +
 . When the command is finished, you should see two pods in the Topology view: one for the _ephemeral_ Postgres database (data will not be saved), and one for the _native_ Quarkus application. If you click the Quarkus' application link (small bubble with link icon at the top right of the Quarkus' application bubble), you will be navigated to the application. Alternatively, you can get the route from bash with the following command:
