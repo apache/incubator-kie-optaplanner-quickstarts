@@ -8,6 +8,7 @@ on:
 
 jobs:
   nightly:
+    if: github.repository == 'kiegroup/optaplanner-quickstarts'
     concurrency:
       group: nightly
       cancel-in-progress: true
