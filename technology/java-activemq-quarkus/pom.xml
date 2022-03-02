@@ -10,8 +10,9 @@
   <packaging>pom</packaging>
 
   <properties>
+    <version.org.apache.activemq>2.19.0</version.org.apache.activemq>
     <version.org.optaplanner>8.13.1-SNAPSHOT</version.org.optaplanner>
-    <version.io.quarkus>2.4.0.Final</version.io.quarkus>
+    <version.io.quarkus>2.7.2.Final</version.io.quarkus>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.release>11</maven.compiler.release>
@@ -46,6 +47,16 @@
         <groupId>org.acme</groupId>
         <artifactId>optaplanner-activemq-quarkus-school-timetabling-common</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>artemis-amqp-protocol</artifactId>
+        <version>${version.org.apache.activemq}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>artemis-server</artifactId>
+        <version>${version.org.apache.activemq}</version>
       </dependency>
       <dependency>
         <groupId>org.awaitility</groupId>
