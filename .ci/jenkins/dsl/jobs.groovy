@@ -28,7 +28,7 @@ Map getMultijobPRConfig() {
 
 // Optaplanner PR checks
 setupMultijobPrDefaultChecks()
-setupMultijobPrNativeChecks()
+// setupMultijobPrNativeChecks()
 setupMultijobPrLTSChecks()
 
 // Tools
