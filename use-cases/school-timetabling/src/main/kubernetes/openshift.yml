@@ -11,6 +11,7 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
+        app.kubernetes.io/part-of: school-timetabling
         template: postgresql-ephemeral-template
       name: postgresql
     stringData:
@@ -27,6 +28,7 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
+        app.kubernetes.io/part-of: school-timetabling
         template: postgresql-ephemeral-template
       name: postgresql
     spec:
@@ -51,6 +53,7 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
+        app.kubernetes.io/part-of: school-timetabling
         template: postgresql-ephemeral-template
       name: postgresql
     spec:
