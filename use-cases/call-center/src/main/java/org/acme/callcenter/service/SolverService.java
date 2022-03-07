@@ -1,12 +1,8 @@
 package org.acme.callcenter.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,27 +17,21 @@ import org.acme.callcenter.solver.change.PinCallProblemChange;
 import org.acme.callcenter.solver.change.ProlongCallByMinuteProblemChange;
 import org.acme.callcenter.solver.change.RemoveCallProblemChange;
 import org.eclipse.microprofile.context.ManagedExecutor;
-import org.optaplanner.core.api.solver.Solver;
-import org.optaplanner.core.api.solver.SolverFactory;
+import org.optaplanner.core.api.solver.SolverManager;
+import org.optaplanner.core.api.solver.SolverStatus;
 import org.optaplanner.core.api.solver.change.ProblemChange;
-import org.optaplanner.core.api.solver.event.BestSolutionChangedEvent;
 
 @ApplicationScoped
 public class SolverService {
 
-    private final ManagedExecutor managedExecutor;
+    private final SolverManager<CallCenter, Long> solverManager;
+    private final long SINGLETON_ID = 1L;
 
-    // TODO: Replace by @Inject SolverManager once https://issues.redhat.com/browse/PLANNER-2141 is resolved.
-    private final Solver<CallCenter> solver;
-
-    private AtomicBoolean solving = new AtomicBoolean(false);
-    private CompletableFuture<?> completableSolverFuture;
     private final BlockingQueue<ProblemChange<CallCenter>> waitingProblemChanges = new LinkedBlockingQueue<>();
 
     @Inject
-    public SolverService(SolverFactory<CallCenter> solverFactory, @Default ManagedExecutor executorService) {
-        solver = solverFactory.buildSolver();
-        this.managedExecutor = executorService;
+    public SolverService(SolverManager<CallCenter, Long> solverManager) {
+        this.solverManager = solverManager;
     }
 
     private void pinCallAssignedToAgents(List<Call> calls) {
@@ -50,48 +40,28 @@ public class SolverService {
                         && call.getPreviousCallOrAgent() != null
                         && call.getPreviousCallOrAgent() instanceof Agent)
                 .map(PinCallProblemChange::new)
-                .forEach(solver::addProblemChange);
+                .forEach(problemChange -> solverManager.addProblemChange(SINGLETON_ID, problemChange));
     }
 
     public void startSolving(CallCenter inputProblem,
-            Consumer<BestSolutionChangedEvent<CallCenter>> bestSolutionChangedEventConsumer, Consumer<Throwable> errorHandler) {
-        solving.set(true);
-        completableSolverFuture = managedExecutor.runAsync(() -> {
-
-            solver.addEventListener(event -> {
-                if (event.isEveryProblemChangeProcessed() && event.getNewBestScore().isSolutionInitialized()) {
-                    pinCallAssignedToAgents(event.getNewBestSolution().getCalls());
-                    bestSolutionChangedEventConsumer.accept(event);
-                }
-            });
-
-            try {
-                solver.solve(inputProblem);
-            } catch (Throwable throwable) {
-                errorHandler.accept(throwable);
-            }
-            solver.addProblemChanges(new ArrayList<>(waitingProblemChanges));
-        });
+            Consumer<CallCenter> bestSolutionChangedEventConsumer, Consumer<Throwable> errorHandler) {
+        solverManager.solveAndListen(SINGLETON_ID, id -> inputProblem, bestSolution -> {
+                                         if (bestSolution.getScore().isSolutionInitialized()) {
+                                             bestSolutionChangedEventConsumer.accept(bestSolution);
+                                             pinCallAssignedToAgents(bestSolution.getCalls());
+                                         }
+                                     },
+                                     (id, error) -> errorHandler.accept(error));
+        waitingProblemChanges.forEach(problemChange -> solverManager.addProblemChange(SINGLETON_ID, problemChange));
+        waitingProblemChanges.clear();
     }
 
     public void stopSolving() {
-        solving.set(false);
-        if (completableSolverFuture != null) {
-            solver.terminateEarly();
-            try {
-                completableSolverFuture.get(); // Wait for termination and propagate exceptions.
-                completableSolverFuture = null;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Failed to stop solver.", e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException("Failed to stop solver.", e.getCause());
-            }
-        }
+        solverManager.terminateEarly(SINGLETON_ID);
     }
 
     public boolean isSolving() {
-        return solving.get();
+        return solverManager.getSolverStatus(SINGLETON_ID) == SolverStatus.SOLVING_ACTIVE;
     }
 
     public void addCall(Call call) {
@@ -108,27 +78,9 @@ public class SolverService {
 
     private void registerProblemChange(ProblemChange<CallCenter> problemChange) {
         if (isSolving()) {
-            assertSolverIsAlive();
-            solver.addProblemChange(problemChange);
+            solverManager.addProblemChange(SINGLETON_ID, problemChange);
         } else {
             waitingProblemChanges.add(problemChange);
-        }
-    }
-
-    private void assertSolverIsAlive() {
-        if (completableSolverFuture == null) {
-            throw new IllegalStateException("Solver has not been started yet.");
-        }
-        if (completableSolverFuture.isDone()) {
-            try {
-                completableSolverFuture.get();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Solver thread was interrupted.", e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException("Solver thread has died.", e.getCause());
-            }
-            throw new IllegalStateException("Solver has finished solving even though it operates in daemon mode.");
         }
     }
 }
