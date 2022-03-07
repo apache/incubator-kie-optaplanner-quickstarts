@@ -30,23 +30,19 @@ import org.acme.callcenter.domain.Call;
 import org.acme.callcenter.domain.CallCenter;
 import org.acme.callcenter.domain.Skill;
 import org.acme.callcenter.service.SolverService;
-import org.eclipse.microprofile.context.ManagedExecutor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
-import org.optaplanner.core.api.solver.SolverFactory;
 
 import io.quarkus.test.junit.QuarkusTest;
+import org.optaplanner.core.api.solver.SolverManager;
 
 @QuarkusTest
 public class SolverServiceTest {
 
     @Inject
-    ManagedExecutor managedExecutor;
-
-    @Inject
-    SolverFactory<CallCenter> solverFactory;
+    SolverManager<CallCenter, Long> solverManager;
 
     @Inject
     DataGenerator dataGenerator;
@@ -55,7 +51,7 @@ public class SolverServiceTest {
 
     @BeforeEach
     void setUp() {
-        solverService = new SolverService(solverFactory, managedExecutor);
+        solverService = new SolverService(solverManager);
     }
 
     @Test
@@ -126,8 +122,8 @@ public class SolverServiceTest {
 
         AtomicReference<Throwable> errorDuringSolving = new AtomicReference<>();
         AtomicReference<CallCenter> bestSolution = new AtomicReference<>();
-        solverService.startSolving(inputProblem, bestSolutionChangedEvent -> {
-            bestSolution.set(bestSolutionChangedEvent.getNewBestSolution());
+        solverService.startSolving(inputProblem, newBestSolution -> {
+            bestSolution.set(newBestSolution);
             allChangesProcessed.countDown();
             solverService.stopSolving();
         }, throwable -> errorDuringSolving.set(throwable));

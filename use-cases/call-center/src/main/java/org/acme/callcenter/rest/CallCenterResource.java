@@ -61,9 +61,9 @@ public class CallCenterResource {
     @POST
     @Path("solve")
     public void solve() {
-        solverService.startSolving(bestSolution.get(), bestSolutionChangedEvent -> {
-            bestSolution.set(bestSolutionChangedEvent.getNewBestSolution());
-            simulationService.onNewBestSolution(bestSolutionChangedEvent.getNewBestSolution());
+        solverService.startSolving(bestSolution.get(), newBestSolution -> {
+            bestSolution.set(newBestSolution);
+            simulationService.onNewBestSolution(newBestSolution);
         }, throwable -> solvingError.set(throwable));
         simulationService.startSimulation();
     }
