@@ -14,6 +14,7 @@ import org.acme.callcenter.domain.Call;
 import org.acme.callcenter.domain.CallCenter;
 import org.acme.callcenter.domain.Skill;
 import org.acme.callcenter.service.SolverService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Timeout;
 
 import io.quarkus.test.junit.QuarkusTest;
 import org.optaplanner.core.api.solver.SolverManager;
+import org.optaplanner.core.api.solver.SolverStatus;
 
 @QuarkusTest
 public class SolverServiceTest {
@@ -36,6 +38,13 @@ public class SolverServiceTest {
     @BeforeEach
     void setUp() {
         solverService = new SolverService(solverManager);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if (solverManager.getSolverStatus(SolverService.SINGLETON_ID) != SolverStatus.NOT_SOLVING) {
+            solverManager.terminateEarly(SolverService.SINGLETON_ID);
+        }
     }
 
     @Test
