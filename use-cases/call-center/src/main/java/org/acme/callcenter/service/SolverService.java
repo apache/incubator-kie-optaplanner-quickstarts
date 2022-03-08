@@ -22,7 +22,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import org.acme.callcenter.domain.Agent;
@@ -32,7 +31,6 @@ import org.acme.callcenter.solver.change.AddCallProblemChange;
 import org.acme.callcenter.solver.change.PinCallProblemChange;
 import org.acme.callcenter.solver.change.ProlongCallByMinuteProblemChange;
 import org.acme.callcenter.solver.change.RemoveCallProblemChange;
-import org.eclipse.microprofile.context.ManagedExecutor;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 import org.optaplanner.core.api.solver.change.ProblemChange;
@@ -41,7 +39,7 @@ import org.optaplanner.core.api.solver.change.ProblemChange;
 public class SolverService {
 
     private final SolverManager<CallCenter, Long> solverManager;
-    private final long SINGLETON_ID = 1L;
+    public static final long SINGLETON_ID = 1L;
 
     private final BlockingQueue<ProblemChange<CallCenter>> waitingProblemChanges = new LinkedBlockingQueue<>();
 
@@ -60,10 +58,10 @@ public class SolverService {
     }
 
     public void startSolving(CallCenter inputProblem,
-            Consumer<CallCenter> bestSolutionChangedEventConsumer, Consumer<Throwable> errorHandler) {
+            Consumer<CallCenter> bestSolutionConsumer, Consumer<Throwable> errorHandler) {
         solverManager.solveAndListen(SINGLETON_ID, id -> inputProblem, bestSolution -> {
                                          if (bestSolution.getScore().isSolutionInitialized()) {
-                                             bestSolutionChangedEventConsumer.accept(bestSolution);
+                                             bestSolutionConsumer.accept(bestSolution);
                                              pinCallAssignedToAgents(bestSolution.getCalls());
                                          }
                                      },
