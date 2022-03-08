@@ -131,16 +131,16 @@ public class SolverServiceTest {
 
         AtomicReference<Throwable> errorDuringSolving = new AtomicReference<>();
         AtomicReference<CallCenter> bestSolution = new AtomicReference<>();
-        solverService.startSolving(inputProblem, newBestSolution -> {
-            bestSolution.set(newBestSolution);
-            allChangesProcessed.countDown();
-            solverService.stopSolving();
-        }, throwable -> errorDuringSolving.set(throwable));
+        solverService.startSolving(inputProblem, bestSolution::set, errorDuringSolving::set);
 
         problemChanges.run();
+        solverManager.addProblemChange(SolverService.SINGLETON_ID, (workingSolution, problemChangeDirector) -> {
+            bestSolution.set(null); // ignore previous best solution since all changes were not process yet
+            allChangesProcessed.countDown();
+        });
 
         try {
-            while (!allChangesProcessed.await(10, TimeUnit.MILLISECONDS)) {
+            while (!allChangesProcessed.await(10, TimeUnit.MILLISECONDS) || bestSolution.get() == null) {
                 if (errorDuringSolving.get() != null) {
                     throw new IllegalStateException("Exception during solving", errorDuringSolving.get());
                 }
@@ -148,7 +148,7 @@ public class SolverServiceTest {
         } catch (InterruptedException interruptedException) {
             throw new IllegalStateException("Interrupted during waiting.", interruptedException);
         }
-
+        solverService.stopSolving();
         return bestSolution.get();
     }
 
