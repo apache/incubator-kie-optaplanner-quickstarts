@@ -59,7 +59,7 @@ public class SolverService {
     }
 
     public boolean isSolving() {
-        return solverManager.getSolverStatus(SINGLETON_ID) == SolverStatus.SOLVING_ACTIVE;
+        return solverManager.getSolverStatus(SINGLETON_ID) != SolverStatus.NOT_SOLVING;
     }
 
     public void addCall(Call call) {
