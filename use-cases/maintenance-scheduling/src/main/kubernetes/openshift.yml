@@ -11,9 +11,9 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
-        app.kubernetes.io/part-of: school-timetabling
+        app.kubernetes.io/part-of: maintenance-scheduling
         template: postgresql-ephemeral-template
-      name: postgresql-school-timetabling
+      name: postgresql-maintenance-scheduling
     stringData:
       database-name: app
       database-password: app
@@ -28,12 +28,12 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
-        app.kubernetes.io/part-of: school-timetabling
+        app.kubernetes.io/part-of: maintenance-scheduling
         template: postgresql-ephemeral-template
-      name: postgresql-school-timetabling
+      name: postgresql-maintenance-scheduling
     spec:
       ports:
-        - name: postgresql-school-timetabling
+        - name: postgresql-maintenance-scheduling
           port: 5432
           protocol: TCP
           targetPort: 5432
@@ -53,9 +53,9 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
-        app.kubernetes.io/part-of: school-timetabling
+        app.kubernetes.io/part-of: maintenance-scheduling
         template: postgresql-ephemeral-template
-      name: postgresql-school-timetabling
+      name: postgresql-maintenance-scheduling
     spec:
       replicas: 1
       selector:
@@ -77,17 +77,17 @@ items:
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: postgresql-school-timetabling
+                      name: postgresql-maintenance-scheduling
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: postgresql-school-timetabling
+                      name: postgresql-maintenance-scheduling
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: postgresql-school-timetabling
+                      name: postgresql-maintenance-scheduling
               image: ' '
               imagePullPolicy: IfNotPresent
               livenessProbe:
