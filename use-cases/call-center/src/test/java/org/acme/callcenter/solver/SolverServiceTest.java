@@ -127,9 +127,11 @@ public class SolverServiceTest {
         AtomicReference<Throwable> errorDuringSolving = new AtomicReference<>();
         AtomicReference<CallCenter> bestSolution = new AtomicReference<>();
         solverService.startSolving(inputProblem, bestSolutionChangedEvent -> {
-            bestSolution.set(bestSolutionChangedEvent.getNewBestSolution());
-            allChangesProcessed.countDown();
-            solverService.stopSolving();
+            if (bestSolutionChangedEvent.getNewBestScore().isFeasible()) {
+                bestSolution.set(bestSolutionChangedEvent.getNewBestSolution());
+                allChangesProcessed.countDown();
+                solverService.stopSolving();
+            }
         }, throwable -> errorDuringSolving.set(throwable));
 
         problemChanges.run();
