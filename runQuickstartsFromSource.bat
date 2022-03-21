@@ -2,6 +2,7 @@
 setLocal enableExtensions enableDelayedExpansion
 
 cd build
-mvnw verify -DskipTests && ^
+mvnw -f .. verify -DskipTests && cd build && ^
 mvnw -f quickstarts-showcase quarkus:dev -Dstartup-open-browser=true
+cd ..
 cd ..
