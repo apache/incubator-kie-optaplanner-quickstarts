@@ -11,7 +11,8 @@ a|* <<school-timetabling, School timetabling>>
 * <<call-center, Call center>>
 * <<vaccination-scheduling, Vaccination scheduling>>
 * <<order-picking, Order Picking>>
-* <<quarkus-vehicle-routing, Vehicle Routing>>
+* <<employee-scheduling, Employee Scheduling>>
+* <<vehicle-routing, Vehicle Routing>>
 
 a|* link:use-cases/school-timetabling/README.adoc[Quarkus] (Java, Maven or Gradle, Quarkus, H2)
 * link:technology/java-spring-boot/README.adoc[Spring Boot] (Java, Maven or Gradle, Spring Boot, H2)
@@ -103,8 +104,17 @@ image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screensh
 
 * link:use-cases/order-picking/README.adoc[Run quarkus-order-picking] (Java, Maven, Quarkus)
 
-[[quarkus-vehicle-routing]]
-=== Quarkus Vehicle Routing
+[[employee-scheduling]]
+=== Employee Scheduling
+
+Schedule shifts to employees, accounting for employee availability and shift skill requirements.
+
+image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-employee-scheduling-screenshot.png[]
+
+* link:use-cases/employee-scheduling/README.adoc[Run quarkus-employee-scheduling] (Java, Maven, Quarkus)
+
+[[vehicle-routing]]
+=== Vehicle Routing
 
 Find the most efficient routes for a fleet of vehicles.
 
