@@ -34,20 +34,17 @@ public class RemoveCallProblemChange implements ProblemChange<CallCenter> {
 
     @Override
     public void doChange(CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
-        Call call = new Call(callId, null);
-        Optional<Call> workingCallOptional = problemChangeDirector.lookUpWorkingObject(call);
+        Optional<Call> workingCallOptional = problemChangeDirector.lookUpWorkingObject(new Call(callId, null));
         workingCallOptional.ifPresent(workingCall -> removeCall(workingCall, workingCallCenter, problemChangeDirector));
     }
 
-    private void removeCall(Call call, CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
-        PreviousCallOrAgent previousCallOrAgent = call.getPreviousCallOrAgent();
+    private void removeCall(Call workingCall, CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
+        PreviousCallOrAgent previousCallOrAgent = workingCall.getPreviousCallOrAgent();
 
-        Call nextCall = call.getNextCall();
+        Call nextCall = workingCall.getNextCall();
         if (nextCall != null) {
-            problemChangeDirector.changeVariable(nextCall, "previousCallOrAgent",
-                    workingNextCall -> workingNextCall.setPreviousCallOrAgent(previousCallOrAgent));
+            nextCall.setPreviousCallOrAgent(previousCallOrAgent);
         }
-
-        problemChangeDirector.removeEntity(call, workingCallCenter.getCalls()::remove);
+        workingCallCenter.getCalls().remove(workingCall);
     }
 }

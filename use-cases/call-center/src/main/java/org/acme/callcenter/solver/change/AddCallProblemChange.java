@@ -31,6 +31,6 @@ public class AddCallProblemChange implements ProblemChange<CallCenter> {
 
     @Override
     public void doChange(CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
-        problemChangeDirector.addEntity(call, workingCallCenter.getCalls()::add);
+        workingCallCenter.getCalls().add(call);
     }
 }

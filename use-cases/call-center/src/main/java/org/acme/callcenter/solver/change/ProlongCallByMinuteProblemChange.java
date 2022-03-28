@@ -34,9 +34,7 @@ public class ProlongCallByMinuteProblemChange implements ProblemChange<CallCente
 
     @Override
     public void doChange(CallCenter workingSolution, ProblemChangeDirector problemChangeDirector) {
-        Call call = new Call(callId, null);
-
-        problemChangeDirector.changeProblemProperty(call,
-                workingCall -> workingCall.setDuration(workingCall.getDuration().plus(PROLONGATION)));
+        Call workingCall = problemChangeDirector.lookUpWorkingObjectOrFail(new Call(callId, null));
+        workingCall.setDuration(workingCall.getDuration().plus(PROLONGATION));
     }
 }

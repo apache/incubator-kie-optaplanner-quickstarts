@@ -33,9 +33,8 @@ public class PinCallProblemChange implements ProblemChange<CallCenter> {
 
     @Override
     public void doChange(CallCenter workingCallCenter, ProblemChangeDirector problemChangeDirector) {
-        problemChangeDirector.changeProblemProperty(call, workingCall -> {
-            workingCall.setPinned(true);
-            workingCall.setPickUpTime(LocalTime.now());
-        });
+        Call workingCall = problemChangeDirector.lookUpWorkingObjectOrFail(call);
+        workingCall.setPinned(true);
+        workingCall.setPickUpTime(LocalTime.now());
     }
 }
