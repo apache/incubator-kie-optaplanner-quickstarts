@@ -3,7 +3,7 @@
 function display_help() {
   readonly script_name="./$(basename "$0")"
 
-  echo "This script uploads the OptaPlanner distribution to the filemgmt.jboss.org."
+  echo "This script uploads the OptaPlanner distribution to the filemgmt-prod.jboss.org."
   echo "Make sure the OptaPlanner Quickstarts project has been build with the full profile enabled before calling this script."
   echo
   echo "Usage:"
@@ -35,7 +35,7 @@ if [[ $# -ne 2 ]]; then
   exit 1
 fi
 
-readonly remote_optaplanner_downloads=optaplanner@filemgmt.jboss.org:/downloads_htdocs/optaplanner
+readonly remote_optaplanner_downloads=optaplanner@filemgmt-prod-sync.jboss.org:/downloads_htdocs/optaplanner
 
 readonly version=$1
 readonly optaplanner_ssh_key=$2
@@ -67,6 +67,6 @@ mkdir -p "$local_optaplanner_downloads/$version"
 # Upload the OptaPlanner distribution.zip.
 cp "$optaplanner_distribution/target/optaplanner-distribution-$version.zip" "$local_optaplanner_downloads/$version"
 
-readonly remote_shell="ssh -oKexAlgorithms=+diffie-hellman-group1-sha1 -i $optaplanner_ssh_key"
+readonly remote_shell="ssh -p 2222 -i $optaplanner_ssh_key"
 create_latest_symlinks "$local_optaplanner_downloads" "$version"
 rsync -a -r -e "$remote_shell" --protocol=28 "$local_optaplanner_downloads/.." "$remote_optaplanner_downloads"
