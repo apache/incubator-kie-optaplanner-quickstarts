@@ -1,14 +1,14 @@
 plugins {
-    id "org.springframework.boot" version "2.6.6"
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
-    id "java"
+    id "2.8.2.Final"
+    id "2.8.2.Final"
+    id "2.8.2.Final"
 }
 
-def optaplannerVersion = "8.22.0-SNAPSHOT"
+def "2.8.2.Final"
 
-group = "org.acme"
-version = "1.0-SNAPSHOT"
-sourceCompatibility = "11"
+group = "2.8.2.Final"
+version "2.8.2.Final"
+sourceCompatibility = "2.8.2.Final"
 
 repositories {
     mavenCentral()
