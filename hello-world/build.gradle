@@ -1,14 +1,14 @@
 plugins {
-    id "2.8.2.Final"
-    id "2.8.2.Final"
+    id "java"
+    id "application"
 }
 
-def "2.8.2.Final"
-def "2.8.2.Final"
-def "2.8.2.Final"
+def optaplannerVersion = "8.22.0-SNAPSHOT"
+def logbackVersion = "1.2.9"
+def junitJupiterVersion = "5.8.2"
 
-group = "2.8.2.Final"
-version "2.8.2.Final"
+group = "org.acme"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -31,21 +31,21 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = "2.8.2.Final"
-    targetCompatibility = "2.8.2.Final"
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 compileJava {
-    options.encoding = "2.8.2.Final"
+    options.encoding = "UTF-8"
     options.compilerArgs << "-parameters"
 }
 
 compileTestJava {
-    options.encoding = "2.8.2.Final"
+    options.encoding = "UTF-8"
 }
 
 application {
-    mainClass = "2.8.2.Final"
+    mainClass = "org.acme.schooltimetabling.TimeTableApp"
 }
 
 test {

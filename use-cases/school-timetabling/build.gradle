@@ -1,13 +1,13 @@
 plugins {
-    id "2.8.2.Final"
-    id "2.8.2.Final"
+    id "java"
+    id "io.quarkus" version "2.8.1.Final"
 }
 
-def "2.8.2.Final"
-def "2.8.2.Final"
+def quarkusVersion = "2.8.1.Final"
+def optaplannerVersion = "8.22.0-SNAPSHOT"
 
-group = "2.8.2.Final"
-version "2.8.2.Final"
+group = "org.acme"
+version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    implementation platform("io.quarkus:quarkus-bom:${quarkusVersion "2.8.2.Final"
+    implementation platform("io.quarkus:quarkus-bom:${quarkusVersion}")
     implementation "io.quarkus:quarkus-resteasy"
     implementation "io.quarkus:quarkus-resteasy-jackson"
     implementation "io.quarkus:quarkus-hibernate-orm-panache"
@@ -46,17 +46,17 @@ dependencies {
 }
 
 java {
-    sourceCompatibility = "2.8.2.Final"
-    targetCompatibility = "2.8.2.Final"
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
 compileJava {
-    options.encoding = "2.8.2.Final"
+    options.encoding = "UTF-8"
     options.compilerArgs << "-parameters"
 }
 
 compileTestJava {
-    options.encoding = "2.8.2.Final"
+    options.encoding = "UTF-8"
 }
 
 test {
