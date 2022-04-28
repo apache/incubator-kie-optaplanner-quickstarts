@@ -11,7 +11,7 @@
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.io.quarkus>2.8.2.Final</version.io.quarkus>
+    <version.io.quarkus>2.9.0.CR1</version.io.quarkus>
     <version.kotlin>1.5.10</version.kotlin>
     <version.org.optaplanner>8.22.0-SNAPSHOT</version.org.optaplanner>
 
