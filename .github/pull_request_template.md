@@ -21,10 +21,10 @@ and also the external https://github.com/quarkusio/quarkus-quickstarts/tree/main
 <!-- Add URLs of all referenced pull requests if they exist. This is only required when making
 changes that span multiple kiegroup repositories and depend on each other. -->
 <!-- Example:
-* https://github.com/kiegroup/droolsjbpm-build-bootstrap/pull/1234
-* https://github.com/kiegroup/drools/pull/3000
-* https://github.com/kiegroup/optaplanner/pull/899
-* etc.
+- https://github.com/kiegroup/droolsjbpm-build-bootstrap/pull/1234
+- https://github.com/kiegroup/drools/pull/3000
+- https://github.com/kiegroup/optaplanner/pull/899
+- etc.
 -->
 
 <details>
@@ -32,11 +32,44 @@ changes that span multiple kiegroup repositories and depend on each other. -->
 How to retest this PR or trigger a specific build:
 </summary>
 
-* for a <b>pull request build</b> please add comment: <b>Jenkins retest this</b>
-* for a <b>full downstream build</b> please add the label `run_fdb`
-* for a <b>specific pull request build</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] tests</b>
-* for a <b>Quarkus LTS check</b> please add comment: <b>Jenkins run LTS</b>
-* for a <b>specific Quarkus LTS check</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] LTS</b>
-* for a <b>Native check</b> please add comment: <b>Jenkins run native</b>
-* for a <b>specific Native LTS check</b> please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] native</b>
+- for <b>pull request checks</b>  
+  Please add comment: <b>Jenkins retest this</b>
+
+- for a <b>specific pull request check</b>  
+  please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] tests</b>
+
+- for a <b>full downstream build</b>  
+  please add the label `run_fdb`
+
+- for <b>quarkus branch checks</b>  
+  Run checks against Quarkus current used branch  
+  Please add comment: <b>Jenkins run quarkus-branch</b>
+
+- for a <b>quarkus branch specific check</b>  
+  Run checks against Quarkus current used branch  
+  Please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] quarkus-branch</b>
+
+- for <b>quarkus main checks</b>  
+  Run checks against Quarkus main branch  
+  Please add comment: <b>Jenkins run quarkus-main</b>
+
+- for a <b>specific quarkus main check</b>  
+  Run checks against Quarkus main branch  
+  Please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] quarkus-branch</b>
+
+- for <b>native checks</b>  
+  Run native checks  
+  Please add comment: <b>Jenkins run native</b>
+
+- for a <b>specific native check</b>  
+  Run native checks 
+  Please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] native</b>
+
+- for <b>mandrel checks</b>  
+  Run native checks against Mandrel image
+  Please add comment: <b>Jenkins run mandrel</b>
+
+- for a <b>specific mandrel check</b>  
+  Run native checks against Mandrel image  
+  Please add comment: <b>Jenkins (re)run [optaplanner-quickstarts] mandrel</b>
 </details>

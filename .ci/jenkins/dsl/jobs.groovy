@@ -1,9 +1,14 @@
-import org.kie.jenkins.jobdsl.templates.KogitoJobTemplate
-import org.kie.jenkins.jobdsl.KogitoJobUtils
+/*
+* This file is describing all the Jenkins jobs in the DSL format (see https://plugins.jenkins.io/job-dsl/)
+* needed by the Kogito pipelines.
+*
+* The main part of Jenkins job generation is defined into the https://github.com/kiegroup/kogito-pipelines repository.
+*
+* This file is making use of shared libraries defined in
+* https://github.com/kiegroup/kogito-pipelines/tree/main/dsl/seed/src/main/groovy/org/kie/jenkins/jobdsl.
+*/
 
-def getDefaultJobParams(String repoName = 'optaplanner-quickstarts') {
-    return KogitoJobTemplate.getDefaultJobParams(this, repoName)
-}
+import org.kie.jenkins.jobdsl.KogitoJobUtils
 
 Map getMultijobPRConfig() {
     return [
@@ -28,30 +33,12 @@ Map getMultijobPRConfig() {
 }
 
 // Optaplanner PR checks
-setupMultijobPrDefaultChecks()
-setupMultijobPrNativeChecks()
-setupMultijobPrLTSChecks()
+KogitoJobUtils.createAllEnvsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConfig() }
 
 // Tools
-KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', 'OptaPlanner Quickstarts', [
+KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
     properties: [ 'version.io.quarkus' ],
 ], [
     // Escaping quotes so it is correctly handled by Json marshalling/unmarshalling
     regex: [ 'id \\"io.quarkus\\" version', 'def quarkusVersion =' ]
 ])
-
-/////////////////////////////////////////////////////////////////
-// Methods
-/////////////////////////////////////////////////////////////////
-
-void setupMultijobPrDefaultChecks() {
-    KogitoJobTemplate.createMultijobPRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
-}
-
-void setupMultijobPrNativeChecks() {
-    KogitoJobTemplate.createMultijobNativePRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
-}
-
-void setupMultijobPrLTSChecks() {
-    KogitoJobTemplate.createMultijobLTSPRJobs(this, getMultijobPRConfig()) { return getDefaultJobParams() }
-}
