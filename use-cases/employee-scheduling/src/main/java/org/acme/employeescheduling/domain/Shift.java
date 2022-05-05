@@ -2,6 +2,7 @@ package org.acme.employeescheduling.domain;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -20,6 +21,7 @@ public class Shift {
     Long id;
 
     LocalDateTime start;
+    @Column(name = "endDateTime") // "end" clashes with H2 syntax.
     LocalDateTime end;
 
     String location;
