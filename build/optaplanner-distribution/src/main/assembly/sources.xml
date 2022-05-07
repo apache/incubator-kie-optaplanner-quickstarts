@@ -82,6 +82,15 @@
     </fileSet>
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
+      <directory>../../use-cases/employee-scheduling</directory>
+      <outputDirectory>quickstarts/sources/use-cases/employee-scheduling</outputDirectory>
+      <excludes>
+        <exclude>target/**</exclude>
+        <exclude>.gitignore</exclude>
+      </excludes>
+    </fileSet>
+    <fileSet>
+      <useDefaultExcludes>false</useDefaultExcludes>
       <directory>../../technology/java-quarkus</directory>
       <outputDirectory>quickstarts/sources/technology/java-quarkus</outputDirectory>
     </fileSet>
