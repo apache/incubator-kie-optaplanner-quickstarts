@@ -1,3 +1,4 @@
+# For a local development without any Kubernetes cluster.
 version: '2'
 
 services:

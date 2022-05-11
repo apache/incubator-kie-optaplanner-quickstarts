@@ -49,7 +49,7 @@ public class MessageHandler {
             try {
                 solution = solver.solve(problem);
             } catch (Throwable throwable) {
-                LOGGER.info("Solving an input problem (" + solverEvent.getProblemId() + ") has failed.", throwable);
+                LOGGER.error("Solving an input problem (" + solverEvent.getProblemId() + ") has failed.", throwable);
                 solverEventMessage.nack(throwable);
                 return;
             }
@@ -58,10 +58,11 @@ public class MessageHandler {
                 repository.save(problemId, solution);
                 solverEventEmitter.send(new SolverEvent(problemId, SolverEventType.SOLVER_FINISHED)).thenRun(() -> {
                     solverEventMessage.ack();
-                    LOGGER.info("Solution saved for an input problem (" + solverEvent.getProblemId() + ")");
+                    LOGGER.debug("Solution saved for an input problem (" + solverEvent.getProblemId() + ")");
                 });
             } catch (Throwable throwable) {
-                LOGGER.info("Saving a solution for an input problem (" + solverEvent.getProblemId() + ") has failed.", throwable);
+                LOGGER.error("Saving a solution for an input problem (" + solverEvent.getProblemId() + ") has failed.",
+                        throwable);
                 solverEventMessage.nack(throwable);
             }
         });

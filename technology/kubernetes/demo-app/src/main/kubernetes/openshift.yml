@@ -1,3 +1,5 @@
+# Deploys the PostgreSQL database to OpenShift.
+# The quarkus-openshift extension automatically picks up this file when it deploys the project.
 apiVersion: v1
 items:
   - apiVersion: v1

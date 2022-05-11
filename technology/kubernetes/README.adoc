@@ -1,0 +1,75 @@
+= School Timetabling (OpenShift, Java, Quarkus, Maven)
+
+This demo shows how to use the OptaPlanner Operator to run OptaPlanner workloads on OpenShift.
+
+*Please note that the OptaPlanner Operator used in this demo is experimental. As such, it provides no guarantees
+in terms of maturity and backward compatibility.*
+
+== Get your environment running
+
+Use an existing OpenShift cluster or download and start the https://developers.redhat.com/products/codeready-containers/overview[RedHat CodeReady Containers]
+
+Login as a user with the `cluster-admin` role.
+
+[#deployOperator]
+== Deploy the OptaPlanner operator
+
+Please follow the https://github.com/kiegroup/optaplanner/optaplanner-operator/README.adoc[optaplanner-operator README].
+
+== Deploy the demo app
+
+. create new project called _demo_:
+
+`oc new-project demo`
+
+. Deploy the demo-app:
+
+`mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dkafka.bootstrap.servers=<kafka bootstrap servers address>`
+
+To find the address of the Kafka bootstrap servers:
+
+. login to the OpenShift UI console
+. open the _openshift-operators_ project and navigate to _Networking -> Services_
+. open the _<kafka-cluster-name>-kafka-bootstrap_ service and notice its hostname and service port mapping for TCP clients under the _Service routing_ section
+. the address is a compound of the `<hostname>:<service port>`
+
+== Create the school-timetabling solver
+
+[#buildSolverImage]
+=== Build and push the school-timetabling container image
+
+Build and push the school-timetabling container image to a registry of your choice by running the following maven command:
+
+`mvn clean package -Dopenshift -Dquarkus.container-image.group=<image group> -Dquarkus.container-image.registry=<container registry>`
+
+=== Create the Solver custom resource
+
+The Solver custom resource describes the problem to solve on OpenShift and the infrastructure it requires.
+Below are the mandatory spec properties:
+
+- `kafkaCluster` - the name of the Kafka cluster created during the <<#deployOperator, Strimzi installation>>
+- `kafkaBootstrapServers` - the kafka bootstrap servers address
+- `solverImage` - the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
+
+An example of the `Solver` custom resource looks like follows:
+
+[source yaml]
+----
+apiVersion: org.optaplanner.solver/v1
+kind: Solver
+metadata:
+  name: school-timetabling
+spec:
+  kafkaCluster: my-cluster
+  kafkaBootstrapServers: my-cluster-kafka-bootstrap.openshift-operators.svc.cluster.local:9092
+  solverImage: quay.io/rsynek/school-timetabling:latest
+  replicas: 1
+----
+
+== Local development
+
+To work locally on this demo without OpenShift or any Kubernetes cluster:
+
+. start the PostgreSQL database and a Kafka broker by running `docker-compose up`
+. run the `demo-app` by `mvn quarkus:dev` in the `demo-app` directory
+. run the `school-timetabling` by `mvn quarkus:dev` in the `school-timetabling` directory
