@@ -14,17 +14,13 @@ Login as a user with the `cluster-admin` role.
 [#deployOperator]
 == Deploy the OptaPlanner operator
 
-Please follow the https://github.com/kiegroup/optaplanner/optaplanner-operator/README.adoc[optaplanner-operator README].
+Please follow the https://github.com/kiegroup/optaplanner/optaplanner-operator/README.adoc#deployToOpenShift[optaplanner-operator README].
 
 == Deploy the demo app
 
-. create new project called _demo_:
-
-`oc new-project demo`
-
-. Deploy the demo-app:
-
-`mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dkafka.bootstrap.servers=<kafka bootstrap servers address>`
+. change directory to `demo-app`
+. create new project called _demo_ by running `oc new-project demo`
+. deploy the demo-app via a maven command: `mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dquarkus.openshift.env.vars.kafka-bootstrap-servers=<kafka bootstrap servers address>`
 
 To find the address of the Kafka bootstrap servers:
 
@@ -33,14 +29,17 @@ To find the address of the Kafka bootstrap servers:
 . open the _<kafka-cluster-name>-kafka-bootstrap_ service and notice its hostname and service port mapping for TCP clients under the _Service routing_ section
 . the address is a compound of the `<hostname>:<service port>`
 
+TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed` exception due to self-signed certificate during the build, add the `-Dquarkus.kubernetes-client.trust-certs=true` property.
+
 == Create the school-timetabling solver
 
 [#buildSolverImage]
 === Build and push the school-timetabling container image
 
-Build and push the school-timetabling container image to a registry of your choice by running the following maven command:
+Build and push the school-timetabling container image to a registry of your choice.
 
-`mvn clean package -Dopenshift -Dquarkus.container-image.group=<image group> -Dquarkus.container-image.registry=<container registry>`
+. change directory to `school-timetabling`
+. run `mvn clean package -Dopenshift -Dquarkus.container-image.group=<image group> -Dquarkus.container-image.registry=<container registry>`
 
 === Create the Solver custom resource
 
@@ -65,6 +64,14 @@ spec:
   solverImage: quay.io/rsynek/school-timetabling:latest
   replicas: 1
 ----
+
+Create the `Solver` resource via `oc apply -f <file>`.
+
+=== Run the demo-app
+
+. find out the demo-app address by running `oc get route`; see the _HOST/PORT_ column of its output
+. open the address in the browser
+. change the number of lessons, if needed, and click the _Create & send_ button
 
 == Local development
 
