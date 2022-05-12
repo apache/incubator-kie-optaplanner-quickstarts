@@ -14,7 +14,7 @@ Login as a user with the `cluster-admin` role.
 [#deployOperator]
 == Deploy the OptaPlanner operator
 
-Please follow the https://github.com/kiegroup/optaplanner/optaplanner-operator/README.adoc#deployToOpenShift[optaplanner-operator README].
+Please follow the https://github.com/kiegroup/optaplanner/blob/main/optaplanner-operator/README.adoc#deployToOpenShift[optaplanner-operator README].
 
 == Deploy the demo app
 
@@ -36,10 +36,20 @@ TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.s
 [#buildSolverImage]
 === Build and push the school-timetabling container image
 
-Build and push the school-timetabling container image to a registry of your choice.
+Build and push the school-timetabling container image to a registry of your choice:
 
 . change directory to `school-timetabling`
 . run `mvn clean package -Dopenshift -Dquarkus.container-image.group=<image group> -Dquarkus.container-image.registry=<container registry>`
+
+[TIP]
+.Pushing an image to a container image registry
+====
+You can use https://quay.io[quay.io] as a container image registry.
+
+. open https://quay.io in the browser and login with your Red Hat account
+. create a new repository called _school-timetabling_, switch its visibility to _Public_ and click the _Create Public Repository_ button
+. the image is identified by quay.io/<login>/<image name>:<tag>
+====
 
 === Create the Solver custom resource
 
@@ -67,7 +77,7 @@ spec:
 
 Create the `Solver` resource via `oc apply -f <file>`.
 
-=== Run the demo-app
+== Run the demo-app
 
 . find out the demo-app address by running `oc get route`; see the _HOST/PORT_ column of its output
 . open the address in the browser
