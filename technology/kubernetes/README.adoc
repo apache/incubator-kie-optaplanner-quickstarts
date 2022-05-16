@@ -7,7 +7,15 @@ in terms of maturity and backward compatibility.*
 
 == Get your environment running
 
-Use an existing OpenShift cluster or download and start the https://developers.redhat.com/products/codeready-containers/overview[RedHat CodeReady Containers]
+Use an existing OpenShift cluster or download and start the https://developers.redhat.com/products/codeready-containers/overview[RedHat CodeReady Containers].
+
+WARNING: Be sure to pick the _Red Hat OpenShift Local_, as the other option, the _Developer Sandbox for Red Hat OpenShift_ does not
+allow installing new operators.
+
+The CodeReady Containers need more resources to run this demo. Before starting the local cluster, increase the available memory
+to 12 000 MiB by running `crc config set memory 16384`.
+
+Install the https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI (`oc`)].
 
 Login as a user with the `cluster-admin` role.
 
@@ -18,8 +26,10 @@ Please follow the https://github.com/kiegroup/optaplanner/blob/main/optaplanner-
 
 == Deploy the demo app
 
+. change directory to `optaplanner-quickstarts/technology/kubernetes`
+. build the maven project via `mvn clean install`
+. create a new OpenShift project called _demo_ by running `oc new-project demo`
 . change directory to `demo-app`
-. create new project called _demo_ by running `oc new-project demo`
 . deploy the demo-app via a maven command: `mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dquarkus.openshift.env.vars.kafka-bootstrap-servers=<kafka bootstrap servers address>`
 
 To find the address of the Kafka bootstrap servers:
@@ -71,7 +81,7 @@ metadata:
 spec:
   kafkaCluster: my-cluster
   kafkaBootstrapServers: my-cluster-kafka-bootstrap.openshift-operators.svc.cluster.local:9092
-  solverImage: quay.io/rsynek/school-timetabling:latest
+  solverImage: quay.io/example/school-timetabling:latest
   replicas: 1
 ----
 
