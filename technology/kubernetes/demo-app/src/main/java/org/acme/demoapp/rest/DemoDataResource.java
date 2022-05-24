@@ -48,6 +48,8 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 @Path("demo")
 public class DemoDataResource {
 
+    private static final int MAX_LESSON_COUNT = 200;
+
     public static final ProblemIdSequence PROBLEM_ID_SEQUENCE = new ProblemIdSequence();
 
     private final DemoDataGenerator demoDataGenerator;
@@ -77,7 +79,7 @@ public class DemoDataResource {
     @Produces(MediaType.APPLICATION_JSON)
     @Path("{lessons}")
     public Dataset createTimeTable(@PathParam("lessons") int lessons) {
-        if (lessons < 10 || lessons > 200) {
+        if (lessons < 10 || lessons > MAX_LESSON_COUNT) {
             throw new IllegalArgumentException("The number of lessons (" + lessons + ") must be between 10 and 200.");
         }
         Dataset dataset = generateAndPersistUnsolvedDataset(lessons);
@@ -124,7 +126,7 @@ public class DemoDataResource {
     }
 
     public Dataset generateAndPersistUnsolvedDataset(int lessons) {
-        int sanitizedLessons = lessons > 200 ? 200 : lessons;
+        int sanitizedLessons = lessons > MAX_LESSON_COUNT ? MAX_LESSON_COUNT : lessons;
         final long problemId = PROBLEM_ID_SEQUENCE.next();
         int rooms = sanitizedLessons / 20;
         TimeTable timeTable = demoDataGenerator.generateUnsolvedTimeTable(problemId, sanitizedLessons, rooms);
