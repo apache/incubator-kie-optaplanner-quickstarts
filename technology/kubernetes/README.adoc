@@ -13,7 +13,7 @@ WARNING: Be sure to pick the _Red Hat OpenShift Local_, as the other option, the
 allow installing new operators.
 
 The CodeReady Containers need more resources to run this demo. Before starting the local cluster, increase the available memory
-to 12 000 MiB by running `crc config set memory 16384`.
+to 16 384 MiB by running `crc config set memory 16384`.
 
 Install the https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI (`oc`)].
 
@@ -22,14 +22,15 @@ Login as a user with the `cluster-admin` role.
 [#deployOperator]
 == Deploy the OptaPlanner operator
 
-Please follow the https://github.com/kiegroup/optaplanner/blob/main/optaplanner-operator/README.adoc#deployToOpenShift[optaplanner-operator README].
+. create a new OpenShift project called _demo_ by running `oc new-project demo`
+. please follow the https://github.com/kiegroup/optaplanner/blob/main/optaplanner-operator/README.adoc#deployToOpenShift[optaplanner-operator README]
 
 == Deploy the demo app
 
 . change directory to `optaplanner-quickstarts/technology/kubernetes`
 . build the maven project via `mvn clean install`
-. create a new OpenShift project called _demo_ by running `oc new-project demo`
 . change directory to `demo-app`
+. make sure the current OpenShift project is `demo`: `oc project demo`
 . deploy the demo-app via a maven command: `mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dquarkus.openshift.env.vars.kafka-bootstrap-servers=<kafka bootstrap servers address>`
 
 To find the address of the Kafka bootstrap servers:
@@ -49,7 +50,11 @@ TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.s
 Build and push the school-timetabling container image to a registry of your choice:
 
 . change directory to `school-timetabling`
-. run `mvn clean package -Dopenshift -Dquarkus.container-image.group=<image group> -Dquarkus.container-image.registry=<container registry>`
+. run `mvn clean package -Dopenshift -Dquarkus.container-image.group=<image group> -Dquarkus.container-image.registry=<container registry>
+ -Dquarkus.container-image.username=<container registry username> -Dquarkus.container-image.password=<container registry password>`
+
+Where the container registry is a repository used to store and access container images (e.g. docker.io) and the image
+group is an organization or a personal account in that registry.
 
 [TIP]
 .Pushing an image to a container image registry
@@ -82,7 +87,8 @@ spec:
   kafkaCluster: my-cluster
   kafkaBootstrapServers: my-cluster-kafka-bootstrap.openshift-operators.svc.cluster.local:9092
   solverImage: quay.io/example/school-timetabling:latest
-  replicas: 1
+  scaling:
+    replicas: 1
 ----
 
 Create the `Solver` resource via `oc apply -f <file>`.
