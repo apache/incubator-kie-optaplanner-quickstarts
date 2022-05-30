@@ -13,25 +13,54 @@ WARNING: Be sure to pick the _Red Hat OpenShift Local_, as the other option, the
 allow installing new operators.
 
 The CodeReady Containers need more resources to run this demo. Before starting the local cluster, increase the available memory
-to 16 384 MiB by running `crc config set memory 16384`.
+at least to 16 384 MiB by running `crc config set memory 16384`.
 
-Install the https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI (`oc`)].
+Next, install the https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI (`oc`)]
+to be able to interact with the OpenShift cluster.
 
-Login as a user with the `cluster-admin` role.
+Login as a user with the `cluster-admin` role using the `oc login` command.
 
-[#deployOperator]
-== Deploy the OptaPlanner operator
+[#installStrimzi]
+=== Install Strimzi
 
-. create a new OpenShift project called _demo_ by running `oc new-project demo`
-. please follow the https://github.com/kiegroup/optaplanner/blob/main/optaplanner-operator/README.adoc#deployToOpenShift[optaplanner-operator README]
+The OptaPlanner Operator uses https://strimzi.io/[Strimzi] to create Kafka topics, thus, as the first step, install
+Strimzi to your OpenShift instance.
 
-== Deploy the demo app
+. in the OpenShift console, navigate to the menu _Operators -> Operator Hub_. Find the _Strimzi_ operator and install it
+. now, create a new `demo` project by running `oc new-project demo`
+. open the _Strimzi_ operator, select the _Kafka_ tab and create a new Kafka cluster. You will need the Kafka cluster name
+to create the `Solver` custom resource later
 
-. change directory to `optaplanner-quickstarts/technology/kubernetes`
-. build the maven project via `mvn clean install`
+NOTE: The Strimzi topic operator watches the project the Kafka cluster resides in. The rule of thumb is to create
+a separate project that contains the Solver resource together with its dependent resources, like Kafka cluster and topics.
+For additional options, please refer to https://strimzi.io/documentation/[Strimzi documentation].
+
+=== Deploy the OptaPlanner Operator
+
+The OptaPlanner operator is also a Quarkus application. As such, it's container image can be built and pushed directly to OpenShift using the https://quarkus.io/guides/deploying-to-openshift[`io.quarkus:quarkus-openshift` extension].
+
+. create the `optaplanner-operator` project by running `oc new-project optaplanner-operator`
+. run `mvn clean package -Dopenshift`
+. apply the generated CRD by running `oc create -f target/kubernetes/solvers.org.optaplanner.solver-v1.yml`
+. apply the prepared template by running `oc apply -f src/k8s/openshift.yml`
+
+TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed` exception due to self-signed certificate during the build, add the `-Dquarkus.kubernetes-client.trust-certs=true` property.
+
+=== Deploy the Demo App
+
+The Demo App also relies upon the `quarkus-openshift` extension to deploy to OpenShift. The extension also picks up additional
+resources defined in the `src/main/kubernetes/openshift.yml`; in this case, there is a template that creates
+the PostgreSQL database to store input problems and solutions.
+
 . change directory to `demo-app`
-. make sure the current OpenShift project is `demo`: `oc project demo`
+. create new project called _demo_ by running `oc new-project demo`
 . deploy the demo-app via a maven command: `mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dquarkus.openshift.env.vars.kafka-bootstrap-servers=<kafka bootstrap servers address>`
+
+The `-Dquarkus.openshift.env.vars.kafka-bootstrap-servers` property results in an environment variable `KAFKA_BOOTSTRAP_SERVERS`
+in the running container, which Quarkus converts to the `kafka.bootstrap.servers` property, effectively overriding the
+`kafka.bootstrap.servers=localhost:9092` in the `application.properties`.
+
+TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed` exception due to self-signed certificate during the build, add the `-Dquarkus.kubernetes-client.trust-certs=true` property.
 
 To find the address of the Kafka bootstrap servers:
 
@@ -40,21 +69,28 @@ To find the address of the Kafka bootstrap servers:
 . open the _<kafka-cluster-name>-kafka-bootstrap_ service and notice its hostname and service port mapping for TCP clients under the _Service routing_ section
 . the address is a compound of the `<hostname>:<service port>`
 
-TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed` exception due to self-signed certificate during the build, add the `-Dquarkus.kubernetes-client.trust-certs=true` property.
+image::img/kafkaBootstrapService.png[Kafka bootstrap service address screenshot]
 
-== Create the school-timetabling solver
+=== Create the school-timetabling solver
+
+Now, when all the other pieces of the puzzle are already in place, it's time to make the school-timetabling running.
 
 [#buildSolverImage]
-=== Build and push the school-timetabling container image
+==== Build and push the school-timetabling container image
 
-Build and push the school-timetabling container image to a registry of your choice:
+In order for the OptaPlanner Operator to create a deployment of the solver project, you need to push it to any container image registry accessible
+by your OpenShift instance.
+
+Quarkus comes in handy again, this time with one of the https://quarkus.io/guides/container-image[Quarkus container image extensions], which
+builds a container image locally and pushes it to a container image registry.
+
+Build and push the School Timetabling container image to a registry of your choice:
 
 . change directory to `school-timetabling`
 . run `mvn clean package -Dopenshift -Dquarkus.container-image.group=<image group> -Dquarkus.container-image.registry=<container registry>
- -Dquarkus.container-image.username=<container registry username> -Dquarkus.container-image.password=<container registry password>`
+-Dquarkus.container-image.username=<container registry username> -Dquarkus.container-image.password=<container registry password>`
 
-Where the container registry is a repository used to store and access container images (e.g. docker.io) and the image
-group is an organization or a personal account in that registry.
+The container registry in the command above is a repository used to store and access container images (e.g. docker.io) and the image group is an organization or a personal account in that registry.
 
 [TIP]
 .Pushing an image to a container image registry
@@ -66,36 +102,47 @@ You can use https://quay.io[quay.io] as a container image registry.
 . the image is identified by quay.io/<login>/<image name>:<tag>
 ====
 
-=== Create the Solver custom resource
+==== Create the Solver custom resource
 
 The Solver custom resource describes the problem to solve on OpenShift and the infrastructure it requires.
-Below are the mandatory spec properties:
-
-- `kafkaCluster` - the name of the Kafka cluster created during the <<#deployOperator, Strimzi installation>>
-- `kafkaBootstrapServers` - the kafka bootstrap servers address
-- `solverImage` - the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
-
-An example of the `Solver` custom resource looks like follows:
+In this case, the `Solver` custom resource might look like follows:
 
 [source yaml]
 ----
 apiVersion: org.optaplanner.solver/v1
 kind: Solver
 metadata:
-  name: school-timetabling
+  name: school-timetabling <1>
 spec:
-  kafkaCluster: my-cluster
-  kafkaBootstrapServers: my-cluster-kafka-bootstrap.openshift-operators.svc.cluster.local:9092
-  solverImage: quay.io/example/school-timetabling:latest
+  kafkaCluster: my-cluster <2>
+  kafkaBootstrapServers: my-cluster-kafka-bootstrap.demo.svc.cluster.local:9092 <3>
+  solverImage: quay.io/example/school-timetabling:latest  <4>
   scaling:
-    replicas: 1
+    replicas: 1 <5>
 ----
+
+<1> the solver name
+<2> the name of the Kafka cluster created during the <<#installStrimzi, Strimzi installation>>
+<3> Kafka bootstrap servers address
+<4> the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
+<5> the number of running school-timetabling pods
 
 Create the `Solver` resource via `oc apply -f <file>`.
 
+Let's check the active pods in the `demo` project by running the `oc get pods` command:
+
+image::img/runningPods.png[Running pods in the demo project]
+
+To see what Kafka topics there are in the `demo` project, run `oc get kafkatopic`:
+
+image::img/kafkaTopics.png[Kafka topics in the demo project]
+
+Both the `school-timetabling-problem` and `school-timetabling-solution` have been created and there is
+a single running `school-timetabling` pod.
+
 == Run the demo-app
 
-. find out the demo-app address by running `oc get route`; see the _HOST/PORT_ column of its output
+. find out the Demo App address by running `oc get route`; see the _HOST/PORT_ column of its output
 . open the address in the browser
 . change the number of lessons, if needed, and click the _Create & send_ button
 
