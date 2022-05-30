@@ -109,7 +109,7 @@ In this case, the `Solver` custom resource might look like follows:
 
 [source yaml]
 ----
-apiVersion: org.optaplanner.solver/v1
+apiVersion: org.optaplanner.solver/v1beta1
 kind: Solver
 metadata:
   name: school-timetabling <1>
