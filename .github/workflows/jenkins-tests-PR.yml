@@ -17,6 +17,15 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
+    
+    - name: Setup default base branch
+      run: |
+        echo 'BASE_BRANCH=${{ github.base_ref }}' >> $GITHUB_ENV
+    
+    - name: Setup correct base branch on development
+      if: github.base_ref == 'development'
+      run: |
+        echo 'BASE_BRANCH=main' >> $GITHUB_ENV
 
     - name: Test DSL
-      run: .ci/jenkins/dsl/test.sh -h ${{ github.head_ref }} -r ${{ github.event.pull_request.head.repo.full_name }} -b ${{ github.base_ref }} -t ${{ github.event.pull_request.base.repo.full_name }} .ci/jenkins/dsl
+      run: .ci/jenkins/dsl/test.sh -h ${{ github.head_ref }} -r ${{ github.event.pull_request.head.repo.full_name }} -b ${{ env.BASE_BRANCH }} -t ${{ github.event.pull_request.base.repo.full_name }} .ci/jenkins/dsl
