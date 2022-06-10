@@ -7,13 +7,12 @@ in terms of maturity and backward compatibility.*
 
 == Get your environment running
 
-Use an existing OpenShift cluster or download and start the https://developers.redhat.com/products/codeready-containers/overview[RedHat CodeReady Containers].
+Use an existing OpenShift cluster or https://developers.redhat.com/products/openshift/download[try any of the options] that fit best your needs.
 
-WARNING: Be sure to pick the _Red Hat OpenShift Local_, as the other option, the _Developer Sandbox for Red Hat OpenShift_ does not
-allow installing new operators.
+WARNING: The _Developer Sandbox for Red Hat OpenShift_ does not allow installing new operators, thus it's not suitable for running this demo.
 
-The CodeReady Containers need more resources to run this demo. Before starting the local cluster, increase the available memory
-at least to 16 384 MiB by running `crc config set memory 16384`.
+WARNING: If you pick the _Red Hat OpenShift Local_, increase the available memory at least to 16 384 MiB
+by running `crc config set memory 16384` before you start the local cluster.
 
 Next, install the https://docs.openshift.com/container-platform/latest/cli_reference/openshift_cli/getting-started-cli.html[OpenShift CLI (`oc`)]
 to be able to interact with the OpenShift cluster.
