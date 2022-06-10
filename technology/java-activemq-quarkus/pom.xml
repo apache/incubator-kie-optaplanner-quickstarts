@@ -45,6 +45,11 @@
         <scope>import</scope>
       </dependency>
       <dependency>
+        <groupId>io.quarkiverse.artemis</groupId>
+        <artifactId>quarkus-artemis-jms</artifactId>
+        <version>1.0.6</version>
+      </dependency>
+      <dependency>
         <groupId>org.acme</groupId>
         <artifactId>optaplanner-activemq-quarkus-school-timetabling-common</artifactId>
         <version>${project.version}</version>
