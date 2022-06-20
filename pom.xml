@@ -20,6 +20,7 @@
     <module>technology/java-spring-boot</module>
     <module>technology/java-activemq-quarkus</module>
     <module>technology/kotlin-quarkus</module>
+    <module>technology/kubernetes</module>
     <module>use-cases/school-timetabling</module>
     <module>use-cases/facility-location</module>
     <module>use-cases/maintenance-scheduling</module>
