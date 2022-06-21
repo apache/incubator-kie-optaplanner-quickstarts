@@ -1,6 +1,5 @@
 package org.acme.demoapp.rest;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
