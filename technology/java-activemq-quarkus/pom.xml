@@ -12,7 +12,7 @@
   <properties>
     <version.org.apache.activemq>2.19.0</version.org.apache.activemq>
     <version.io.quarkus>2.10.0.Final</version.io.quarkus>
-    <version.org.optaplanner>8.23.0.Final</version.org.optaplanner>
+    <version.org.optaplanner>8.23.1-SNAPSHOT</version.org.optaplanner>
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
