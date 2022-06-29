@@ -10,9 +10,20 @@ jobs:
   dsl-tests:
     runs-on: ubuntu-latest
     steps:
+    - name: Set correct base branch
+      run: |
+        branch="${{ github.base_ref }}"
+        if [ "${branch}" = "development" ]; then
+          branch='main'
+        fi
+        echo "BRANCH_CONFIG_BRANCH=${branch}"  >> $GITHUB_ENV
+        echo "BASE_BRANCH=${branch}"  >> $GITHUB_ENV
+
     - name: DSL tests
       uses: kiegroup/kogito-pipelines/.ci/actions/dsl-tests@main
       with:
         main-config-file-repo: kiegroup/optaplanner
         main-config-file-ref: main
         main-config-file-path: .ci/jenkins/config/main.yaml
+        branch-config-branch: ${{ env.BRANCH_CONFIG_BRANCH }}
+        base-branch: ${{ env.BASE_BRANCH }}
