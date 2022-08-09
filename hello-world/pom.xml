@@ -10,13 +10,15 @@
   <properties>
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jar.with.dependencies.name>hello-world-run</jar.with.dependencies.name>
 
     <version.org.optaplanner>8.26.0-SNAPSHOT</version.org.optaplanner>
-    <version.org.logback>1.2.9</version.org.logback>
+    <version.org.junit.jupiter>5.9.0</version.org.junit.jupiter>
+    <version.org.logback>1.2.11</version.org.logback>
 
-    <version.compiler.plugin>3.8.1</version.compiler.plugin>
-    <version.surefire.plugin>3.0.0-M5</version.surefire.plugin>
-    <version.exec.plugin>3.0.0</version.exec.plugin>
+    <version.compiler.plugin>3.10.1</version.compiler.plugin>
+    <version.surefire.plugin>3.0.0-M7</version.surefire.plugin>
+    <version.assembly.plugin>3.4.2</version.assembly.plugin>
   </properties>
 
   <dependencyManagement>
@@ -25,6 +27,13 @@
         <groupId>org.optaplanner</groupId>
         <artifactId>optaplanner-bom</artifactId>
         <version>${version.org.optaplanner}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>${version.org.junit.jupiter}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -53,6 +62,11 @@
       <artifactId>optaplanner-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -65,13 +79,49 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${version.surefire.plugin}</version>
       </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>${version.exec.plugin}</version>
+      <plugin> <!-- For the purposes of integration testing only. -->
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${version.surefire.plugin}</version>
         <configuration>
-          <mainClass>org.acme.schooltimetabling.TimeTableApp</mainClass>
+          <systemPropertyVariables>
+            <artifactName>${jar.with.dependencies.name}</artifactName>
+          </systemPropertyVariables>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>${version.assembly.plugin}</version>
+        <configuration>
+          <finalName>${jar.with.dependencies.name}</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors> <!-- Builds a JAR with dependencies that correctly merges META-INF/service descriptors. -->
+            <descriptor>src/assembly/jar-with-dependencies-and-services.xml</descriptor>
+          </descriptors>
+          <archive>
+            <manifestEntries>
+              <Main-Class>org.acme.schooltimetabling.TimeTableApp</Main-Class>
+              <Multi-Release>true</Multi-Release> <!-- Some of our dependencies are multi-release JARs. -->
+            </manifestEntries>
+          </archive>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

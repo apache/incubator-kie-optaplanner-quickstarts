@@ -17,7 +17,9 @@ $ cd optaplanner-quickstarts/hello-world
 +
 [source, shell]
 ----
-$ mvn exec:java
+$ mvn verify
+...
+$ java -jar target/hello-world-run.jar
 ----
 +
 or with Gradle:
