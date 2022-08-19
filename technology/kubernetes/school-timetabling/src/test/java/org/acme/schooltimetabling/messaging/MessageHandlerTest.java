@@ -1,83 +1,147 @@
 package org.acme.schooltimetabling.messaging;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.util.List;
 
-import javax.enterprise.inject.Any;
 import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.JMSConsumer;
+import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.jms.JMSProducer;
+import javax.jms.Message;
+import javax.jms.Session;
 
 import org.acme.common.domain.Lesson;
 import org.acme.common.domain.Room;
 import org.acme.common.domain.TimeTable;
 import org.acme.common.domain.Timeslot;
-import org.acme.common.event.SolverEvent;
-import org.acme.common.event.SolverEventType;
+import org.acme.common.message.SolverRequest;
+import org.acme.common.message.SolverResponse;
 import org.acme.common.persistence.TimeTableRepository;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.assertj.core.api.SoftAssertions;
-import org.eclipse.microprofile.reactive.messaging.Message;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.mockito.Mockito;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
-import io.smallrye.reactive.messaging.providers.connectors.InMemoryConnector;
-import io.smallrye.reactive.messaging.providers.connectors.InMemorySink;
-import io.smallrye.reactive.messaging.providers.connectors.InMemorySource;
 
 @QuarkusTest
-@QuarkusTestResource(KafkaTestResourceLifecycleManager.class)
+@QuarkusTestResource(ActiveMQEmbeddedBrokerLifecycleManager.class)
 public class MessageHandlerTest {
 
-    private static final long PROBLEM_ID = 1L;
+    private static final String SOLVER_REQUEST_QUEUE = "school-timetabling-problem";
+    private static final String SOLVER_RESPONSE_QUEUE = "school-timetabling-solution";
 
-    private static final Duration AWAIT_TIMEOUT = Duration.ofSeconds(10L);
+    private static final long TEST_TIMEOUT_SECONDS = 60L;
+
+    private static final int MESSAGE_RECEIVE_TIMEOUT_SECONDS = 10;
+
+    private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
 
     @Inject
     TimeTableRepository repository;
 
     @Inject
-    @Any
-    InMemoryConnector connector;
+    ObjectMapper objectMapper;
 
-    private InMemorySource<SolverEvent> solverInSource;
-    private InMemorySink<SolverEvent> solverOutSink;
+    @Test
+    @Timeout(TEST_TIMEOUT_SECONDS)
+    void solve() {
+        long problemId = 1L;
+        TimeTable unsolvedTimeTable = createTimetable(problemId);
+        repository.persist(unsolvedTimeTable);
 
-    @BeforeEach
-    void setupChannels() {
-        solverInSource = connector.source("solver_in");
-        solverOutSink = connector.sink("solver_out");
+        sendSolverRequest(new SolverRequest(problemId));
+        SolverResponse solverResponse = receiveSolverResponse(MESSAGE_RECEIVE_TIMEOUT_SECONDS);
+
+        assertThat(solverResponse.getResponseStatus()).isEqualTo(SolverResponse.ResponseStatus.SUCCESS);
+        assertThat(solverResponse.getProblemId()).isEqualTo(problemId);
+
+        TimeTable timeTable = repository.load(solverResponse.getProblemId());
+        SoftAssertions.assertSoftly(softly -> {
+            softly.assertThat(timeTable.getLessonList()).hasSameSizeAs(unsolvedTimeTable.getLessonList());
+            timeTable.getLessonList().forEach(lesson -> {
+                softly.assertThat(lesson.getRoom()).isNotNull();
+                softly.assertThat(lesson.getTimeslot()).isNotNull();
+            });
+        });
     }
 
-    @Timeout(60)
     @Test
-    void solve() {
-        TimeTable inputProblem = createTimetable(PROBLEM_ID);
-        repository.persist(inputProblem);
+    @Timeout(TEST_TIMEOUT_SECONDS)
+    void incorrectSolutionClass_respondsWithError() {
+        long problemId = 10L;
+        TimeTableRepository timeTableRepositoryMock = Mockito.mock(TimeTableRepository.class);
+        // OptaPlanner detects the mock is not the class nor subclass of the PlanningSolution.
+        when(timeTableRepositoryMock.load(eq(problemId))).thenReturn(mock(TimeTable.class));
+        QuarkusMock.installMockForInstance(timeTableRepositoryMock, repository);
 
-        solverInSource.send(new SolverEvent(PROBLEM_ID, SolverEventType.SOLVER_REQUEST));
+        sendSolverRequest(new SolverRequest(problemId));
 
-        await()
-                .timeout(AWAIT_TIMEOUT)
-                .until(solverOutSink::received, messages -> !messages.isEmpty());
+        SolverResponse solverResponse = receiveSolverResponse(MESSAGE_RECEIVE_TIMEOUT_SECONDS);
+        assertThat(solverResponse.getResponseStatus()).isEqualTo(SolverResponse.ResponseStatus.FAILURE);
+        assertThat(solverResponse.getProblemId()).isEqualTo(problemId);
+        assertThat(solverResponse.getErrorInfo().getExceptionClassName()).isEqualTo(IllegalArgumentException.class.getName());
+        assertThat(solverResponse.getErrorInfo().getExceptionMessage()).contains("not a known subclass of the solution class");
+    }
 
-        Message<SolverEvent> solverResponseMessage = solverOutSink.received().get(0);
-        SolverEvent solverResponseEvent = solverResponseMessage.getPayload();
+    @Test
+    @Timeout(TEST_TIMEOUT_SECONDS)
+    void badRequest_DLQ() {
+        final String wrongMessage = "Bad request!";
+        sendMessage(SOLVER_REQUEST_QUEUE, wrongMessage);
+        String messageFromDLQ = receiveMessage("DLQ", 10);
+        assertThat(messageFromDLQ).isEqualTo(wrongMessage);
+    }
 
-        TimeTable timeTable = repository.load(solverResponseEvent.getProblemId());
-        assertThat(timeTable.getLessonList()).hasSize(2);
+    private SolverResponse receiveSolverResponse(int timeoutSeconds) {
+        String solverResponsePayload = receiveMessage(SOLVER_RESPONSE_QUEUE, timeoutSeconds);
+        try {
+            return objectMapper.readValue(solverResponsePayload, SolverResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    private String receiveMessage(String queueName, int timeoutSeconds) {
+        try (JMSContext context = connectionFactory.createContext("admin", "admin", Session.AUTO_ACKNOWLEDGE)) {
+            JMSConsumer consumer = context.createConsumer(context.createQueue(queueName));
+            Message message = consumer.receive(timeoutSeconds * 1_000);
+            return message.getBody(String.class);
+        } catch (JMSException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-        SoftAssertions.assertSoftly(softly ->
-                timeTable.getLessonList().forEach(lesson -> {
-                    softly.assertThat(lesson.getRoom()).isNotNull();
-                    softly.assertThat(lesson.getTimeslot()).isNotNull();
-                }));
+    private void sendSolverRequest(SolverRequest solverRequest) {
+        try {
+            String message = objectMapper.writeValueAsString(solverRequest);
+            sendMessage(SOLVER_REQUEST_QUEUE, message);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void sendMessage(String queueName, String message) {
+        try (JMSContext context = connectionFactory.createContext("quarkus", "quarkus", Session.AUTO_ACKNOWLEDGE)) {
+            JMSProducer producer = context.createProducer();
+            Destination solverRequestQueue = context.createQueue(queueName);
+            producer.send(solverRequestQueue, message);
+        }
     }
 
     private TimeTable createTimetable(long problemId) {

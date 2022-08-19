@@ -1,35 +1,46 @@
 package org.acme.schooltimetabling.messaging;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
+import javax.jms.JMSConsumer;
+import javax.jms.JMSContext;
+import javax.jms.JMSProducer;
+import javax.jms.Message;
+import javax.jms.Queue;
 
 import org.acme.common.domain.TimeTable;
-import org.acme.common.event.SolverEvent;
-import org.acme.common.event.SolverEventType;
+import org.acme.common.message.SolverRequest;
+import org.acme.common.message.SolverResponse;
 import org.acme.common.persistence.TimeTableRepository;
-import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
-import org.eclipse.microprofile.reactive.messaging.Channel;
-import org.eclipse.microprofile.reactive.messaging.Emitter;
-import org.eclipse.microprofile.reactive.messaging.Incoming;
-import org.eclipse.microprofile.reactive.messaging.Message;
 import org.optaplanner.core.api.solver.Solver;
 import org.optaplanner.core.api.solver.SolverFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.quarkus.runtime.ShutdownEvent;
+import io.quarkus.runtime.StartupEvent;
+
 @ApplicationScoped
-public class MessageHandler {
+public class MessageHandler implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageHandler.class);
 
-    @Channel("solver_out")
-    Emitter<SolverEvent> solverEventEmitter;
-
     @Inject
     TimeTableRepository repository;
+
+    @Inject
+    ObjectMapper objectMapper;
+
+    @Inject
+    ConnectionFactory connectionFactory;
 
     private Solver<TimeTable> solver;
 
@@ -38,33 +49,86 @@ public class MessageHandler {
         solver = solverFactory.buildSolver();
     }
 
-    @Acknowledgment(Acknowledgment.Strategy.MANUAL)
-    @Incoming("solver_in")
-    public CompletionStage<Void> solve(Message<SolverEvent> solverEventMessage) {
-        SolverEvent solverEvent = solverEventMessage.getPayload();
-        return CompletableFuture.runAsync(() -> {
-            final Long problemId = solverEvent.getProblemId();
-            TimeTable problem = repository.load(problemId);
-            TimeTable solution;
+    private final ExecutorService scheduler = Executors.newSingleThreadExecutor();
+
+    void onStart(@Observes StartupEvent event) {
+        scheduler.submit(this);
+    }
+
+    void onStop(@Observes ShutdownEvent event) {
+        scheduler.shutdown();
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            solve();
+        }
+    }
+
+    public void solve() {
+        Long problemId = null;
+        try (JMSContext context = connectionFactory.createContext(JMSContext.SESSION_TRANSACTED);
+             JMSConsumer jmsConsumer = context.createConsumer(context.createQueue("school-timetabling-problem"))) {
+            Queue solutionQueue = context.createQueue("school-timetabling-solution");
+            JMSProducer jmsProducer = context.createProducer();
+            Message solverRequestMessage = jmsConsumer.receive(1_000L);
+            if (solverRequestMessage == null) {
+                return;
+            }
             try {
-                solution = solver.solve(problem);
-            } catch (Throwable throwable) {
-                LOGGER.error("Solving an input problem (" + solverEvent.getProblemId() + ") has failed.", throwable);
-                solverEventMessage.nack(throwable);
+                SolverRequest solverRequest
+                        = objectMapper.readValue(solverRequestMessage.getBody(String.class), SolverRequest.class);
+                problemId = solverRequest.getProblemId();
+            } catch (JsonProcessingException jsonProcessingException) { // Bad request.
+                LOGGER.error("Unable to deserialize a solver request (" + solverRequestMessage + ").",
+                        jsonProcessingException);
+                context.rollback();
                 return;
             }
 
+            TimeTable problem = repository.load(problemId);
+            TimeTable solution;
+
+            LOGGER.debug("Started solving an input problem (" + problemId + ").");
             try {
-                repository.save(problemId, solution);
-                solverEventEmitter.send(new SolverEvent(problemId, SolverEventType.SOLVER_FINISHED)).thenRun(() -> {
-                    solverEventMessage.ack();
-                    LOGGER.debug("Solution saved for an input problem (" + solverEvent.getProblemId() + ")");
-                });
-            } catch (Throwable throwable) {
-                LOGGER.error("Saving a solution for an input problem (" + solverEvent.getProblemId() + ") has failed.",
-                        throwable);
-                solverEventMessage.nack(throwable);
+                solution = solver.solve(problem);
+            } catch (Exception solverException) { // Exception during solving will most likely require code change.
+                LOGGER.error("Solving an input problem (" + problemId + ") has failed.", solverException);
+                String errorMessage = createReplyFailure(problemId, solverException);
+                jmsProducer.send(solutionQueue, errorMessage);
+                context.commit();
+                return;
             }
-        });
+
+            repository.save(problemId, solution);
+            LOGGER.debug("Solution saved for an input problem (" + problemId + ")");
+            String solvingFinishedMessage = createReplySuccess(problemId);
+            jmsProducer.send(solutionQueue, solvingFinishedMessage);
+            context.commit(); // The output message is sent out and the input message removed from a queue.
+        } catch (Exception ex) {
+            throw new IllegalStateException("Exception during processing an input problem (" + problemId + ").", ex);
+        }
+    }
+
+    private String createReplySuccess(Long problemId) {
+        try {
+            return objectMapper.writeValueAsString(new SolverResponse(problemId));
+        } catch (JsonProcessingException serializationException) {
+            throw new IllegalStateException("Unable to serialize a success response to the input problem ("
+                    + problemId + ") to JSON.", serializationException);
+        }
+    }
+
+    private String createReplyFailure(Long problemId, Throwable throwable) {
+        SolverResponse solverResponse =
+                new SolverResponse(problemId,
+                        new SolverResponse.ErrorInfo(throwable.getClass().getName(), throwable.getMessage()));
+        try {
+            return objectMapper.writeValueAsString(solverResponse);
+        } catch (JsonProcessingException serializationException) {
+            throw new IllegalStateException("Unable to serialize a failure response to the input problem ("
+                    + problemId + ") to JSON.", serializationException);
+        }
     }
 }
