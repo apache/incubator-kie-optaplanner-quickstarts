@@ -164,6 +164,9 @@ To find out the ActiveMQ broker management host:
 . find the service bound to the port 8161
 . the ActiveMQ broker management host is a compound of the `<service name>.<project>.svc.cluster.local`, e.g. `ex-aao-hdls-svc.demo.svc.cluster.local`
 
+The ActiveMQ broker username and password is stored in a secret named `<broker resource name>-credentials-secret`.
+Run `oc get secret` to see the available secrets in the project.
+
 Create the `Solver` resource via `oc apply -f <file>`.
 
 To see what ActiveMQ queue there are in the `demo` project, run `oc get activemqartemisaddress`:
