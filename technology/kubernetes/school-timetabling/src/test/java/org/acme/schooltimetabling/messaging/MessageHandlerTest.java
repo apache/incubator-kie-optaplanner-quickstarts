@@ -26,7 +26,6 @@ import org.acme.common.domain.Timeslot;
 import org.acme.common.message.SolverRequest;
 import org.acme.common.message.SolverResponse;
 import org.acme.common.persistence.TimeTableRepository;
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -50,7 +49,8 @@ public class MessageHandlerTest {
 
     private static final int MESSAGE_RECEIVE_TIMEOUT_SECONDS = 10;
 
-    private ConnectionFactory connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+    @Inject
+    ConnectionFactory connectionFactory;
 
     @Inject
     TimeTableRepository repository;

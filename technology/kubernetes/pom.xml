@@ -43,9 +43,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>io.quarkiverse.artemis</groupId>
-        <artifactId>quarkus-artemis-jms</artifactId>
-        <version>1.2.0</version>
+        <groupId>org.amqphub.quarkus</groupId>
+        <artifactId>quarkus-qpid-jms</artifactId>
+        <version>0.36.0</version>
       </dependency>
       <dependency>
         <groupId>org.acme</groupId>

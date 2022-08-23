@@ -19,8 +19,8 @@
       <artifactId>kubernetes-demo-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkiverse.artemis</groupId>
-      <artifactId>quarkus-artemis-jms</artifactId>
+      <groupId>org.amqphub.quarkus</groupId>
+      <artifactId>quarkus-qpid-jms</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
