@@ -45,13 +45,13 @@ To enable the AMQP protocol on the broker, add the following acceptor definition
 spec:
   acceptors:
   - name: amqp
-    connectionsAllowed: 100 <1>
+    connectionsAllowed: 100
     port: 5672
     protocols: amqp
 ...
 ----
 
-<1> allows up to 100 concurrent connections
+This acceptor allows up to 100 concurrent connections via the AMQP protocol.
 
 === Install KEDA
 
