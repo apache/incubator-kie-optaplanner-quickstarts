@@ -127,36 +127,36 @@ You can use https://quay.io[quay.io] as a container image registry.
 The Solver custom resource describes the problem to solve on OpenShift and the infrastructure it requires.
 In this case, the `Solver` custom resource might look like follows:
 
-[source, yaml]
+[source, yaml, linenums]
 ----
 apiVersion: org.optaplanner.solver/v1beta1
 kind: Solver
 metadata:
-  name: school-timetabling <1>
+  name: school-timetabling
 spec:
   amqBroker:
-    host: ex-aao-amqp-0-svc.demo.svc.cluster.local <2>
-    port: 5672 <2>
-    managementHost: ex-aao-hdls-svc.demo.svc.cluster.local <3>
-    usernameSecretRef: <4>
+    host: ex-aao-amqp-0-svc.demo.svc.cluster.local
+    port: 5672
+    managementHost: ex-aao-hdls-svc.demo.svc.cluster.local
+    usernameSecretRef:
       key: AMQ_USER
       name: ex-aao-credentials-secret
-    passwordSecretRef: <4>
+    passwordSecretRef:
       key: AMQ_PASSWORD
       name: ex-aao-credentials-secret
-  solverImage: quay.io/example/school-timetabling:latest <5>
+  solverImage: quay.io/example/school-timetabling:latest
   scaling:
-    dynamic: true <6>
-    replicas: 3 <7>
+    dynamic: true
+    replicas: 3
 ----
 
-<1> the solver name
-<2> ActiveMQ broker host and port accepting AMQP connections
-<3> ActiveMQ broker host providing management interface
-<4> reference to a secret containing a username and password to access the broker
-<5> the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
-<6> enables dynamic scaling via KEDA
-<7> the maximum number of running school-timetabling pods; if dynamic scaling is disabled, this parameter defines a fixed number of pods
+* line 4 - the solver name
+* lines 7 and 8 - ActiveMQ broker host and port accepting AMQP connections
+* line 9 - ActiveMQ broker host providing management interface
+* lines 10 to 15 - reference to a secret containing a username and password to access the broker
+* line 16 - the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
+* line 18 - enables dynamic scaling via KEDA
+* line 19 - the maximum number of running school-timetabling pods; if dynamic scaling is disabled, this parameter defines a fixed number of pods
 
 To find out the ActiveMQ broker management host:
 
