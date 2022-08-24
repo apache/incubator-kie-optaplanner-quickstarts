@@ -17,7 +17,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.acme.common.domain.TimeTable;
 import org.acme.common.event.SolverEvent;
-import org.acme.common.event.SolverEventType;
+import org.acme.common.message.SolverRequest;
+import org.acme.common.message.SolverResponse;
 import org.acme.common.persistence.TimeTableRepository;
 import org.acme.demoapp.generator.DemoDataGenerator;
 import org.eclipse.microprofile.reactive.messaging.Acknowledgment;
@@ -27,6 +28,9 @@ import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Path("demo")
 public class DemoDataResource {
@@ -39,23 +43,27 @@ public class DemoDataResource {
 
     private final TimeTableRepository timeTableRepository;
 
-    private final Emitter<SolverEvent> solverEventEmitter;
+    private final Emitter<String> solverRequestEmitter;
 
     private final EventResource eventResource;
 
     private final ScoreManager<TimeTable, HardSoftScore> scoreManager;
 
+    private final ObjectMapper objectMapper;
+
     private final ConcurrentHashMap<Long, Dataset> datasets = new ConcurrentHashMap<>();
 
     @Inject
     public DemoDataResource(DemoDataGenerator demoDataGenerator, TimeTableRepository timeTableRepository,
-                            @Channel("solver_request") Emitter<SolverEvent> solverEventEmitter,
-                            EventResource eventResource, ScoreManager<TimeTable, HardSoftScore> scoreManager) {
+                            @Channel("solver_request") Emitter<String> solverRequestEmitter,
+                            EventResource eventResource, ScoreManager<TimeTable, HardSoftScore> scoreManager,
+                            ObjectMapper objectMapper) {
         this.demoDataGenerator = demoDataGenerator;
         this.timeTableRepository = timeTableRepository;
-        this.solverEventEmitter = solverEventEmitter;
+        this.solverRequestEmitter = solverRequestEmitter;
         this.eventResource = eventResource;
         this.scoreManager = scoreManager;
+        this.objectMapper = objectMapper;
     }
 
     @POST
@@ -66,9 +74,16 @@ public class DemoDataResource {
             throw new IllegalArgumentException("The number of lessons (" + lessons + ") must be between 10 and 200.");
         }
         Dataset dataset = generateAndPersistUnsolvedDataset(lessons);
-        SolverEvent solverEvent = new SolverEvent(dataset.getProblemId(), SolverEventType.SOLVER_REQUEST);
+        SolverRequest solverRequest = new SolverRequest(dataset.getProblemId());
+        String solverRequestMessage;
+        try {
+            solverRequestMessage = objectMapper.writeValueAsString(solverRequest);
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException("Unable to serialize the " + SolverRequest.class.getName()
+                    + " (" + solverRequest + ") to JSON.", e);
+        }
         datasets.put(dataset.getProblemId(), dataset);
-        solverEventEmitter.send(solverEvent);
+        solverRequestEmitter.send(solverRequestMessage);
 
         return dataset;
     }
@@ -82,14 +97,21 @@ public class DemoDataResource {
 
     @Incoming("solver_response")
     @Acknowledgment(Acknowledgment.Strategy.MANUAL)
-    public CompletionStage<Void> handleMessage(Message<SolverEvent> solverEventMessage) {
+    public CompletionStage<Void> handleMessage(Message<String> solverResponseMessage) {
         return CompletableFuture.runAsync(() -> {
-            final long problemId = solverEventMessage.getPayload().getProblemId();
+            SolverResponse solverResponse;
+            try {
+                solverResponse = objectMapper.readValue(solverResponseMessage.getPayload(), SolverResponse.class);
+            } catch (JsonProcessingException e) {
+                throw new IllegalStateException("Unable to serialize the " + SolverResponse.class.getName()
+                        + " (" + solverResponseMessage.getPayload() + ") from JSON.", e);
+            }
+            final long problemId = solverResponse.getProblemId();
             TimeTable timeTable = timeTableRepository.load(problemId);
             if (timeTable == null) {
                 IllegalStateException exception = new IllegalStateException("A timetable (" + problemId
                         + ") cannot be found in the repository.");
-                solverEventMessage.nack(exception);
+                solverResponseMessage.nack(exception);
                 throw exception;
             }
             scoreManager.updateScore(timeTable);
@@ -99,7 +121,7 @@ public class DemoDataResource {
                         + problemId
                         + ") that was never submitted.");
             }
-            solverEventMessage.ack();
+            solverResponseMessage.ack();
             if (timeTable.getScore() != null) {
                 dataset.setSolved(true);
                 dataset.setScore(timeTable.getScore().toString());

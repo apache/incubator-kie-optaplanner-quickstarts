@@ -55,6 +55,4 @@ public class TimeTable {
     public HardSoftScore getScore() {
         return score;
     }
-
-
 }
