@@ -6,12 +6,15 @@ import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
 import org.acme.common.domain.TimeTable;
-import org.acme.common.event.SolverEvent;
+import org.acme.common.message.SolverRequest;
 import org.acme.common.persistence.TimeTableRepository;
-import org.acme.demoapp.KafkaTestResourceLifecycleManager;
+import org.acme.demoapp.InMemoryBrokerLifecycleManager;
 import org.eclipse.microprofile.reactive.messaging.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
@@ -19,7 +22,7 @@ import io.smallrye.reactive.messaging.providers.connectors.InMemoryConnector;
 import io.smallrye.reactive.messaging.providers.connectors.InMemorySink;
 
 @QuarkusTest
-@QuarkusTestResource(KafkaTestResourceLifecycleManager.class)
+@QuarkusTestResource(InMemoryBrokerLifecycleManager.class)
 public class DemoDataResourceTest {
 
     @Inject
@@ -31,7 +34,10 @@ public class DemoDataResourceTest {
     @Inject
     TimeTableRepository timeTableRepository;
 
-    private InMemorySink<SolverEvent> solverRequestSink;
+    @Inject
+    ObjectMapper objectMapper;
+
+    private InMemorySink<String> solverRequestSink;
 
     @BeforeEach
     void setupChannels() {
@@ -39,14 +45,14 @@ public class DemoDataResourceTest {
     }
 
     @Test
-    void createTimeTable() {
+    void createTimeTable() throws JsonProcessingException {
         final int lessons = 10;
         Dataset dataset = demoDataResource.createTimeTable(lessons);
         assertThat(dataset.getLessons()).isEqualTo(lessons);
         assertThat(dataset.isSolved()).isFalse();
 
-        Message<SolverEvent> solverRequestMessage = solverRequestSink.received().get(0);
-        SolverEvent solverEvent = solverRequestMessage.getPayload();
+        Message<String> solverRequestMessage = solverRequestSink.received().get(0);
+        SolverRequest solverEvent = objectMapper.readValue(solverRequestMessage.getPayload(), SolverRequest.class);
 
         TimeTable timeTable = timeTableRepository.load(solverEvent.getProblemId());
         assertThat(timeTable.getLessonList()).hasSize(lessons);

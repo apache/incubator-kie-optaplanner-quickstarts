@@ -19,20 +19,45 @@ to be able to interact with the OpenShift cluster.
 
 Login as a user with the `cluster-admin` role using the `oc login` command.
 
-[#installStrimzi]
-=== Install Strimzi
+=== Create a project
 
-The OptaPlanner Operator uses https://strimzi.io/[Strimzi] to create Kafka topics, thus, as the first step, install
-Strimzi to your OpenShift instance.
+Create a new project called _demo_ by running `oc new-project demo`.
 
-. in the OpenShift console, navigate to the menu _Operators -> Operator Hub_. Find the _Strimzi_ operator and install it
-. now, create a new `demo` project by running `oc new-project demo`
-. open the _Strimzi_ operator, select the _Kafka_ tab and create a new Kafka cluster. You will need the Kafka cluster name
-to create the `Solver` custom resource later
+[#installArtemisCloud]
+=== Install ArtemisCloud
 
-NOTE: The Strimzi topic operator watches the project the Kafka cluster resides in. The rule of thumb is to create
-a separate project that contains the Solver resource together with its dependent resources, like Kafka cluster and topics.
-For additional options, please refer to https://strimzi.io/documentation/[Strimzi documentation].
+The OptaPlanner Operator uses https://artemiscloud.io/[ArtemisCloud] to create ActiveMQ queues, thus, as the first step,
+follow the https://artemiscloud.io/docs/help/operator/[documentation] to install the ArtemisCloud operator to your OpenShift instance.
+
+NOTE: The ArtemisCloud operator by default watches for ActiveMQ broker and queue resources in the namespace it has been installed to.
+
+=== Create a broker
+
+After the ArtemisCloud operator has been deployed, https://artemiscloud.io/docs/help/operator/#creating-operator-based-broker-deployments[create a new broker].
+The ArtemisCloud distribution comes with several `activemqartemis` example resources you can use as a starting point.
+
+This demo uses the AMQP protocol to send and receive messages.
+To enable the AMQP protocol on the broker, add the following acceptor definition in the `activemqartemis` resource `spec`:
+
+[source, yaml]
+----
+...
+spec:
+  acceptors:
+  - name: amqp
+    connectionsAllowed: 100
+    port: 5672
+    protocols: amqp
+...
+----
+
+This acceptor allows up to 100 concurrent connections via the AMQP protocol.
+
+=== Install KEDA
+
+https://keda.sh[KEDA] enables dynamic scaling of solver deployments based on the number of incoming requests.
+
+Follow the https://keda.sh/docs/deploy/[documentation] to install the KEDA operator.
 
 === Deploy the OptaPlanner Operator
 
@@ -52,23 +77,19 @@ resources defined in the `src/main/kubernetes/openshift.yml`; in this case, ther
 the PostgreSQL database to store input problems and solutions.
 
 . change directory to `demo-app`
-. create new project called _demo_ by running `oc new-project demo`
-. deploy the demo-app via a maven command: `mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dquarkus.openshift.env.vars.kafka-bootstrap-servers=<kafka bootstrap servers address>`
+. change the current project to _demo_ by running `oc project demo`
+. deploy the demo-app via a maven command: `mvn clean package -Dopenshift -Dquarkus.openshift.namespace=demo -Dquarkus.openshift.env.vars.amqp-host=<ActiveMQ broker host>`
 
-The `-Dquarkus.openshift.env.vars.kafka-bootstrap-servers` property results in an environment variable `KAFKA_BOOTSTRAP_SERVERS`
-in the running container, which Quarkus converts to the `kafka.bootstrap.servers` property, effectively overriding the
-`kafka.bootstrap.servers=localhost:9092` in the `application.properties`.
+The `-Dquarkus.openshift.env.vars.amqp-host` property results in an environment variable `AMQP_HOST`
+in the running container, which Quarkus converts to the `amqp-host` property, effectively overriding the
+`amqp-host=localhost` in the `application.properties`.
 
 TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed` exception due to self-signed certificate during the build, add the `-Dquarkus.kubernetes-client.trust-certs=true` property.
 
-To find the address of the Kafka bootstrap servers:
-
-. login to the OpenShift UI console
-. open the _openshift-operators_ project and navigate to _Networking -> Services_
-. open the _<kafka-cluster-name>-kafka-bootstrap_ service and notice its hostname and service port mapping for TCP clients under the _Service routing_ section
-. the address is a compound of the `<hostname>:<service port>`
-
-image::img/kafkaBootstrapService.png[Kafka bootstrap service address screenshot]
+To find out the ActiveMQ broker host:
+. run `oc get service`
+. find the service bound to the port 5672
+. the ActiveMQ broker host is a compound of the `<service name>.<project>.svc.cluster.local`, e.g. `ex-aao-amqp-0-svc.demo.svc.cluster.local`
 
 === Create the school-timetabling solver
 
@@ -106,44 +127,93 @@ You can use https://quay.io[quay.io] as a container image registry.
 The Solver custom resource describes the problem to solve on OpenShift and the infrastructure it requires.
 In this case, the `Solver` custom resource might look like follows:
 
-[source yaml]
+[source, yaml, linenums]
 ----
 apiVersion: org.optaplanner.solver/v1beta1
 kind: Solver
 metadata:
-  name: school-timetabling <1>
+  name: school-timetabling
 spec:
-  kafkaCluster: my-cluster <2>
-  kafkaBootstrapServers: my-cluster-kafka-bootstrap.demo.svc.cluster.local:9092 <3>
-  solverImage: quay.io/example/school-timetabling:latest  <4>
+  amqBroker:
+    host: ex-aao-amqp-0-svc.demo.svc.cluster.local
+    port: 5672
+    managementHost: ex-aao-hdls-svc.demo.svc.cluster.local
+    usernameSecretRef:
+      key: AMQ_USER
+      name: ex-aao-credentials-secret
+    passwordSecretRef:
+      key: AMQ_PASSWORD
+      name: ex-aao-credentials-secret
+  solverImage: quay.io/example/school-timetabling:latest
   scaling:
-    replicas: 1 <5>
+    dynamic: true
+    replicas: 3
 ----
 
-<1> the solver name
-<2> the name of the Kafka cluster created during the <<#installStrimzi, Strimzi installation>>
-<3> Kafka bootstrap servers address
-<4> the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
-<5> the number of running school-timetabling pods
+* line 4 - the solver name
+* lines 7 and 8 - ActiveMQ broker host and port accepting AMQP connections
+* line 9 - ActiveMQ broker host providing management interface
+* lines 10 to 15 - reference to a secret containing a username and password to access the broker
+* line 16 - the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
+* line 18 - enables dynamic scaling via KEDA
+* line 19 - the maximum number of running school-timetabling pods; if dynamic scaling is disabled, this parameter defines a fixed number of pods
+
+To find out the ActiveMQ broker management host:
+
+. run `oc get service`
+. find the service bound to the port 8161
+. the ActiveMQ broker management host is a compound of the `<service name>.<project>.svc.cluster.local`, e.g. `ex-aao-hdls-svc.demo.svc.cluster.local`
+
+The ActiveMQ broker username and password is stored in a secret named `<broker resource name>-credentials-secret`.
+Run `oc get secret` to see the available secrets in the project.
 
 Create the `Solver` resource via `oc apply -f <file>`.
 
-Let's check the active pods in the `demo` project by running the `oc get pods` command:
+To see what ActiveMQ queue there are in the `demo` project, run `oc get activemqartemisaddress`:
 
-image::img/runningPods.png[Running pods in the demo project]
+----
+$ oc get activemqartemisaddress
+NAME                          AGE
+school-timetabling-problem    4s
+school-timetabling-solution   4s
+----
 
-To see what Kafka topics there are in the `demo` project, run `oc get kafkatopic`:
+Both the `school-timetabling-problem` and `school-timetabling-solution` have been created.
 
-image::img/kafkaTopics.png[Kafka topics in the demo project]
+Check the active pods in the `demo` project by running the `oc get pods` command:
 
-Both the `school-timetabling-problem` and `school-timetabling-solution` have been created and there is
-a single running `school-timetabling` pod.
+----
+$ oc get pod
+NAME                                                   READY   STATUS
+activemq-artemis-controller-manager-569cdd7f7c-xrfcx   1/1     Running
+demo-app-3-t4pkp                                       1/1     Running
+ex-aao-ss-0                                            1/1     Running
+postgresql-school-timetabling-1-kwdr5                  1/1     Running
+----
+
+There are no running `school-timetabling` pods, as no request for solving has been submitted yet.
 
 == Run the demo-app
 
 . find out the Demo App address by running `oc get route`; see the _HOST/PORT_ column of its output
 . open the address in the browser
 . change the number of lessons, if needed, and click the _Create & send_ button
+
+Check the active pods again:
+
+----
+$ oc get pod
+NAME                                                   READY   STATUS
+activemq-artemis-controller-manager-569cdd7f7c-xrfcx   1/1     Running
+demo-app-3-t4pkp                                       1/1     Running
+ex-aao-ss-0                                            1/1     Running
+postgresql-school-timetabling-1-kwdr5                  1/1     Running
+school-timetabling-cb57fc6bd-hvmc6                     0/1     ContainerCreating
+school-timetabling-cb57fc6bd-lhn9d                     0/1     ContainerCreating
+school-timetabling-cb57fc6bd-tnlw8                     1/1     Running
+----
+
+After submitting four datasets for solving, there is one running pod and two others starting, as the maximum number of replicas is three.
 
 == Local development
 
