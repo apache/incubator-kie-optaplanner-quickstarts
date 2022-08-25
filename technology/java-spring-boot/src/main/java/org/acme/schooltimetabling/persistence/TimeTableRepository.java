@@ -36,7 +36,10 @@ public class TimeTableRepository {
     public void save(TimeTable timeTable) {
         for (Lesson lesson : timeTable.getLessonList()) {
             // TODO this is awfully naive: optimistic locking causes issues if called by the SolverManager
-            lessonRepository.save(lesson);
+            lessonRepository.findById(lesson.getId()).ifPresent(attachedLesson -> {
+                attachedLesson.setTimeslot(lesson.getTimeslot());
+                attachedLesson.setRoom(lesson.getRoom());
+            });
         }
     }
 
