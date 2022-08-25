@@ -51,7 +51,7 @@ KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
 ])
 
 void setupInitBranchJob() {
-    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner-quickstarts', Folder.INIT_BRANCH, "${jenkins_path}/Jenkinsfile.init-branch", 'Optaplanner Quickstarts Init branch')
+    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner-quickstarts', Folder.INIT_BRANCH, "${jenkins_path}/Jenkinsfile.init-branch", 'OptaPlanner Quickstarts Init Branch')
     KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
     jobParams.env.putAll([
         REPO_NAME: 'optaplanner-quickstarts',
@@ -70,7 +70,7 @@ void setupInitBranchJob() {
 
             stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
 
-            stringParam('OPTAPLANNER_VERSION', '', 'Optaplanner version to set.')
+            stringParam('OPTAPLANNER_VERSION', '', 'OptaPlanner version to set.')
 
             booleanParam('SEND_NOTIFICATION', false, 'In case you want the pipeline to send a notification on CI channel for this run.')
         }

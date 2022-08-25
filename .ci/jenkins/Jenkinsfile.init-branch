@@ -48,7 +48,7 @@ pipeline {
                 }
             }
         }
-        stage('Build Optaplanner parents') {
+        stage('Build OptaPlanner parents') {
             steps {
                 script {
                     getMavenCommand(optaplannerRepo)
