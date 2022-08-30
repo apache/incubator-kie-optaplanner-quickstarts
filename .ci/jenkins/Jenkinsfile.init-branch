@@ -163,6 +163,7 @@ void runMavenDeploy(String directory) {
     mvnCmd = getMavenCommand(directory)
 
     mvnCmd.withOptions(['-pl', ':optaplanner-distribution'])
+        .withProperty('full')
 
     if (env.MAVEN_DEPLOY_REPOSITORY) {
         mvnCmd.withDeployRepository(env.MAVEN_DEPLOY_REPOSITORY)
