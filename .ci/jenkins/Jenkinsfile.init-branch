@@ -113,7 +113,7 @@ pipeline {
 
 void sendNotification() {
     if (params.SEND_NOTIFICATION) {
-        mailer.sendMarkdownTestSummaryNotification('Init', "[${getBuildBranch()}] Optaweb Vehicle Routing", [env.OPTAPLANNER_CI_EMAIL_TO])
+        mailer.sendMarkdownTestSummaryNotification('Init', "[${getBuildBranch()}] Optaplanner Quickstarts", [env.OPTAPLANNER_CI_EMAIL_TO])
     } else {
         echo 'No notification sent per configuration'
     }
