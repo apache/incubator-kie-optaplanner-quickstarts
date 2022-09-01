@@ -4,7 +4,7 @@ plugins {
     id "java"
 }
 
-def optaplannerVersion = "8.27.0.Final"
+def optaplannerVersion = "8.27.1-SNAPSHOT"
 
 group = "org.acme"
 archivesBaseName = "optaplanner-spring-boot-school-timetabling-quickstart"
