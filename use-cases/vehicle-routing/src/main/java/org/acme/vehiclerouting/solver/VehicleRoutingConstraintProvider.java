@@ -23,10 +23,9 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
     protected Constraint vehicleCapacity(ConstraintFactory factory) {
         return factory.forEach(Vehicle.class)
                 .filter(vehicle -> vehicle.getTotalDemand() > vehicle.getCapacity())
-                .penalizeLong(
-                        "vehicleCapacity",
-                        HardSoftLongScore.ONE_HARD,
-                        vehicle -> vehicle.getTotalDemand() - vehicle.getCapacity());
+                .penalizeLong(HardSoftLongScore.ONE_HARD,
+                        vehicle -> vehicle.getTotalDemand() - vehicle.getCapacity())
+                .asConstraint("vehicleCapacity");
     }
 
     // ************************************************************************
@@ -35,9 +34,8 @@ public class VehicleRoutingConstraintProvider implements ConstraintProvider {
 
     protected Constraint totalDistance(ConstraintFactory factory) {
         return factory.forEach(Vehicle.class)
-                .penalizeLong(
-                        "distanceFromPreviousStandstill",
-                        HardSoftLongScore.ONE_SOFT,
-                        Vehicle::getTotalDistanceMeters);
+                .penalizeLong(HardSoftLongScore.ONE_SOFT,
+                        Vehicle::getTotalDistanceMeters)
+                .asConstraint("distanceFromPreviousStandstill");
     }
 }

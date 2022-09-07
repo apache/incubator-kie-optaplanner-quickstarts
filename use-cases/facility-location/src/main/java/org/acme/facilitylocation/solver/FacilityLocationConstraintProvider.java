@@ -24,24 +24,21 @@ public class FacilityLocationConstraintProvider implements ConstraintProvider {
         return constraintFactory.forEach(Consumer.class)
                 .groupBy(Consumer::getFacility, sumLong(Consumer::getDemand))
                 .filter((facility, demand) -> demand > facility.getCapacity())
-                .penalizeConfigurableLong(
-                        FacilityLocationConstraintConfiguration.FACILITY_CAPACITY,
-                        (facility, demand) -> demand - facility.getCapacity());
+                .penalizeConfigurableLong((facility, demand) -> demand - facility.getCapacity())
+                .asConstraint(FacilityLocationConstraintConfiguration.FACILITY_CAPACITY);
     }
 
     Constraint setupCost(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Consumer.class)
                 .groupBy(Consumer::getFacility)
-                .penalizeConfigurableLong(
-                        FacilityLocationConstraintConfiguration.FACILITY_SETUP_COST,
-                        Facility::getSetupCost);
+                .penalizeConfigurableLong(Facility::getSetupCost)
+                .asConstraint(FacilityLocationConstraintConfiguration.FACILITY_SETUP_COST);
     }
 
     Constraint distanceFromFacility(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(Consumer.class)
                 .filter(Consumer::isAssigned)
-                .penalizeConfigurableLong(
-                        FacilityLocationConstraintConfiguration.DISTANCE_FROM_FACILITY,
-                        Consumer::distanceFromFacility);
+                .penalizeConfigurableLong(Consumer::distanceFromFacility)
+                .asConstraint(FacilityLocationConstraintConfiguration.DISTANCE_FROM_FACILITY);
     }
 }

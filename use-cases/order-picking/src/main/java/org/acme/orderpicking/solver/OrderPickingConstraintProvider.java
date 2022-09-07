@@ -49,9 +49,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
                         sum((trolley, order, orderTotalBuckets) -> orderTotalBuckets))
                 //penalization if the trolley don't have enough buckets to hold the orders
                 .filter((trolley, trolleyTotalBuckets) -> trolley.getBucketCount() < trolleyTotalBuckets)
-                .penalize("Required number of buckets",
-                        HardSoftLongScore.ONE_HARD,
-                        (trolley, trolleyTotalBuckets) -> trolleyTotalBuckets - trolley.getBucketCount());
+                .penalize(HardSoftLongScore.ONE_HARD,
+                        (trolley, trolleyTotalBuckets) -> trolleyTotalBuckets - trolley.getBucketCount())
+                .asConstraint("Required number of buckets");
     }
 
     /**
@@ -61,8 +61,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
         return constraintFactory.forEach(TrolleyStep.class)
                 .groupBy(trolleyStep -> trolleyStep.getOrderItem().getOrder(),
                         countDistinctLong(TrolleyStep::getTrolley))
-                .penalizeLong("Minimize order split by trolley",
-                        HardSoftLongScore.ONE_SOFT, (order, trolleySpreadCount) -> trolleySpreadCount * 1000);
+                .penalizeLong(HardSoftLongScore.ONE_SOFT,
+                        (order, trolleySpreadCount) -> trolleySpreadCount * 1000)
+                .asConstraint("Minimize order split by trolley");
     }
 
     /**
@@ -73,9 +74,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
      */
     Constraint minimizeDistanceFromPreviousTrolleyStep(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(TrolleyStep.class)
-                .penalizeLong("Minimize the distance from the previous trolley step",
-                        HardSoftLongScore.ONE_SOFT,
-                        trolleyStep -> calculateDistance(trolleyStep.getPreviousElement().getLocation(), trolleyStep.getLocation()));
+                .penalizeLong(HardSoftLongScore.ONE_SOFT,
+                        trolleyStep -> calculateDistance(trolleyStep.getPreviousElement().getLocation(), trolleyStep.getLocation()))
+                .asConstraint("Minimize the distance from the previous trolley step");
     }
 
     /**
@@ -87,10 +88,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
     Constraint minimizeDistanceFromLastTrolleyStepToPathOrigin(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(TrolleyStep.class)
                 .filter(TrolleyStep::isLast)
-                .penalizeLong(
-                        "Minimize the distance from last trolley step to the path origin",
-                        HardSoftLongScore.ONE_SOFT,
-                        trolleyStep -> calculateDistance(trolleyStep.getLocation(), trolleyStep.getTrolley().getLocation()));
+                .penalizeLong(HardSoftLongScore.ONE_SOFT,
+                        trolleyStep -> calculateDistance(trolleyStep.getLocation(), trolleyStep.getTrolley().getLocation()))
+                .asConstraint("Minimize the distance from last trolley step to the path origin");
     }
 
     private int calculateOrderRequiredBuckets(int orderVolume, int bucketVolume) {

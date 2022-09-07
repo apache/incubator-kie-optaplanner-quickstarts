@@ -44,12 +44,13 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                 .forEachUniquePair(Job.class,
                         equal(Job::getCrew),
                         overlapping(Job::getStartDate, Job::getEndDate))
-                .penalizeLong("Crew conflict", HardSoftLongScore.ONE_HARD,
+                .penalizeLong(HardSoftLongScore.ONE_HARD,
                         (job1, job2) -> DAYS.between(
                                 job1.getStartDate().isAfter(job2.getStartDate())
                                         ? job1.getStartDate() : job2.getStartDate(),
                                 job1.getEndDate().isBefore(job2.getEndDate())
-                                        ? job1.getEndDate() : job2.getEndDate()));
+                                        ? job1.getEndDate() : job2.getEndDate()))
+                .asConstraint("Crew conflict");
     }
 
     public Constraint readyDate(ConstraintFactory constraintFactory) {
@@ -57,8 +58,9 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getReadyDate() != null
                         && job.getStartDate().isBefore(job.getReadyDate()))
-                .penalizeLong("Ready date", HardSoftLongScore.ONE_HARD,
-                        job -> DAYS.between(job.getStartDate(), job.getReadyDate()));
+                .penalizeLong(HardSoftLongScore.ONE_HARD,
+                        job -> DAYS.between(job.getStartDate(), job.getReadyDate()))
+                .asConstraint("Ready date");
     }
 
     public Constraint dueDate(ConstraintFactory constraintFactory) {
@@ -66,8 +68,9 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getDueDate() != null
                         && job.getEndDate().isAfter(job.getDueDate()))
-                .penalizeLong("Due date", HardSoftLongScore.ONE_HARD,
-                        job -> DAYS.between(job.getDueDate(), job.getEndDate()));
+                .penalizeLong(HardSoftLongScore.ONE_HARD,
+                        job -> DAYS.between(job.getDueDate(), job.getEndDate()))
+                .asConstraint("Due date");
     }
 
     // ************************************************************************
@@ -79,8 +82,9 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getIdealEndDate() != null
                         && job.getEndDate().isBefore(job.getIdealEndDate()))
-                .penalizeLong("Before ideal end date", HardSoftLongScore.ofSoft(1),
-                        job -> DAYS.between(job.getEndDate(), job.getIdealEndDate()));
+                .penalizeLong(HardSoftLongScore.ofSoft(1),
+                        job -> DAYS.between(job.getEndDate(), job.getIdealEndDate()))
+                .asConstraint("Before ideal end date");
     }
 
     public Constraint afterIdealEndDate(ConstraintFactory constraintFactory) {
@@ -88,8 +92,9 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
         return constraintFactory.forEach(Job.class)
                 .filter(job -> job.getIdealEndDate() != null
                         && job.getEndDate().isAfter(job.getIdealEndDate()))
-                .penalizeLong("After ideal end date", HardSoftLongScore.ofSoft(1_000_000),
-                        job -> DAYS.between(job.getIdealEndDate(), job.getEndDate()));
+                .penalizeLong(HardSoftLongScore.ofSoft(1_000_000),
+                        job -> DAYS.between(job.getIdealEndDate(), job.getEndDate()))
+                .asConstraint("After ideal end date");
     }
     
     public Constraint tagConflict(ConstraintFactory constraintFactory) {
@@ -100,7 +105,7 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                         // TODO Use intersecting() when available https://issues.redhat.com/browse/PLANNER-2558
                         filtering((job1, job2) -> !Collections.disjoint(
                                 job1.getTagSet(), job2.getTagSet())))
-                .penalizeLong("Tag conflict", HardSoftLongScore.ofSoft(1_000),
+                .penalizeLong(HardSoftLongScore.ofSoft(1_000),
                         (job1, job2) -> {
                             Set<String> intersection = new HashSet<>(job1.getTagSet());
                             intersection.retainAll(job2.getTagSet());
@@ -110,7 +115,8 @@ public class MaintenanceScheduleConstraintProvider implements ConstraintProvider
                                     job1.getEndDate().isBefore(job2.getEndDate())
                                             ? job1.getEndDate() : job2.getEndDate());
                             return intersection.size() * overlap;
-                        });
+                        })
+                .asConstraint("Tag conflict");
     }
 
 }
