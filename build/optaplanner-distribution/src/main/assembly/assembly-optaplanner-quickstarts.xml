@@ -102,6 +102,13 @@
         <include>quarkus-app/**</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <directory>../../use-cases/employee-scheduling/target</directory>
+      <outputDirectory>quickstarts/binaries/use-cases/employee-scheduling</outputDirectory>
+      <includes>
+        <include>quarkus-app/**</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
   <dependencySets>

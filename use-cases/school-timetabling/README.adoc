@@ -53,25 +53,32 @@ Notice that those changes are immediately in effect.
 When you're done iterating in `quarkus:dev` mode,
 package the application to run as a conventional jar file.
 
-. Compile it with Maven:
+. Build it with Maven:
 +
 [source, shell]
 ----
 $ mvn package
 ----
 +
-or with gradle:
+or with Gradle:
 +
 [source, shell]
 ----
 $ gradle clean build
 ----
 
-. Run it:
+. Run the Maven output:
 +
 [source, shell]
 ----
 $ java -jar ./target/quarkus-app/quarkus-run.jar
+----
++
+or the Gradle output:
++
+[source, shell]
+----
+$ java -jar ./build/quarkus-app/quarkus-run.jar
 ----
 +
 [NOTE]

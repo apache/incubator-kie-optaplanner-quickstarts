@@ -3,9 +3,9 @@ plugins {
     id "application"
 }
 
-def optaplannerVersion = "8.19.0-SNAPSHOT"
-def logbackVersion = "1.2.9"
-def junitJupiterVersion = "5.8.2"
+def optaplannerVersion = "8.28.0-SNAPSHOT"
+def logbackVersion = "1.2.11"
+def junitJupiterVersion = "5.9.0"
 
 group = "org.acme"
 version = "1.0-SNAPSHOT"

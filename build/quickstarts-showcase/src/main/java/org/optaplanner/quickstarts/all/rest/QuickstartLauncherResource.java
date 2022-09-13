@@ -1,19 +1,3 @@
-/*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.optaplanner.quickstarts.all.rest;
 
 import java.awt.Desktop;
@@ -21,7 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +17,6 @@ import javax.enterprise.event.Observes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -42,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 
-@Path("quickstart")
+@javax.ws.rs.Path("quickstart")
 public class QuickstartLauncherResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QuickstartLauncherResource.class);
@@ -55,7 +40,7 @@ public class QuickstartLauncherResource {
     private List<QuickstartMeta> quickstartMetaList;
     private boolean development;
     private int nextPort = 8081;
-    private File baseDirectory;
+    private Path baseDirectory;
 
     private Map<Integer, Process> portToProcessMap;
 
@@ -69,25 +54,17 @@ public class QuickstartLauncherResource {
                 new QuickstartMeta("vehicle-routing"),
                 new QuickstartMeta("order-picking"),
                 new QuickstartMeta("employee-scheduling"));
-        File workingDirectory;
-        try {
-            workingDirectory = new File(".").getCanonicalFile();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not determine the workingDirectory.", e);
-        }
-        if (new File(workingDirectory, "target").exists()) {
-            baseDirectory = new File(workingDirectory, "../..");
+        Path workingDirectory = Paths.get("").toAbsolutePath();
+        if (Files.exists(workingDirectory.resolve("target"))) {
+            baseDirectory = workingDirectory.getParent().getParent();
             development = true;
         } else {
-            baseDirectory = new File(workingDirectory, "quickstarts/binaries");
+            baseDirectory = workingDirectory.resolve(Paths.get("quickstarts", "binaries"));
             development = false;
         }
         portToProcessMap = new HashMap<>(quickstartMetaList.size());
-        try {
-            baseDirectory = baseDirectory.getCanonicalFile();
-        } catch (IOException e) {
-            throw new IllegalStateException("Could not canonicalize baseDirectory (" + baseDirectory + ").", e);
-        }
+        baseDirectory = baseDirectory.toAbsolutePath();
+
         if (startupOpenBrowser) {
             openInBrowser(httpPort);
         }
@@ -107,7 +84,7 @@ public class QuickstartLauncherResource {
         return quickstartMetaList;
     }
 
-    @Path("{quickstartId}/launch")
+    @javax.ws.rs.Path("{quickstartId}/launch")
     @POST
     public void launchQuickstart(@PathParam("quickstartId") String quickstartId) {
         QuickstartMeta quickstartMeta = quickstartMetaList.stream()
@@ -123,14 +100,19 @@ public class QuickstartLauncherResource {
         String corsArg = "-Dquarkus.http.cors=true";
         this.nextPort++;
         if (development) {
-            String mvnCommand = System.getProperty("os.name").startsWith("Windows") ? "mvnw.cmd" : "./mvnw";
+            String mvnCommand;
+            if (System.getProperty("os.name").startsWith("Windows")) {
+                mvnCommand = baseDirectory.resolve(Paths.get("build", "mvnw.cmd")).toString();
+            } else {
+                mvnCommand = baseDirectory.resolve(Paths.get("build", "mvnw")).toString();
+            }
             processBuilder = new ProcessBuilder(mvnCommand, "-f", "../use-cases/" + quickstartId, "quarkus:dev", portArg,
                     corsArg, "-Ddebug=false");
-            processBuilder.directory(new File(baseDirectory, "build"));
+            processBuilder.directory(baseDirectory.resolve("build").toFile());
         } else {
             processBuilder = new ProcessBuilder("java", portArg, corsArg, "-jar",
                     getQuickstartRunnerJar(quickstartId).getAbsolutePath());
-            processBuilder.directory(new File(new File(baseDirectory, "use-cases"), quickstartId));
+            processBuilder.directory(baseDirectory.resolve(Paths.get("use-cases", quickstartId)).toFile());
         }
         processBuilder.inheritIO();
         Process process;
@@ -147,9 +129,9 @@ public class QuickstartLauncherResource {
     }
 
     private File getQuickstartRunnerJar(String quickstartId) {
-        File quickstartRunnerJar = FileSystems.getDefault().getPath(baseDirectory.getAbsolutePath(),
+        File quickstartRunnerJar = baseDirectory.resolve(Paths.get(
                 "use-cases", quickstartId,
-                "quarkus-app", "quarkus-run.jar").toFile();
+                "quarkus-app", "quarkus-run.jar")).toFile();
         if (!quickstartRunnerJar.exists()) {
             throw new IllegalStateException(
                     "The quickstart (" + quickstartId + ") runner JAR file does not exist ("
@@ -158,7 +140,7 @@ public class QuickstartLauncherResource {
         return quickstartRunnerJar;
     }
 
-    @Path("{quickstartId}/stop/{port}")
+    @javax.ws.rs.Path("{quickstartId}/stop/{port}")
     @DELETE
     public void stopQuickstart(@PathParam("quickstartId") String quickstartId, @PathParam("port") int port) {
         QuickstartMeta quickstartMeta = quickstartMetaList.stream()

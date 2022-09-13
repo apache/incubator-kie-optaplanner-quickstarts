@@ -1,20 +1,13 @@
 #!/bin/bash -e
 
-TEMP_DIR=`mktemp -d`
+script_dir_path=$(cd `dirname "${BASH_SOURCE[0]}"`; pwd -P)
 
-branch=$1
-author=$2
+export DSL_DEFAULT_MAIN_CONFIG_FILE_REPO=kiegroup/optaplanner
+export DSL_DEFAULT_MAIN_CONFIG_FILE_REF=main
+export DSL_DEFAULT_MAIN_CONFIG_FILE_PATH=.ci/jenkins/config/main.yaml
 
-if [ -z $branch ]; then
-  branch='main'
-fi
-
-if [ -z $author ]; then
-  author='kiegroup'
-fi
-
-echo "----- Cloning pipelines repo from ${author} on branch ${branch}"
-git clone --single-branch --branch ${branch} https://github.com/${author}/kogito-pipelines.git $TEMP_DIR
-
-echo '----- Launching seed tests'
-${TEMP_DIR}/dsl/seed/scripts/seed_test.sh ${TEMP_DIR}
+file=$(mktemp)
+# For more usage of the script, use ./test.sh -h
+curl -o ${file} https://raw.githubusercontent.com/kiegroup/kogito-pipelines/main/dsl/seed/scripts/seed_test.sh
+chmod u+x ${file}
+${file} $@

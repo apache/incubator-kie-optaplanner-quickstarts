@@ -1,19 +1,3 @@
-/*
- * Copyright 2021 Red Hat, Inc. and/or its affiliates.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package org.acme.orderpicking.solver;
 
 import org.acme.orderpicking.domain.TrolleyStep;
@@ -65,9 +49,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
                         sum((trolley, order, orderTotalBuckets) -> orderTotalBuckets))
                 //penalization if the trolley don't have enough buckets to hold the orders
                 .filter((trolley, trolleyTotalBuckets) -> trolley.getBucketCount() < trolleyTotalBuckets)
-                .penalize("Required number of buckets",
-                        HardSoftLongScore.ONE_HARD,
-                        (trolley, trolleyTotalBuckets) -> trolleyTotalBuckets - trolley.getBucketCount());
+                .penalize(HardSoftLongScore.ONE_HARD,
+                        (trolley, trolleyTotalBuckets) -> trolleyTotalBuckets - trolley.getBucketCount())
+                .asConstraint("Required number of buckets");
     }
 
     /**
@@ -77,8 +61,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
         return constraintFactory.forEach(TrolleyStep.class)
                 .groupBy(trolleyStep -> trolleyStep.getOrderItem().getOrder(),
                         countDistinctLong(TrolleyStep::getTrolley))
-                .penalizeLong("Minimize order split by trolley",
-                        HardSoftLongScore.ONE_SOFT, (order, trolleySpreadCount) -> trolleySpreadCount * 1000);
+                .penalizeLong(HardSoftLongScore.ONE_SOFT,
+                        (order, trolleySpreadCount) -> trolleySpreadCount * 1000)
+                .asConstraint("Minimize order split by trolley");
     }
 
     /**
@@ -89,9 +74,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
      */
     Constraint minimizeDistanceFromPreviousTrolleyStep(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(TrolleyStep.class)
-                .penalizeLong("Minimize the distance from the previous trolley step",
-                        HardSoftLongScore.ONE_SOFT,
-                        trolleyStep -> calculateDistance(trolleyStep.getPreviousElement().getLocation(), trolleyStep.getLocation()));
+                .penalizeLong(HardSoftLongScore.ONE_SOFT,
+                        trolleyStep -> calculateDistance(trolleyStep.getPreviousElement().getLocation(), trolleyStep.getLocation()))
+                .asConstraint("Minimize the distance from the previous trolley step");
     }
 
     /**
@@ -103,10 +88,9 @@ public class OrderPickingConstraintProvider implements ConstraintProvider {
     Constraint minimizeDistanceFromLastTrolleyStepToPathOrigin(ConstraintFactory constraintFactory) {
         return constraintFactory.forEach(TrolleyStep.class)
                 .filter(TrolleyStep::isLast)
-                .penalizeLong(
-                        "Minimize the distance from last trolley step to the path origin",
-                        HardSoftLongScore.ONE_SOFT,
-                        trolleyStep -> calculateDistance(trolleyStep.getLocation(), trolleyStep.getTrolley().getLocation()));
+                .penalizeLong(HardSoftLongScore.ONE_SOFT,
+                        trolleyStep -> calculateDistance(trolleyStep.getLocation(), trolleyStep.getTrolley().getLocation()))
+                .asConstraint("Minimize the distance from last trolley step to the path origin");
     }
 
     private int calculateOrderRequiredBuckets(int orderVolume, int bucketVolume) {

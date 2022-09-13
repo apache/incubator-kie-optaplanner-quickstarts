@@ -11,8 +11,9 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
+        app.kubernetes.io/part-of: school-timetabling
         template: postgresql-ephemeral-template
-      name: postgresql
+      name: postgresql-school-timetabling
     stringData:
       database-name: app
       database-password: app
@@ -27,11 +28,12 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
+        app.kubernetes.io/part-of: school-timetabling
         template: postgresql-ephemeral-template
-      name: postgresql
+      name: postgresql-school-timetabling
     spec:
       ports:
-        - name: postgresql
+        - name: postgresql-school-timetabling
           port: 5432
           protocol: TCP
           targetPort: 5432
@@ -51,8 +53,9 @@ items:
         app: postgresql
         app.kubernetes.io/component: postgresql
         app.kubernetes.io/instance: postgresql
+        app.kubernetes.io/part-of: school-timetabling
         template: postgresql-ephemeral-template
-      name: postgresql
+      name: postgresql-school-timetabling
     spec:
       replicas: 1
       selector:
@@ -74,17 +77,17 @@ items:
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: postgresql
+                      name: postgresql-school-timetabling
                 - name: POSTGRESQL_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: postgresql
+                      name: postgresql-school-timetabling
                 - name: POSTGRESQL_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: postgresql
+                      name: postgresql-school-timetabling
               image: ' '
               imagePullPolicy: IfNotPresent
               livenessProbe:

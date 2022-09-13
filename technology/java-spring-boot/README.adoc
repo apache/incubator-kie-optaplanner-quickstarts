@@ -36,6 +36,49 @@ $ gradle bootRun
 
 . Click on the *Solve* button.
 
+[[package]]
+== Run the packaged application
+
+When you're ready to deploy the application,
+package the project to run as a conventional jar file.
+
+. Build it with Maven:
++
+[source, shell]
+----
+$ mvn package
+----
++
+or with Gradle:
++
+[source, shell]
+----
+$ gradle clean build
+----
+
+. Run the Maven output:
++
+[source, shell]
+----
+$ java -jar target/optaplanner-spring-boot-school-timetabling-quickstart-1.0-SNAPSHOT.jar
+----
++
+or the Gradle output:
++
+[source, shell]
+----
+$ java -jar build/libs/optaplanner-spring-boot-school-timetabling-quickstart-1.0-SNAPSHOT.jar
+----
++
+[NOTE]
+====
+To run it on port 8081 instead, add `-Dserver.port=8081`.
+====
+
+. Visit http://localhost:8080 in your browser.
+
+. Click on the *Solve* button.
+
 == More information
 
 Visit https://www.optaplanner.org/[www.optaplanner.org].
