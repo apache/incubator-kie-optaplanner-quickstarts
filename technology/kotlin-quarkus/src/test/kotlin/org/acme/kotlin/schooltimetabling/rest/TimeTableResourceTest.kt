@@ -1,38 +1,41 @@
 package org.acme.kotlin.schooltimetabling.rest
 
 import io.quarkus.test.junit.QuarkusTest
-import org.acme.kotlin.schooltimetabling.domain.TimeTable
-import org.junit.jupiter.api.Assertions
+import io.restassured.RestAssured.get
+import io.restassured.RestAssured.given
+import io.restassured.http.ContentType
+import org.awaitility.Awaitility.await
+import org.hamcrest.Matchers
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Timeout
 import org.optaplanner.core.api.solver.SolverStatus
-import javax.inject.Inject
-
+import java.time.Duration
 
 @QuarkusTest
 class TimeTableResourceTest {
 
-    @Inject
-    lateinit var timeTableResource: TimeTableResource
-
     @Test
-    @Timeout(600_000)
-    @Throws(InterruptedException::class)
     fun solveDemoDataUntilFeasible() {
-        timeTableResource.solve()
-        var timeTable: TimeTable = timeTableResource.getTimeTable()
-        do { // Use do-while to give the solver some time and avoid retrieving an early infeasible solution.
-            // Quick polling (not a Test Thread Sleep anti-pattern)
-            // Test is still fast on fast machines and doesn't randomly fail on slow machines.
-            Thread.sleep(20L)
-            timeTable = timeTableResource.getTimeTable()
-        } while (timeTable.solverStatus != SolverStatus.NOT_SOLVING || !timeTable.score!!.isFeasible)
-        Assertions.assertFalse(timeTable.lessonList.isEmpty())
-        for (lesson in timeTable.lessonList) {
-            Assertions.assertNotNull(lesson.timeslot)
-            Assertions.assertNotNull(lesson.room)
-        }
-        Assertions.assertTrue(timeTable.score!!.isFeasible)
+        given()
+            .contentType(ContentType.JSON)
+            .`when`().post("/timeTable/solve")
+            .then()
+            .statusCode(204)
+
+        await()
+            .atMost(Duration.ofMinutes(1))
+            .pollDelay(Duration.ofSeconds(5))
+            .pollInterval(Duration.ofSeconds(5))
+            .until {
+                SolverStatus.NOT_SOLVING.name == get("/timeTable").body().path("solverStatus")
+            }
+
+        get("/timeTable").then().assertThat()
+            .body("solverStatus", Matchers.equalTo(SolverStatus.NOT_SOLVING.name))
+            .body("timeslotList", Matchers.`is`(Matchers.not(Matchers.empty<Any>())))
+            .body("roomList", Matchers.`is`(Matchers.not(Matchers.empty<Any>())))
+            .body("lessonList", Matchers.`is`(Matchers.not(Matchers.empty<Any>())))
+            .body("lessonList.timeslot", Matchers.not(Matchers.nullValue()))
+            .body("lessonList.room", Matchers.not(Matchers.nullValue()))
     }
-    
+
 }
