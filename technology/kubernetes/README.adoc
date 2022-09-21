@@ -61,14 +61,7 @@ Follow the https://keda.sh/docs/deploy/[documentation] to install the KEDA opera
 
 === Deploy the OptaPlanner Operator
 
-The OptaPlanner operator is also a Quarkus application. As such, it's container image can be built and pushed directly to OpenShift using the https://quarkus.io/guides/deploying-to-openshift[`io.quarkus:quarkus-openshift` extension].
-
-. create the `optaplanner-operator` project by running `oc new-project optaplanner-operator`
-. run `mvn clean package -Dopenshift`
-. apply the generated CRD by running `oc create -f target/kubernetes/solvers.org.optaplanner.solver-v1.yml`
-. apply the prepared template by running `oc apply -f src/k8s/openshift.yml`
-
-TIP: If you encounter the `Caused by: javax.net.ssl.SSLHandshakeException: sun.security.validator.ValidatorException: PKIX path building failed` exception due to self-signed certificate during the build, add the `-Dquarkus.kubernetes-client.trust-certs=true` property.
+Follow the https://github.com/kiegroup/optaplanner/tree/main/optaplanner-operator#deploy-the-optaplanner-operator[README] to install the OptaPlanner operator.
 
 === Deploy the Demo App
 
