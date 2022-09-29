@@ -42,6 +42,16 @@ KogitoJobUtils.createAllEnvsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConf
 // Init branch
 setupInitBranchJob()
 
+// Nightlies
+setupSpecificNightlyJob(Folder.NIGHTLY_NATIVE)
+
+setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN)
+setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
+
+setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL)
+setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
+setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
+
 // Tools
 KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
     properties: [ 'version.io.quarkus' ],
@@ -49,6 +59,23 @@ KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
     // Escaping quotes so it is correctly handled by Json marshalling/unmarshalling
     regex: [ 'id \\"io.quarkus\\" version', 'def quarkusVersion =' ]
 ])
+
+void setupSpecificNightlyJob(Folder specificNightlyFolder) {
+    String envName = specificNightlyFolder.environment.toName()
+    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner', specificNightlyFolder, "${jenkins_path}/Jenkinsfile.specific_nightly", "OptaPlanner Nightly ${envName}")
+    KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
+    jobParams.triggers = [ cron : '@midnight' ]
+    jobParams.env.putAll([
+        JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
+        NOTIFICATION_JOB_NAME: "${envName} check"
+    ])
+    KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
+        parameters {
+            stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
+            stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
+        }
+    }
+}
 
 void setupInitBranchJob() {
     def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner-quickstarts', Folder.INIT_BRANCH, "${jenkins_path}/Jenkinsfile.init-branch", 'OptaPlanner Quickstarts Init Branch')
