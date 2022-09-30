@@ -12,9 +12,8 @@ import javax.persistence.ManyToOne;
 import org.acme.maintenancescheduling.solver.EndDateUpdatingVariableListener;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.lookup.PlanningId;
-import org.optaplanner.core.api.domain.variable.CustomShadowVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
-import org.optaplanner.core.api.domain.variable.PlanningVariableReference;
+import org.optaplanner.core.api.domain.variable.ShadowVariable;
 
 @PlanningEntity
 @Entity
@@ -33,14 +32,13 @@ public class Job {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> tagSet;
 
-    @PlanningVariable(valueRangeProviderRefs = {"crewRange"})
+    @PlanningVariable(valueRangeProviderRefs = { "crewRange" })
     @ManyToOne
     private Crew crew;
     // Follows the TimeGrain Design Pattern
-    @PlanningVariable(valueRangeProviderRefs = {"startDateRange"})
+    @PlanningVariable(valueRangeProviderRefs = { "startDateRange" })
     private LocalDate startDate; // Inclusive
-    @CustomShadowVariable(variableListenerClass = EndDateUpdatingVariableListener.class,
-            sources = @PlanningVariableReference(variableName = "startDate"))
+    @ShadowVariable(variableListenerClass = EndDateUpdatingVariableListener.class, sourceVariableName = "startDate")
     private LocalDate endDate; // Exclusive
 
     // No-arg constructor required for Hibernate and OptaPlanner
