@@ -11,10 +11,9 @@ import org.acme.callcenter.solver.ResponseTimeUpdatingVariableListener;
 import org.optaplanner.core.api.domain.entity.PlanningEntity;
 import org.optaplanner.core.api.domain.entity.PlanningPin;
 import org.optaplanner.core.api.domain.variable.AnchorShadowVariable;
-import org.optaplanner.core.api.domain.variable.CustomShadowVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariable;
 import org.optaplanner.core.api.domain.variable.PlanningVariableGraphType;
-import org.optaplanner.core.api.domain.variable.PlanningVariableReference;
+import org.optaplanner.core.api.domain.variable.ShadowVariable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,8 +37,7 @@ public class Call extends PreviousCallOrAgent {
     @AnchorShadowVariable(sourceVariableName = "previousCallOrAgent")
     private Agent agent;
 
-    @CustomShadowVariable(variableListenerClass = ResponseTimeUpdatingVariableListener.class,
-            sources = { @PlanningVariableReference(variableName = "previousCallOrAgent") })
+    @ShadowVariable(variableListenerClass = ResponseTimeUpdatingVariableListener.class, sourceVariableName = "previousCallOrAgent")
     private Duration estimatedWaiting;
 
     public Call() {
