@@ -20,7 +20,6 @@
     <module>technology/java-spring-boot</module>
     <module>technology/java-activemq-quarkus</module>
     <module>technology/kotlin-quarkus</module>
-    <module>technology/kubernetes</module>
     <module>use-cases/school-timetabling</module>
     <module>use-cases/facility-location</module>
     <module>use-cases/maintenance-scheduling</module>
@@ -33,6 +32,18 @@
   </modules>
 
   <profiles>
+    <profile>
+      <id>default</id>
+      <activation>
+        <property>
+          <name>!productized</name>
+        </property>
+      </activation>
+      <modules>
+        <module>technology/kubernetes</module>
+      </modules>
+    </profile>
+
     <profile>
       <id>fullProfile</id>
       <activation>
