@@ -40,7 +40,7 @@ jobs:
     strategy:
       matrix:
         quickstartDir: ['hello-world', 'use-cases/school-timetabling', 'technology/java-spring-boot']
-        java-version: [11, 17, 18]
+        java-version: [11, 17] # JDK 19 not yet supported by Gradle.
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK
