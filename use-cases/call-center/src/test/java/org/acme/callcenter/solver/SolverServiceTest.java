@@ -2,9 +2,11 @@ package org.acme.callcenter.solver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
 
@@ -16,35 +18,23 @@ import org.acme.callcenter.domain.Skill;
 import org.acme.callcenter.service.SolverService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.optaplanner.core.api.solver.SolverManager;
-import org.optaplanner.core.api.solver.SolverStatus;
 
 @QuarkusTest
 public class SolverServiceTest {
 
     @Inject
-    SolverManager<CallCenter, Long> solverManager;
-
-    @Inject
     DataGenerator dataGenerator;
 
-    private SolverService solverService;
-
-    @BeforeEach
-    void setUp() {
-        solverService = new SolverService(solverManager);
-    }
+    @Inject
+    SolverService solverService;
 
     @AfterEach
     void tearDown() {
-        if (solverManager.getSolverStatus(SolverService.SINGLETON_ID) != SolverStatus.NOT_SOLVING) {
-            solverManager.terminateEarly(SolverService.SINGLETON_ID);
-        }
+        solverService.stopSolving();
     }
 
     @Test
@@ -52,10 +42,8 @@ public class SolverServiceTest {
     void addCall() {
         Call call1 = new Call(1L, "123-456-7891", Skill.ENGLISH, Skill.CAR_INSURANCE);
         Call call2 = new Call(2L, "123-456-7892", Skill.ENGLISH, Skill.CAR_INSURANCE);
-        CallCenter bestSolution = solve(dataGenerator.generateCallCenter(), () -> {
-            solverService.addCall(call1);
-            solverService.addCall(call2);
-        });
+        CallCenter bestSolution = solve(dataGenerator.generateCallCenter(), () -> solverService.addCall(call1),
+                () -> solverService.addCall(call2));
 
         Agent agentWithCalls = getFirstAgentWithCallOrFail(bestSolution);
 
@@ -73,9 +61,7 @@ public class SolverServiceTest {
         inputProblem.getCalls().add(call1);
         inputProblem.getCalls().add(call2);
 
-        CallCenter bestSolution = solve(inputProblem, () -> {
-            solverService.prolongCall(call1.getId());
-        });
+        CallCenter bestSolution = solve(inputProblem, () -> solverService.prolongCall(call1.getId()));
 
         Agent agentWithCalls = getFirstAgentWithCallOrFail(bestSolution);
         assertThat(agentWithCalls.getSkills()).contains(Skill.ENGLISH, Skill.CAR_INSURANCE);
@@ -98,9 +84,7 @@ public class SolverServiceTest {
         inputProblem.getCalls().add(call1);
         inputProblem.getCalls().add(call2);
 
-        CallCenter bestSolution  = solve(inputProblem, () -> {
-            solverService.removeCall(call1.getId());
-        });
+        CallCenter bestSolution = solve(inputProblem, () -> solverService.removeCall(call1.getId()));
 
         Agent agentWithCalls = getFirstAgentWithCallOrFail(bestSolution);
         assertThat(agentWithCalls.getSkills()).contains(Skill.ENGLISH, Skill.CAR_INSURANCE);
@@ -110,29 +94,25 @@ public class SolverServiceTest {
         assertThat(call.getId()).isEqualTo(call2.getId());
     }
 
-    private CallCenter solve(CallCenter inputProblem, Runnable problemChanges) {
-        CountDownLatch allChangesProcessed = new CountDownLatch(1);
-
+    @SafeVarargs
+    private CallCenter solve(CallCenter inputProblem, Supplier<CompletableFuture<Void>>... problemChanges) {
         AtomicReference<Throwable> errorDuringSolving = new AtomicReference<>();
         AtomicReference<CallCenter> bestSolution = new AtomicReference<>();
         solverService.startSolving(inputProblem, bestSolution::set, errorDuringSolving::set);
 
-        problemChanges.run();
-        solverManager.addProblemChange(SolverService.SINGLETON_ID, (workingSolution, problemChangeDirector) -> {
-            bestSolution.set(null); // ignore previous best solution since all changes were not process yet
-            allChangesProcessed.countDown();
-        });
-
-        try {
-            while (!allChangesProcessed.await(10, TimeUnit.MILLISECONDS) || bestSolution.get() == null) {
-                if (errorDuringSolving.get() != null) {
-                    throw new IllegalStateException("Exception during solving", errorDuringSolving.get());
-                }
-            }
-        } catch (InterruptedException interruptedException) {
-            throw new IllegalStateException("Interrupted during waiting.", interruptedException);
+        CountDownLatch allChangesProcessed = new CountDownLatch(problemChanges.length);
+        for (Supplier<CompletableFuture<Void>> problemChange : problemChanges) {
+            problemChange.get().thenRun(() -> allChangesProcessed.countDown());
         }
-        solverService.stopSolving();
+        try {
+            allChangesProcessed.await(1, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Waiting for problem changes in progress has been interrupted.", e);
+        }
+
+        if (errorDuringSolving.get() != null) {
+            throw new IllegalStateException("Exception during solving", errorDuringSolving.get());
+        }
         return bestSolution.get();
     }
 
