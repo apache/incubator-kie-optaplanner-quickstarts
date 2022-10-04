@@ -7,7 +7,7 @@ quickstartsRepo = 'optaplanner-quickstarts'
 
 pipeline {
     agent {
-        label 'kie-rhel7 && kie-mem16g && !master'
+        label 'kie-rhel7 && kie-mem16g && !built-in'
     }
     tools {
         maven env.BUILD_MAVEN_TOOL
@@ -49,7 +49,7 @@ pipeline {
                     // Update downstream repositories dependencies
                     mavenCompareQuarkusDependencies(optaplannerRepo, 'optaplanner-build-parent')
                     mavenSetProperty(optaplannerRepo, 'version.io.quarkus', '999-SNAPSHOT')
-                    mavenCompareQuarkusDependencies(quickstarts)
+                    mavenCompareQuarkusDependencies(quickstartsRepo)
                     mavenSetProperty(quickstartsRepo, 'version.io.quarkus', '999-SNAPSHOT')
                 }
             }
@@ -115,22 +115,19 @@ pipeline {
 }
 
 void sendNotification() {
-    String additionalInfo = "**[${getBuildBranch()}] Optaplanner Quickstarts${NOTIFICATION_JOB_NAME ? " - ${NOTIFICATION_JOB_NAME}" : ''}**"
+    String additionalInfo = "**[${getQuickstartsBranch()}] Optaplanner Quickstarts${NOTIFICATION_JOB_NAME ? " - ${NOTIFICATION_JOB_NAME}" : ''}**"
     mailer.sendMarkdownTestSummaryNotification("CI failures", [env.OPTAPLANNER_CI_EMAIL_TO], additionalInfo)
 }
 
 void checkoutOptaplannerRepo() {
     dir(optaplannerRepo) {
-        checkout(githubscm.resolveRepository(optaplannerRepo, params.GIT_AUTHOR, getBuildBranch(), false))
+        checkout(githubscm.resolveRepository(optaplannerRepo, params.GIT_AUTHOR, getOptaplannerBranch(), false))
     }
 }
 
 void checkoutOptaplannerQuickstartsRepo() {
-    // If the PR to OptaPlanner targets the 'main' branch, we assume the branch 'development' for quickstarts.
-    String quickstartsChangeTarget = params.BUILD_BRANCH_NAME == 'main' ? 'development' : getBuildBranch()
-
     dir(quickstartsRepo) {
-        checkout(githubscm.resolveRepository(quickstartsRepo, params.GIT_AUTHOR, quickstartsChangeTarget, false))
+        checkout(githubscm.resolveRepository(quickstartsRepo, params.GIT_AUTHOR, getQuickstartsBranch(), false))
     }
 }
 
@@ -172,7 +169,7 @@ MavenCommand getFullMavenCommand(String directory) {
     return mvnCmd
 }
 
-void mavenCompareQuarkusDependencies(String repo, String artifactId) {
+void mavenCompareQuarkusDependencies(String repo, String artifactId = '') {
     maven.mvnCompareDependencies(getBasicMavenCommand(repo), 'io.quarkus:quarkus-bom:999-SNAPSHOT', artifactId ? ":${artifactId}" : '', true, true)
 }
 
@@ -196,6 +193,10 @@ String getQuarkusBranch() {
     return env['QUARKUS_BRANCH'] ?: ''
 }
 
-String getBuildBranch() {
+String getQuickstartsBranch() {
     return params.BUILD_BRANCH_NAME
+}
+
+String getOptaplannerBranch() {
+    return getQuickstartsBranch() == 'development' ? 'main' : getQuickstartsBranch()
 }
