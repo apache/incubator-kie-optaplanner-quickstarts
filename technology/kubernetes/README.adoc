@@ -122,7 +122,7 @@ In this case, the `Solver` custom resource might look like follows:
 
 [source, yaml, linenums]
 ----
-apiVersion: org.optaplanner.solver/v1beta1
+apiVersion: org.optaplanner.solver/v1alpha1
 kind: Solver
 metadata:
   name: school-timetabling
@@ -137,7 +137,11 @@ spec:
     passwordSecretRef:
       key: AMQ_PASSWORD
       name: ex-aao-credentials-secret
-  solverImage: quay.io/example/school-timetabling:latest
+  template:
+    spec:
+      containers:
+        - name: school-timetabling
+          image: quay.io/example/school-timetabling:latest
   scaling:
     dynamic: true
     replicas: 3
@@ -147,9 +151,9 @@ spec:
 * lines 7 and 8 - ActiveMQ broker host and port accepting AMQP connections
 * line 9 - ActiveMQ broker host providing management interface
 * lines 10 to 15 - reference to a secret containing a username and password to access the broker
-* line 16 - the school-timetabling container image <<#buildSolverImage, built and pushed>> to a registry of your choice
-* line 18 - enables dynamic scaling via KEDA
-* line 19 - the maximum number of running school-timetabling pods; if dynamic scaling is disabled, this parameter defines a fixed number of pods
+* line 16 to 20 - the school-timetabling container that will run from the image <<#buildSolverImage, built and pushed>> to a registry of your choice
+* line 22 - enables dynamic scaling via KEDA
+* line 23 - the maximum number of running school-timetabling pods; if dynamic scaling is disabled, this parameter defines a fixed number of pods
 
 To find out the ActiveMQ broker management host:
 
