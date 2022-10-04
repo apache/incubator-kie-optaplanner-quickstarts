@@ -1,16 +1,12 @@
 package org.acme.callcenter.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
 import org.acme.callcenter.domain.Agent;
@@ -20,28 +16,21 @@ import org.acme.callcenter.solver.change.AddCallProblemChange;
 import org.acme.callcenter.solver.change.PinCallProblemChange;
 import org.acme.callcenter.solver.change.ProlongCallByMinuteProblemChange;
 import org.acme.callcenter.solver.change.RemoveCallProblemChange;
-import org.eclipse.microprofile.context.ManagedExecutor;
-import org.optaplanner.core.api.solver.Solver;
-import org.optaplanner.core.api.solver.SolverFactory;
+import org.optaplanner.core.api.solver.SolverManager;
+import org.optaplanner.core.api.solver.SolverStatus;
 import org.optaplanner.core.api.solver.change.ProblemChange;
-import org.optaplanner.core.api.solver.event.BestSolutionChangedEvent;
 
 @ApplicationScoped
 public class SolverService {
 
-    private final ManagedExecutor managedExecutor;
+    private final SolverManager<CallCenter, Long> solverManager;
+    public static final long SINGLETON_ID = 1L;
 
-    // TODO: Replace by @Inject SolverManager once https://issues.redhat.com/browse/PLANNER-2141 is resolved.
-    private final Solver<CallCenter> solver;
-
-    private AtomicBoolean solving = new AtomicBoolean(false);
-    private CompletableFuture<?> completableSolverFuture;
-    private final BlockingQueue<ProblemChange<CallCenter>> waitingProblemChanges = new LinkedBlockingQueue<>();
+    private final BlockingQueue<WaitingProblemChange> waitingProblemChanges = new LinkedBlockingQueue<>();
 
     @Inject
-    public SolverService(SolverFactory<CallCenter> solverFactory, @Default ManagedExecutor executorService) {
-        solver = solverFactory.buildSolver();
-        this.managedExecutor = executorService;
+    public SolverService(SolverManager<CallCenter, Long> solverManager) {
+        this.solverManager = solverManager;
     }
 
     private void pinCallAssignedToAgents(List<Call> calls) {
@@ -50,85 +39,75 @@ public class SolverService {
                         && call.getPreviousCallOrAgent() != null
                         && call.getPreviousCallOrAgent() instanceof Agent)
                 .map(PinCallProblemChange::new)
-                .forEach(solver::addProblemChange);
+                .forEach(problemChange -> solverManager.addProblemChange(SINGLETON_ID, problemChange));
     }
 
     public void startSolving(CallCenter inputProblem,
-            Consumer<BestSolutionChangedEvent<CallCenter>> bestSolutionChangedEventConsumer, Consumer<Throwable> errorHandler) {
-        solving.set(true);
-        completableSolverFuture = managedExecutor.runAsync(() -> {
-
-            solver.addEventListener(event -> {
-                if (event.isEveryProblemChangeProcessed() && event.getNewBestScore().isSolutionInitialized()) {
-                    pinCallAssignedToAgents(event.getNewBestSolution().getCalls());
-                    bestSolutionChangedEventConsumer.accept(event);
-                }
-            });
-
-            try {
-                solver.solve(inputProblem);
-            } catch (Throwable throwable) {
-                errorHandler.accept(throwable);
+            Consumer<CallCenter> bestSolutionConsumer, Consumer<Throwable> errorHandler) {
+        solverManager.solveAndListen(SINGLETON_ID, id -> inputProblem, bestSolution -> {
+            if (bestSolution.getScore().isSolutionInitialized()) {
+                bestSolutionConsumer.accept(bestSolution);
+                pinCallAssignedToAgents(bestSolution.getCalls());
             }
-            solver.addProblemChanges(new ArrayList<>(waitingProblemChanges));
-        });
+        }, (id, error) -> errorHandler.accept(error));
+
+        for (WaitingProblemChange waitingProblemChange : waitingProblemChanges) {
+            CompletableFuture<Void> changeInProgress =
+                    solverManager.addProblemChange(SINGLETON_ID, waitingProblemChange.getProblemChange());
+            changeInProgress.thenRun(() -> waitingProblemChange.getCompletion().complete(null));
+        }
+        waitingProblemChanges.clear();
     }
 
     public void stopSolving() {
-        solving.set(false);
-        if (completableSolverFuture != null) {
-            solver.terminateEarly();
-            try {
-                completableSolverFuture.get(); // Wait for termination and propagate exceptions.
-                completableSolverFuture = null;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Failed to stop solver.", e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException("Failed to stop solver.", e.getCause());
-            }
-        }
+        solverManager.terminateEarly(SINGLETON_ID);
     }
 
     public boolean isSolving() {
-        return solving.get();
+        return solverManager.getSolverStatus(SINGLETON_ID) != SolverStatus.NOT_SOLVING;
     }
 
-    public void addCall(Call call) {
-        registerProblemChange(new AddCallProblemChange(call));
+    public CompletableFuture<Void> addCall(Call call) {
+        return registerProblemChange(new AddCallProblemChange(call));
     }
 
-    public void removeCall(long callId) {
-        registerProblemChange(new RemoveCallProblemChange(callId));
+    public CompletableFuture<Void> removeCall(long callId) {
+        return registerProblemChange(new RemoveCallProblemChange(callId));
     }
 
-    public void prolongCall(long callId) {
-        registerProblemChange(new ProlongCallByMinuteProblemChange(callId));
+    public CompletableFuture<Void> prolongCall(long callId) {
+        return registerProblemChange(new ProlongCallByMinuteProblemChange(callId));
     }
 
-    private void registerProblemChange(ProblemChange<CallCenter> problemChange) {
+    private CompletableFuture<Void> registerProblemChange(ProblemChange<CallCenter> problemChange) {
         if (isSolving()) {
-            assertSolverIsAlive();
-            solver.addProblemChange(problemChange);
+            return solverManager.addProblemChange(SINGLETON_ID, problemChange);
         } else {
-            waitingProblemChanges.add(problemChange);
+            /*
+             * Expose a temporary CompletableFuture that will get completed once the solver is started again
+             * and processes the change.
+             */
+            CompletableFuture<Void> completion = new CompletableFuture<>();
+            waitingProblemChanges.add(new WaitingProblemChange(completion, problemChange));
+            return completion;
         }
     }
 
-    private void assertSolverIsAlive() {
-        if (completableSolverFuture == null) {
-            throw new IllegalStateException("Solver has not been started yet.");
+    private static class WaitingProblemChange {
+        private final CompletableFuture<Void> completion;
+        private final ProblemChange<CallCenter> problemChange;
+
+        public WaitingProblemChange(CompletableFuture<Void> completion, ProblemChange<CallCenter> problemChange) {
+            this.completion = completion;
+            this.problemChange = problemChange;
         }
-        if (completableSolverFuture.isDone()) {
-            try {
-                completableSolverFuture.get();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new RuntimeException("Solver thread was interrupted.", e);
-            } catch (ExecutionException e) {
-                throw new RuntimeException("Solver thread has died.", e.getCause());
-            }
-            throw new IllegalStateException("Solver has finished solving even though it operates in daemon mode.");
+
+        public CompletableFuture<Void> getCompletion() {
+            return completion;
+        }
+
+        public ProblemChange<CallCenter> getProblemChange() {
+            return problemChange;
         }
     }
 }
