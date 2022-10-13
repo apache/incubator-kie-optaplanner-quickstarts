@@ -49,6 +49,10 @@ pipeline {
                     // Update downstream repositories dependencies
                     mavenCompareQuarkusDependencies(optaplannerRepo, 'optaplanner-build-parent')
                     mavenSetProperty(optaplannerRepo, 'version.io.quarkus', '999-SNAPSHOT')
+                    // Some quickstarts consist of multiple modules depending on each other.
+                    getBasicMavenCommand(quickstartsRepo)
+                            .withProperty('skipTests', true)
+                            .run('clean install')
                     mavenCompareQuarkusDependencies(quickstartsRepo)
                     mavenSetProperty(quickstartsRepo, 'version.io.quarkus', '999-SNAPSHOT')
                 }
