@@ -4,7 +4,7 @@ plugins {
 }
 
 def quarkusVersion = "2.13.1.Final"
-def optaplannerVersion = "8.29.0-SNAPSHOT"
+def optaplannerVersion = "8.29.0.Final"
 
 group = "org.acme"
 version = "1.0-SNAPSHOT"
