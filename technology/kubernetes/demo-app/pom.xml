@@ -86,11 +86,6 @@
       <artifactId>font-awesome</artifactId>
       <scope>runtime</scope>
     </dependency>
-    <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>momentjs</artifactId>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <build>

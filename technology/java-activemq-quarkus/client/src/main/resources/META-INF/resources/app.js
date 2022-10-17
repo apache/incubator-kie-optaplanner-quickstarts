@@ -1,4 +1,5 @@
 var autoRefreshIntervalId = null;
+const dateTimeFormatter = JSJoda.DateTimeFormatter.ofPattern('HH:mm')
 
 function refreshTimeTable() {
   $.getJSON("/timeTable", function (timeTable) {
@@ -47,15 +48,18 @@ function refreshTimeTable() {
     const tbodyByRoom = $("<tbody>").appendTo(timeTableByRoom);
     const tbodyByTeacher = $("<tbody>").appendTo(timeTableByTeacher);
     const tbodyByStudentGroup = $("<tbody>").appendTo(timeTableByStudentGroup);
+
+    const LocalTime = JSJoda.LocalTime;
+
     $.each(timeTable.timeslotList, (index, timeslot) => {
       const rowByRoom = $("<tr>").appendTo(tbodyByRoom);
       rowByRoom
         .append($(`<th class="align-middle"/>`)
           .append($("<span/>").text(`
                     ${timeslot.dayOfWeek.charAt(0) + timeslot.dayOfWeek.slice(1).toLowerCase()}
-                    ${moment(timeslot.startTime, "HH:mm:ss").format("HH:mm")}
+                    ${LocalTime.parse(timeslot.startTime).format(dateTimeFormatter)}
                     -
-                    ${moment(timeslot.endTime, "HH:mm:ss").format("HH:mm")}
+                    ${LocalTime.parse(timeslot.endTime).format(dateTimeFormatter)}
                 `)
             .append($(`<button type="button" class="ml-2 mb-1 btn btn-light btn-sm p-1"/>`)
               .append($(`<small class="fas fa-trash"/>`)
@@ -66,9 +70,9 @@ function refreshTimeTable() {
         .append($(`<th class="align-middle"/>`)
           .append($("<span/>").text(`
                     ${timeslot.dayOfWeek.charAt(0) + timeslot.dayOfWeek.slice(1).toLowerCase()}
-                    ${moment(timeslot.startTime, "HH:mm:ss").format("HH:mm")}
+                    ${LocalTime.parse(timeslot.startTime).format(dateTimeFormatter)}
                     -
-                    ${moment(timeslot.endTime, "HH:mm:ss").format("HH:mm")}
+                    ${LocalTime.parse(timeslot.endTime).format(dateTimeFormatter)}
                 `)));
       $.each(timeTable.roomList, (index, room) => {
         rowByRoom.append($("<td/>").prop("id", `timeslot${timeslot.id}room${room.id}`));
@@ -78,9 +82,9 @@ function refreshTimeTable() {
         .append($(`<th class="align-middle"/>`)
           .append($("<span/>").text(`
                     ${timeslot.dayOfWeek.charAt(0) + timeslot.dayOfWeek.slice(1).toLowerCase()}
-                    ${moment(timeslot.startTime, "HH:mm:ss").format("HH:mm")}
+                    ${LocalTime.parse(timeslot.startTime).format(dateTimeFormatter)}
                     -
-                    ${moment(timeslot.endTime, "HH:mm:ss").format("HH:mm")}
+                    ${LocalTime.parse(timeslot.endTime).format(dateTimeFormatter)}
                 `)));
 
       $.each(teacherList, (index, teacher) => {
