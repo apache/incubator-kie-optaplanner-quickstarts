@@ -90,8 +90,8 @@
       <scope>runtime</scope>
     </dependency>
     <dependency>
-      <groupId>org.webjars</groupId>
-      <artifactId>momentjs</artifactId>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>js-joda</artifactId>
       <scope>runtime</scope>
     </dependency>
   </dependencies>
