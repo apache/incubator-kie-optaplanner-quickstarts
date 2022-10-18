@@ -11,6 +11,7 @@
 import org.kie.jenkins.jobdsl.model.Folder
 import org.kie.jenkins.jobdsl.KogitoJobTemplate
 import org.kie.jenkins.jobdsl.KogitoJobUtils
+import org.kie.jenkins.jobdsl.Utils
 
 jenkins_path = '.ci/jenkins'
 
@@ -40,7 +41,7 @@ Map getMultijobPRConfig() {
 KogitoJobUtils.createAllEnvsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConfig() }
 
 // Init branch
-setupInitBranchJob()
+createSetupBranchJob()
 
 // Nightlies
 setupSpecificNightlyJob(Folder.NIGHTLY_NATIVE)
@@ -78,8 +79,8 @@ void setupSpecificNightlyJob(Folder specificNightlyFolder) {
     }
 }
 
-void setupInitBranchJob() {
-    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner-quickstarts', Folder.INIT_BRANCH, "${jenkins_path}/Jenkinsfile.init-branch", 'OptaPlanner Quickstarts Init Branch')
+void createSetupBranchJob() {
+    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner-quickstarts', Folder.SETUP_BRANCH, "${jenkins_path}/Jenkinsfile.setup-branch", 'OptaPlanner Quickstarts Setup Branch')
     KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
     jobParams.env.putAll([
         REPO_NAME: 'optaplanner-quickstarts',
@@ -91,6 +92,8 @@ void setupInitBranchJob() {
         MAVEN_SETTINGS_CONFIG_FILE_ID: "${MAVEN_SETTINGS_FILE_ID}",
         MAVEN_DEPENDENCIES_REPOSITORY: "${MAVEN_ARTIFACTS_REPOSITORY}",
         MAVEN_DEPLOY_REPOSITORY: "${MAVEN_ARTIFACTS_REPOSITORY}",
+
+        IS_MAIN_BRANCH: "${Utils.isMainBranch(this)}"
     ])
     KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
         parameters {
