@@ -56,6 +56,7 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: "-Dfull"
+          BUILD_MVN_OPTS: '-Dproductized'
       - name: Check Surefire Report
         if: ${{ always() }}
         uses: ScaCap/action-surefire-report@v1.0.10
