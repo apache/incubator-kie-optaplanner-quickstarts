@@ -5,25 +5,27 @@ on:
   pull_request:
     paths: 
     - '.ci/jenkins/**'
+    - '.github/workflows/jenkins-tests-PR.yml'
 
 jobs:
   dsl-tests:
+    concurrency:
+      group: ${{ github.repository.name }}_dsl_tests-${{ github.head_ref }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     steps:
     - name: Set correct base branch
       run: |
-        branch="${{ github.base_ref }}"
-        if [ "${branch}" = "development" ]; then
-          branch='main'
+        base_branch="${{ github.base_ref }}"
+        if [ "${base_branch}" = "development" ]; then
+          base_branch='main'
         fi
-        echo "BRANCH_CONFIG_BRANCH=${branch}"  >> $GITHUB_ENV
-        echo "BASE_BRANCH=${branch}"  >> $GITHUB_ENV
-
+        echo "BASE_BRANCH=${base_branch}"  >> $GITHUB_ENV
     - name: DSL tests
       uses: kiegroup/kogito-pipelines/.ci/actions/dsl-tests@main
       with:
+        project: optaplanner
         main-config-file-repo: kiegroup/optaplanner
-        main-config-file-ref: main
         main-config-file-path: .ci/jenkins/config/main.yaml
-        branch-config-branch: ${{ env.BRANCH_CONFIG_BRANCH }}
+        branch-config-file-repo: kiegroup/optaplanner
         base-branch: ${{ env.BASE_BRANCH }}
