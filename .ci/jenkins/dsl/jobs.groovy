@@ -55,6 +55,7 @@ setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
 // Tools
 KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
     properties: [ 'version.io.quarkus' ],
+    compare_deps_remote_poms: [ 'io.quarkus:quarkus-bom' ],
 ], [
     // Escaping quotes so it is correctly handled by Json marshalling/unmarshalling
     regex: [ 'id \\"io.quarkus\\" version', 'def quarkusVersion =' ]
