@@ -3,7 +3,6 @@ plugins {
     id "io.quarkus" version "2.14.0.CR1"
 }
 
-// TODO: upgrade the Quarkus version after https://github.com/quarkusio/quarkus/issues/28591 is fixed
 def quarkusVersion = "2.14.0.CR1"
 def optaplannerVersion = "8.30.0-SNAPSHOT"
 
