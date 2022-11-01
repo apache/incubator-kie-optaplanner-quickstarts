@@ -19,19 +19,32 @@ to be able to interact with the OpenShift cluster.
 
 Login as a user with the `cluster-admin` role using the `oc login` command.
 
-=== Create a project
+[#setupByScript]
+=== Install the required operators and deploy the Demo application by using the demo.sh script
+
+To set up the demo, run `./demo.sh setup [path to the OptaPlanner distribution]`.
+
+The script installs KEDA, ArtemisCloud, and OptaPlanner operators and creates a single Artemis AMQ broker in the OpenShift cluster.
+It also prints information about the Artemis AMQ broker required in the next steps.
+
+=== Install the required operators and deploy the Demo application manually
+
+This section describes a manual set up as an alternative to <<#setupByScript>>.
+If you have already set up the demo by the script, proceed to <<#createSolver, creating the school-timetabling solver>>.
+
+==== Create a project
 
 Create a new project called _demo_ by running `oc new-project demo`.
 
 [#installArtemisCloud]
-=== Install ArtemisCloud
+==== Install ArtemisCloud
 
 The OptaPlanner Operator uses https://artemiscloud.io/[ArtemisCloud] to create ActiveMQ queues, thus, as the first step,
 follow the https://artemiscloud.io/docs/help/operator/[documentation] to install the ArtemisCloud operator to your OpenShift instance.
 
 NOTE: The ArtemisCloud operator by default watches for ActiveMQ broker and queue resources in the namespace it has been installed to.
 
-=== Create a broker
+==== Create a broker
 
 After the ArtemisCloud operator has been deployed, https://artemiscloud.io/docs/help/operator/#creating-operator-based-broker-deployments[create a new broker].
 The ArtemisCloud distribution comes with several `activemqartemis` example resources you can use as a starting point.
@@ -53,17 +66,17 @@ spec:
 
 This acceptor allows up to 100 concurrent connections via the AMQP protocol.
 
-=== Install KEDA
+==== Install KEDA
 
 https://keda.sh[KEDA] enables dynamic scaling of solver deployments based on the number of incoming requests.
 
 Follow the https://keda.sh/docs/deploy/[documentation] to install the KEDA operator.
 
-=== Deploy the OptaPlanner Operator
+==== Deploy the OptaPlanner Operator
 
 Follow the https://github.com/kiegroup/optaplanner/tree/main/optaplanner-operator#deploy-the-optaplanner-operator[README] to install the OptaPlanner operator.
 
-=== Deploy the Demo App
+==== Deploy the Demo App
 
 The Demo App also relies upon the `quarkus-openshift` extension to deploy to OpenShift. The extension also picks up additional
 resources defined in the `src/main/kubernetes/openshift.yml`; in this case, there is a template that creates
@@ -84,6 +97,7 @@ To find out the ActiveMQ broker host:
 . find the service bound to the port 5672
 . the ActiveMQ broker host is a compound of the `<service name>.<project>.svc.cluster.local`, e.g. `ex-aao-amqp-0-svc.demo.svc.cluster.local`
 
+[#createSolver]
 === Create the school-timetabling solver
 
 Now, when all the other pieces of the puzzle are already in place, it's time to make the school-timetabling running.
