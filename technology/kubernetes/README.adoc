@@ -20,7 +20,7 @@ to be able to interact with the OpenShift cluster.
 Login as a user with the `cluster-admin` role using the `oc login` command.
 
 [#setupByScript]
-=== Install the required operators and deploy the Demo application by using the demo.sh script
+=== Setup and deploy automatically by using the demo.sh script
 
 To set up the demo, run `./demo.sh setup [path to the OptaPlanner distribution]`.
 
