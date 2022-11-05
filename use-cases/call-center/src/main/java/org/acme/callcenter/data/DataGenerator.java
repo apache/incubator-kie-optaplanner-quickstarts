@@ -54,7 +54,7 @@ public class DataGenerator {
     }
 
     private synchronized Skill pickRandomLanguageSkill() {
-        return LANGUAGE_SKILLS[RANDOM.nextInt(PRODUCT_SKILLS.length)];
+        return LANGUAGE_SKILLS[RANDOM.nextInt(LANGUAGE_SKILLS.length)];
     }
 
     private synchronized String generatePhoneNumber() {
