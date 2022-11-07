@@ -1,11 +1,11 @@
 plugins {
     id "java"
     // TODO: upgrade the Quarkus version after https://github.com/quarkusio/quarkus/issues/28591 is fixed
-    id "io.quarkus" version "2.13.0.Final"
+    id "io.quarkus" version "2.14.0.Final"
 }
 
 // TODO: upgrade the Quarkus version after https://github.com/quarkusio/quarkus/issues/28591 is fixed
-def quarkusVersion = "2.13.0.Final"
+def quarkusVersion = "2.14.0.Final"
 def optaplannerVersion = "8.30.0-SNAPSHOT"
 
 group = "org.acme"
