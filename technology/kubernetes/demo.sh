@@ -117,7 +117,7 @@ function setup_demo() {
   readonly operator_distribution_directory="extra/optaplanner-operator"
   operator_distribution_path="../../../../$operator_distribution_directory"
   if [ ! -d "$operator_distribution_path" ]; then
-    readonly subdirectories=("$1"/optaplanner-distribution-*/"$operator_distribution_directory")
+    readonly subdirectories=("$1"/"$operator_distribution_directory")
     operator_distribution_path="${subdirectories[0]}"
     if [ ! -d "$operator_distribution_path" ]; then
       echo "Provide a path to the OptaPlanner distribution directory."
