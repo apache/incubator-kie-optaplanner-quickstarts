@@ -5,7 +5,7 @@ version: '2'
 services:
 
   artemis:
-    image: vromero/activemq-artemis:2.15.0-alpine
+    image: quay.io/artemiscloud/activemq-artemis-broker:latest
     ports:
       - "8161:8161"
       - "61616:61616"
@@ -13,6 +13,6 @@ services:
     volumes:
       - .:/var/lib/artemis/etc-override
     environment:
-      ARTEMIS_USERNAME: quarkus
-      ARTEMIS_PASSWORD: quarkus
+      AMQ_USER: quarkus
+      AMQ_PASSWORD: quarkus
 
