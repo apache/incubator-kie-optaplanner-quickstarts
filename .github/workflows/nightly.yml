@@ -51,7 +51,7 @@ jobs:
           api-key: ${{ secrets.ZULIP_API_KEY }}
           email: ${{ secrets.ZULIP_EMAIL }}
           organization-url: 'https://kie.zulipchat.com'
-          to: 'optaplanner-dev'
+          to: 'optaplanner-ci'
           type: 'stream'
           topic: 'status of ${{env.project_name}} - ${{env.project_branch}}'
           content: ${{ env.zulip_message }}
