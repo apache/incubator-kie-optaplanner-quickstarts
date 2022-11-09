@@ -40,10 +40,10 @@ jobs:
           echo "action_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
       - name: Set failure message
         if: ${{ failure() }}
-        run: echo "zulip_message=:cross_mark:Build ERROR. See ${{env.action_url}}" >> $GITHUB_ENV  
+        run: echo "zulip_message=:cross_mark:OptaPlanner Quickstarts - stable - Build ERROR. See ${{env.action_url}}" >> $GITHUB_ENV  
       - name: Set success message
         if: ${{ success() }}
-        run: echo "zulip_message=:check:Build OK. See ${{env.action_url}}" >> $GITHUB_ENV  
+        run: echo "zulip_message=:check:OptaPlanner Quickstarts - stable - Build OK. See ${{env.action_url}}" >> $GITHUB_ENV  
       - name: Send a stream message
         if: ${{ always() }}
         uses: zulip/github-actions-zulip/send-message@v1
