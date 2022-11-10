@@ -10,6 +10,7 @@ on:
     paths-ignore:
       - 'LICENSE*'
       - '.gitignore'
+      - '.gitattributes'
       - '**.md'
       - '**.adoc'
       - '*.txt'
