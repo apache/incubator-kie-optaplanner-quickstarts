@@ -43,7 +43,7 @@ pipeline {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
-                    checkoutRepo(optaplannerRepo, getBuildBranch())
+                    checkoutRepo(optaplannerRepo, getBuildBranch() == 'development' ? 'main' : getBuildBranch())
                     checkoutRepo(getRepoName(), getBuildBranch())
                 }
             }
