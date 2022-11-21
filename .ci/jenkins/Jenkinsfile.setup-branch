@@ -43,7 +43,7 @@ pipeline {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
-                    checkoutRepo(optaplannerRepo, getBuildBranch())
+                    checkoutRepo(optaplannerRepo, getBuildBranch() == 'development' ? 'main' : getBuildBranch())
                     checkoutRepo(getRepoName(), getBuildBranch())
                 }
             }
@@ -52,7 +52,7 @@ pipeline {
             steps {
                 script {
                     getMavenCommand(optaplannerRepo)
-                        .withOptions(['-U', '-pl org.optaplanner:optaplanner-build-parent,org.optaplanner:optaplanner-bom', '-am'])
+                        .withOptions(['-U', '-pl org.optaplanner:optaplanner-build-parent,org.optaplanner:optaplanner-bom,org.optaplanner:optaplanner-operator', '-am'])
                         .run('clean install')
                 }
             }
