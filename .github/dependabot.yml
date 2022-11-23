@@ -6,9 +6,9 @@ updates:
     interval: daily
     time: '03:00'
   open-pull-requests-limit: 10
-  target-branch: "main"
+  target-branch: "development"
   commit-message:
-    prefix: "[bot][main]"
+    prefix: "[bot][dev]"
 - package-ecosystem: maven
   directory: "/"
   schedule:
