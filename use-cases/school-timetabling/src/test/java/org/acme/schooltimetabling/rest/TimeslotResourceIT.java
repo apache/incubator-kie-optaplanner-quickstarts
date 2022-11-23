@@ -16,9 +16,9 @@
 
 package org.acme.schooltimetabling.rest;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@NativeImageTest
+@QuarkusIntegrationTest
 public class TimeslotResourceIT extends TimeslotResourceTest {
 
 }
