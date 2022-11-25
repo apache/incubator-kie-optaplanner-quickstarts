@@ -16,8 +16,8 @@
 
 package org.acme.maintenancescheduling.rest;
 
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.quarkus.test.junit.NativeImageTest;
 
-@QuarkusIntegrationTest
+@NativeImageTest
 public class MaintenanceJobAssignmentResourceIT extends MaintenanceJobAssignmentResourceTest {
 }

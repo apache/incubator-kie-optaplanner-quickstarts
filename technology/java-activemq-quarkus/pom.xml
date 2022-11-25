@@ -12,7 +12,7 @@
   <properties>
     <version.org.apache.activemq>2.19.0</version.org.apache.activemq>
     <version.org.optaplanner>8.13.1-SNAPSHOT</version.org.optaplanner>
-    <version.io.quarkus>2.13.4.Final</version.io.quarkus>
+    <version.io.quarkus>2.7.4.Final</version.io.quarkus>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.release>11</maven.compiler.release>
@@ -61,7 +61,7 @@
       <dependency>
         <groupId>org.awaitility</groupId>
         <artifactId>awaitility</artifactId>
-        <version>4.2.0</version>
+        <version>4.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.webjars</groupId>
@@ -82,11 +82,6 @@
         <groupId>org.webjars</groupId>
         <artifactId>momentjs</artifactId>
         <version>2.24.0</version>
-      </dependency>
-      <dependency>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-core</artifactId>
-        <version>3.22.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
