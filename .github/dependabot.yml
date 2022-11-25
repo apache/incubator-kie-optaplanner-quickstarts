@@ -1,0 +1,42 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: '03:00'
+  open-pull-requests-limit: 10
+  target-branch: "development"
+  commit-message:
+    prefix: "[bot][dev]"
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: '04:00'
+  open-pull-requests-limit: 10
+  target-branch: "8.13.x"
+  commit-message:
+    prefix: "[bot][8.13.x]"
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: '05:00'
+  open-pull-requests-limit: 10
+  target-branch: "8.13.x-blue"
+  commit-message:
+    prefix: "[bot][blue]"
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: '06:00'
+  open-pull-requests-limit: 10
+  target-branch: "8.29.x"
+  commit-message:
+    prefix: "[bot][8.29.x]"
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "daily"
