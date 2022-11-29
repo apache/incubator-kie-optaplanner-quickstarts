@@ -52,7 +52,7 @@ jobs:
         id: build-chain
         uses: kiegroup/github-action-build-chain@v2.6.8
         with:
-          definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/main/.ci/pull-request-config.yaml
+          definition-file: https://raw.githubusercontent.com/${GROUP}/optaplanner/main/.ci/buildchain-config.yaml
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: "-Dfull"
