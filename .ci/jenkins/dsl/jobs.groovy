@@ -44,14 +44,14 @@ KogitoJobUtils.createAllEnvsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConf
 createSetupBranchJob()
 
 // Nightlies
-setupSpecificNightlyJob(Folder.NIGHTLY_NATIVE)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_NATIVE)
 
-setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN)
-setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
 
-setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL)
-setupSpecificNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
-setupSpecificNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
 
 // Tools
 KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
@@ -62,21 +62,9 @@ KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
     regex: [ 'id \\"io.quarkus\\" version', 'def quarkusVersion =' ]
 ])
 
-void setupSpecificNightlyJob(Folder specificNightlyFolder) {
+void setupSpecificBuildChainNightlyJob(Folder specificNightlyFolder) {
     String envName = specificNightlyFolder.environment.toName()
-    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner-quickstarts', specificNightlyFolder, "${jenkins_path}/Jenkinsfile.specific_nightly", "OptaPlanner Nightly ${envName}")
-    KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
-    jobParams.triggers = [ cron : '@midnight' ]
-    jobParams.env.putAll([
-        JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
-        NOTIFICATION_JOB_NAME: "${envName} check"
-    ])
-    KogitoJobTemplate.createPipelineJob(this, jobParams)?.with {
-        parameters {
-            stringParam('BUILD_BRANCH_NAME', "${GIT_BRANCH}", 'Set the Git branch to checkout')
-            stringParam('GIT_AUTHOR', "${GIT_AUTHOR_NAME}", 'Set the Git author to checkout')
-        }
-    }
+    KogitoJobUtils.createNightlyBuildChainBuildAndTestJobForCurrentRepo(this, specificNightlyFolder, true, envName)
 }
 
 void createSetupBranchJob() {
