@@ -113,6 +113,11 @@
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${version.surefire.plugin}</version>
         </plugin>
+        <plugin>
+          <groupId>org.jboss.jandex</groupId>
+          <artifactId>jandex-maven-plugin</artifactId>
+          <version>1.0.8</version>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
