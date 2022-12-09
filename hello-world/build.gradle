@@ -3,7 +3,7 @@ plugins {
     id "application"
 }
 
-def optaplannerVersion = "8.31.1-SNAPSHOT"
+def optaplannerVersion = "8.31.1.Final"
 def logbackVersion = "1.2.11"
 def junitJupiterVersion = "5.9.0"
 
