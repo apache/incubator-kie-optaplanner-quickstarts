@@ -21,11 +21,11 @@ public class Lesson {
     private String teacher;
     private String studentGroup;
 
-    @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
+    @PlanningVariable
     @ManyToOne
     private Timeslot timeslot;
 
-    @PlanningVariable(valueRangeProviderRefs = "roomRange")
+    @PlanningVariable
     @ManyToOne
     private Room room;
 

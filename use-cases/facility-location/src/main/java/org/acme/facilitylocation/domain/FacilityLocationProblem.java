@@ -17,7 +17,7 @@ import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 public class FacilityLocationProblem {
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "facilityRange")
+    @ValueRangeProvider
     private List<Facility> facilities;
     @PlanningEntityCollectionProperty
     private List<Consumer> consumers;

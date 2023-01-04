@@ -16,7 +16,7 @@ public class EmployeeSchedule {
     List<Availability> availabilityList;
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id="employeeRange")
+    @ValueRangeProvider
     List<Employee> employeeList;
 
     @PlanningEntityCollectionProperty

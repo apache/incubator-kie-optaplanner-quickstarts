@@ -26,7 +26,7 @@ public class VehicleRoutingSolution {
     private List<Vehicle> vehicleList;
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "customerRange")
+    @ValueRangeProvider
     private List<Customer> customerList;
 
     @PlanningScore

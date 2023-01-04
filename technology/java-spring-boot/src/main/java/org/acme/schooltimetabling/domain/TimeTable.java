@@ -13,11 +13,11 @@ import org.optaplanner.core.api.solver.SolverStatus;
 @PlanningSolution
 public class TimeTable {
 
-    @ValueRangeProvider(id = "timeslotRange")
+    @ValueRangeProvider
     @ProblemFactCollectionProperty
     private List<Timeslot> timeslotList;
 
-    @ValueRangeProvider(id = "roomRange")
+    @ValueRangeProvider
     @ProblemFactCollectionProperty
     private List<Room> roomList;
 

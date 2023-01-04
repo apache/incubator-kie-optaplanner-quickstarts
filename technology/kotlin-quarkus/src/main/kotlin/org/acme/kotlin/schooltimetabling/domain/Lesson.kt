@@ -22,10 +22,10 @@ class Lesson {
     lateinit var teacher: String
     lateinit var studentGroup: String
 
-    @PlanningVariable(valueRangeProviderRefs = ["timeslotRange"])
+    @PlanningVariable
     @ManyToOne
     var timeslot: Timeslot? = null
-    @PlanningVariable(valueRangeProviderRefs = ["roomRange"])
+    @PlanningVariable
     @ManyToOne
     var room: Room? = null
 

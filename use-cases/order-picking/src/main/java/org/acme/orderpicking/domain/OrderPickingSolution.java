@@ -9,9 +9,6 @@ import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty;
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
 
-import static org.acme.orderpicking.domain.TrolleyOrTrolleyStep.TROLLEY_RANGE;
-import static org.acme.orderpicking.domain.TrolleyOrTrolleyStep.TROLLEY_STEP_RANGE;
-
 @PlanningSolution
 public class OrderPickingSolution {
 
@@ -20,7 +17,7 @@ public class OrderPickingSolution {
      * 
      * @see TrolleyStep for more information about the model constructed by the Solver.
      */
-    @ValueRangeProvider(id = TROLLEY_RANGE)
+    @ValueRangeProvider
     @ProblemFactCollectionProperty
     private List<Trolley> trolleyList;
 
@@ -29,7 +26,7 @@ public class OrderPickingSolution {
      * 
      * @see TrolleyStep for more information about the model constructed by the Solver.
      */
-    @ValueRangeProvider(id = TROLLEY_STEP_RANGE)
+    @ValueRangeProvider
     @PlanningEntityCollectionProperty
     private List<TrolleyStep> trolleyStepList;
 

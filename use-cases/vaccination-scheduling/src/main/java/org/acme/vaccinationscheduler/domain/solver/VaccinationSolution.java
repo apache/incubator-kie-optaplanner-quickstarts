@@ -56,7 +56,7 @@ public class VaccinationSolution {
      * See {@link #VaccinationSolution(VaccinationSchedule)} and {@link #toSchedule()}.
      */
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "vaccinationSlotRange")
+    @ValueRangeProvider
     private List<VaccinationSlot> vaccinationSlotList;
 
     @PlanningEntityCollectionProperty

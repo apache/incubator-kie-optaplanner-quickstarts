@@ -21,7 +21,7 @@ public class Consumer {
     private Location location;
     private long demand;
 
-    @PlanningVariable(valueRangeProviderRefs = "facilityRange")
+    @PlanningVariable
     private Facility facility;
 
     public Consumer() {

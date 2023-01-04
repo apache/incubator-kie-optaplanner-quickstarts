@@ -27,7 +27,7 @@ public class Shift {
     String location;
     String requiredSkill;
 
-    @PlanningVariable(valueRangeProviderRefs = "employeeRange")
+    @PlanningVariable
     @ManyToOne
     Employee employee;
 

@@ -17,11 +17,11 @@ public class CallCenter {
     private Set<Skill> skills;
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "agentRange")
+    @ValueRangeProvider
     private List<Agent> agents;
 
     @PlanningEntityCollectionProperty
-    @ValueRangeProvider(id = "callRange")
+    @ValueRangeProvider
     private List<Call> calls;
 
     @PlanningScore
