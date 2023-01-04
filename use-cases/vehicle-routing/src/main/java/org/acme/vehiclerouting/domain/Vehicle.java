@@ -14,7 +14,7 @@ public class Vehicle {
     private int capacity;
     private Depot depot;
 
-    @PlanningListVariable(valueRangeProviderRefs = "customerRange")
+    @PlanningListVariable
     private List<Customer> customerList;
 
     public Vehicle() {

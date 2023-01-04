@@ -14,9 +14,9 @@ public class Lesson {
     private String teacher;
     private String studentGroup;
 
-    @PlanningVariable(valueRangeProviderRefs = "timeslotRange")
+    @PlanningVariable
     private Timeslot timeslot;
-    @PlanningVariable(valueRangeProviderRefs = "roomRange")
+    @PlanningVariable
     private Room room;
 
     Lesson() {

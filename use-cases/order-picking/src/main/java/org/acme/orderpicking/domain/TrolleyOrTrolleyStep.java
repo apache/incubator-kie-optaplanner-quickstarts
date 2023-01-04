@@ -12,8 +12,6 @@ import org.optaplanner.core.api.domain.variable.InverseRelationShadowVariable;
 @PlanningEntity
 public abstract class TrolleyOrTrolleyStep {
 
-    public static final String TROLLEY_RANGE = "trolleyRange";
-    public static final String TROLLEY_STEP_RANGE = "trolleyStepRange";
     public static final String PREVIOUS_ELEMENT = "previousElement";
 
     /**

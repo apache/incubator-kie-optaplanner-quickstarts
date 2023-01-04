@@ -20,7 +20,7 @@ public class MaintenanceSchedule {
     @ProblemFactProperty
     private WorkCalendar workCalendar;
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "crewRange")
+    @ValueRangeProvider
     private List<Crew> crewList;
     @PlanningEntityCollectionProperty
     private List<Job> jobList;
@@ -42,7 +42,7 @@ public class MaintenanceSchedule {
         this.jobList = jobList;
     }
 
-    @ValueRangeProvider(id = "startDateRange")
+    @ValueRangeProvider
     public List<LocalDate> createStartDateList() {
         return workCalendar.getFromDate().datesUntil(workCalendar.getToDate())
                 // Skip weekends. Does not work for holidays.

@@ -30,7 +30,7 @@ public class Call extends PreviousCallOrAgent {
     private boolean pinned;
 
     @JsonIgnore
-    @PlanningVariable(valueRangeProviderRefs = { "agentRange", "callRange" }, graphType = PlanningVariableGraphType.CHAINED)
+    @PlanningVariable(graphType = PlanningVariableGraphType.CHAINED)
     private PreviousCallOrAgent previousCallOrAgent;
 
     @JsonIgnore

@@ -12,10 +12,10 @@ import org.optaplanner.core.api.solver.SolverStatus
 class TimeTable {
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "timeslotRange")
+    @ValueRangeProvider
     lateinit var timeslotList: List<Timeslot>
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "roomRange")
+    @ValueRangeProvider
     lateinit var roomList: List<Room>
     @PlanningEntityCollectionProperty
     lateinit var lessonList: List<Lesson>

@@ -168,7 +168,7 @@ public class PersonAssignment {
         return person.isPinned();
     }
 
-    @PlanningVariable(nullable = true, valueRangeProviderRefs = {"vaccinationSlotRange"})
+    @PlanningVariable(nullable = true)
     public VaccinationSlot getVaccinationSlot() {
         return vaccinationSlot;
     }

@@ -13,10 +13,10 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
 public class TimeTable {
 
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "timeslotRange")
+    @ValueRangeProvider
     private List<Timeslot> timeslotList;
     @ProblemFactCollectionProperty
-    @ValueRangeProvider(id = "roomRange")
+    @ValueRangeProvider
     private List<Room> roomList;
     @PlanningEntityCollectionProperty
     private List<Lesson> lessonList;

@@ -32,11 +32,11 @@ public class Job {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> tagSet;
 
-    @PlanningVariable(valueRangeProviderRefs = { "crewRange" })
+    @PlanningVariable
     @ManyToOne
     private Crew crew;
     // Follows the TimeGrain Design Pattern
-    @PlanningVariable(valueRangeProviderRefs = { "startDateRange" })
+    @PlanningVariable
     private LocalDate startDate; // Inclusive
     @ShadowVariable(variableListenerClass = EndDateUpdatingVariableListener.class, sourceVariableName = "startDate")
     private LocalDate endDate; // Exclusive
