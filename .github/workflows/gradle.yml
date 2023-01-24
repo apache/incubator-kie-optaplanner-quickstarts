@@ -48,7 +48,7 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
       - name: Cache Gradle packages
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.gradle/caches
