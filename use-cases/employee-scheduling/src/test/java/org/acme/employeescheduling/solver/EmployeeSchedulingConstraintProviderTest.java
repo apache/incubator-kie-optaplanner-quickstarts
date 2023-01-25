@@ -21,13 +21,11 @@ import io.quarkus.test.junit.QuarkusTest;
 @QuarkusTest
 public class EmployeeSchedulingConstraintProviderTest {
     private static final LocalDate DAY_1 = LocalDate.of(2021, 2, 1);
-    private static final LocalDate DAY_2 = LocalDate.of(2021, 2, 2);
-    private static final LocalDate DAY_3 = LocalDate.of(2021, 2, 3);
 
-    LocalDateTime DAY_START_TIME = DAY_1.atTime(LocalTime.of(9, 0));
-    LocalDateTime DAY_END_TIME = DAY_1.atTime(LocalTime.of(17, 0));
-    LocalDateTime AFTERNOON_START_TIME = DAY_1.atTime(LocalTime.of(13, 0));
-    LocalDateTime AFTERNOON_END_TIME = DAY_1.atTime(LocalTime.of(21, 0));
+    private static final LocalDateTime DAY_START_TIME = DAY_1.atTime(LocalTime.of(9, 0));
+    private static final LocalDateTime DAY_END_TIME = DAY_1.atTime(LocalTime.of(17, 0));
+    private static final LocalDateTime AFTERNOON_START_TIME = DAY_1.atTime(LocalTime.of(13, 0));
+    private static final LocalDateTime AFTERNOON_END_TIME = DAY_1.atTime(LocalTime.of(21, 0));
 
     @Inject
     ConstraintVerifier<EmployeeSchedulingConstraintProvider, EmployeeSchedule> constraintVerifier;
