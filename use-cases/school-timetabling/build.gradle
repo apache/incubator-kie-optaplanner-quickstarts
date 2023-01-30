@@ -5,6 +5,7 @@ plugins {
 
 def quarkusVersion = "2.16.0.Final"
 def optaplannerVersion = "8.34.0-SNAPSHOT"
+def assertjVersion = "3.24.2"
 
 group = "org.acme"
 version = "1.0-SNAPSHOT"
@@ -38,6 +39,7 @@ dependencies {
     implementation "org.optaplanner:optaplanner-quarkus-jackson"
     testImplementation "org.optaplanner:optaplanner-test"
     testImplementation "org.optaplanner:optaplanner-quarkus-benchmark"
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
 
     runtimeOnly "org.webjars:bootstrap:4.3.1"
     runtimeOnly "org.webjars:jquery:3.4.1"

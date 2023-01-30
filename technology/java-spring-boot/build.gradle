@@ -5,6 +5,7 @@ plugins {
 }
 
 def optaplannerVersion = "8.34.0-SNAPSHOT"
+def assertjVersion = "3.24.2"
 
 group = "org.acme"
 archivesBaseName = "optaplanner-spring-boot-school-timetabling-quickstart"
@@ -34,6 +35,7 @@ dependencies {
     implementation "org.optaplanner:optaplanner-spring-boot-starter"
     testImplementation("org.optaplanner:optaplanner-test")
     testImplementation("org.optaplanner:optaplanner-benchmark")
+    testImplementation "org.assertj:assertj-core:${assertjVersion}"
 
     runtimeOnly "com.h2database:h2"
     runtimeOnly "org.webjars:webjars-locator:0.37"
