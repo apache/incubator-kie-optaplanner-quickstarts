@@ -49,8 +49,7 @@ setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_NATIVE)
 setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN)
 setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
 
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL)
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
+setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_NATIVE_LTS)
 setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
 
 // Tools
