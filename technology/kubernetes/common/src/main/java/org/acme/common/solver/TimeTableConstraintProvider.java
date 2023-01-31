@@ -80,7 +80,8 @@ public class TimeTableConstraintProvider implements ConstraintProvider {
                             lesson2.getTimeslot().getStartTime());
                     return !between.isNegative() && between.compareTo(Duration.ofMinutes(30)) <= 0;
                 })
-                .reward("Teacher time efficiency", HardSoftScore.ONE_SOFT);
+                .reward(HardSoftScore.ONE_SOFT)
+                .asConstraint("Teacher time efficiency");
     }
 
     Constraint studentGroupSubjectVariety(ConstraintFactory constraintFactory) {

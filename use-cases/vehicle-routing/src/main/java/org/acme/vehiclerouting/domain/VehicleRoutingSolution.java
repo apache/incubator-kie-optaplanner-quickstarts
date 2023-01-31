@@ -118,6 +118,6 @@ public class VehicleRoutingSolution {
     }
 
     public long getDistanceMeters() {
-        return score == null ? 0 : -score.getSoftScore();
+        return score == null ? 0 : -score.softScore();
     }
 }
