@@ -27,6 +27,7 @@ import org.acme.common.message.SolverRequest;
 import org.acme.common.message.SolverResponse;
 import org.acme.common.persistence.TimeTableRepository;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.mockito.Mockito;
@@ -81,6 +82,7 @@ public class MessageHandlerTest {
         });
     }
 
+    @Disabled("https://github.com/quarkusio/quarkus/issues/30788")
     @Test
     @Timeout(TEST_TIMEOUT_SECONDS)
     void incorrectSolutionClass_respondsWithError() {
