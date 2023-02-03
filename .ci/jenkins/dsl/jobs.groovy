@@ -8,7 +8,8 @@
 * https://github.com/kiegroup/kogito-pipelines/tree/main/dsl/seed/src/main/groovy/org/kie/jenkins/jobdsl.
 */
 
-import org.kie.jenkins.jobdsl.model.Folder
+import org.kie.jenkins.jobdsl.model.JobType
+import org.kie.jenkins.jobdsl.utils.JobParamsUtils
 import org.kie.jenkins.jobdsl.KogitoJobTemplate
 import org.kie.jenkins.jobdsl.KogitoJobUtils
 import org.kie.jenkins.jobdsl.Utils
@@ -38,20 +39,18 @@ Map getMultijobPRConfig() {
 }
 
 // Optaplanner PR checks
-KogitoJobUtils.createAllEnvsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConfig() }
+KogitoJobUtils.createAllEnvironmentsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConfig() }
 
 // Init branch
 createSetupBranchJob()
 
 // Nightlies
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_NATIVE)
-
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_MAIN)
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_BRANCH)
-
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL)
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_MANDREL_LTS)
-setupSpecificBuildChainNightlyJob(Folder.NIGHTLY_QUARKUS_LTS)
+setupSpecificBuildChainNightlyJob('native')
+setupSpecificBuildChainNightlyJob('quarkus-main')
+setupSpecificBuildChainNightlyJob('quarkus-branch')
+setupSpecificBuildChainNightlyJob('mandrel')
+setupSpecificBuildChainNightlyJob('quarkus-lts')
+setupSpecificBuildChainNightlyJob('mandrel-lts')
 
 // Tools
 KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
@@ -62,14 +61,13 @@ KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
     regex: [ 'id \\"io.quarkus\\" version', 'def quarkusVersion =' ]
 ])
 
-void setupSpecificBuildChainNightlyJob(Folder specificNightlyFolder) {
-    String envName = specificNightlyFolder.environment.toName()
-    KogitoJobUtils.createNightlyBuildChainBuildAndTestJobForCurrentRepo(this, specificNightlyFolder, true, envName)
+void setupSpecificBuildChainNightlyJob(String envName) {
+    KogitoJobUtils.createNightlyBuildChainBuildAndTestJobForCurrentRepo(this, envName, true)
 }
 
 void createSetupBranchJob() {
-    def jobParams = KogitoJobUtils.getBasicJobParams(this, 'optaplanner-quickstarts', Folder.SETUP_BRANCH, "${jenkins_path}/Jenkinsfile.setup-branch", 'OptaPlanner Quickstarts Setup Branch')
-    KogitoJobUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
+    def jobParams = JobParamsUtils.getBasicJobParams(this, 'optaplanner-quickstarts', JobType.SETUP_BRANCH, "${jenkins_path}/Jenkinsfile.setup-branch", 'OptaPlanner Quickstarts Setup Branch')
+    JobParamsUtils.setupJobParamsDefaultMavenConfiguration(this, jobParams)
     jobParams.env.putAll([
         REPO_NAME: 'optaplanner-quickstarts',
         JENKINS_EMAIL_CREDS_ID: "${JENKINS_EMAIL_CREDS_ID}",
