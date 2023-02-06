@@ -48,9 +48,8 @@ createSetupBranchJob()
 setupSpecificBuildChainNightlyJob('native')
 setupSpecificBuildChainNightlyJob('quarkus-main')
 setupSpecificBuildChainNightlyJob('quarkus-branch')
-setupSpecificBuildChainNightlyJob('mandrel')
 setupSpecificBuildChainNightlyJob('quarkus-lts')
-setupSpecificBuildChainNightlyJob('mandrel-lts')
+setupSpecificBuildChainNightlyJob('native-lts')
 
 // Tools
 KogitoJobUtils.createQuarkusUpdateToolsJob(this, 'optaplanner-quickstarts', [
