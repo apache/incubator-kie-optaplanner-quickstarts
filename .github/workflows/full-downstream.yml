@@ -52,7 +52,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.java-version }}-m2
       - name: Build Chain ${{ matrix.java-version }}
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v3.1.4
+        uses: kiegroup/github-action-build-chain@v3.1.5
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/optaplanner/main/.ci/buildchain-config.yaml
         env:
