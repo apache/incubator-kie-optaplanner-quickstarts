@@ -2,8 +2,8 @@ package org.acme.schooltimetabling.rest;
 
 import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.persistence.TimeTableRepository;
-import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.optaplanner.core.api.solver.SolutionManager;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ public class TimeTableController {
     @Autowired
     private SolverManager<TimeTable, Long> solverManager;
     @Autowired
-    private ScoreManager<TimeTable, HardSoftScore> scoreManager;
+    private SolutionManager<TimeTable, HardSoftScore> solutionManager;
 
     // To try, GET http://localhost:8080/timeTable
     @GetMapping()
@@ -30,7 +30,7 @@ public class TimeTableController {
         // to avoid the race condition that the solver terminates between them
         SolverStatus solverStatus = getSolverStatus();
         TimeTable solution = timeTableRepository.findById(TimeTableRepository.SINGLETON_TIME_TABLE_ID);
-        scoreManager.updateScore(solution); // Sets the score
+        solutionManager.update(solution); // Sets the score
         solution.setSolverStatus(solverStatus);
         return solution;
     }

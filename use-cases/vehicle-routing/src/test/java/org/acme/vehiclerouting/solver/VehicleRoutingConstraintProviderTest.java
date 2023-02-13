@@ -11,7 +11,6 @@ import org.acme.vehiclerouting.domain.Location;
 import org.acme.vehiclerouting.domain.Vehicle;
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
 import org.acme.vehiclerouting.domain.geo.EuclideanDistanceCalculator;
-import org.acme.vehiclerouting.solver.VehicleRoutingConstraintProvider;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.optaplanner.test.api.score.stream.ConstraintVerifier;

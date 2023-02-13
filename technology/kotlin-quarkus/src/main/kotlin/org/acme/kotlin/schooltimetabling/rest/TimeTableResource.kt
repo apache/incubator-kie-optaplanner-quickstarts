@@ -6,8 +6,8 @@ import org.acme.kotlin.schooltimetabling.domain.TimeTable
 import org.acme.kotlin.schooltimetabling.persistence.LessonRepository
 import org.acme.kotlin.schooltimetabling.persistence.RoomRepository
 import org.acme.kotlin.schooltimetabling.persistence.TimeslotRepository
-import org.optaplanner.core.api.score.ScoreManager
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore
+import org.optaplanner.core.api.solver.SolutionManager
 import org.optaplanner.core.api.solver.SolverManager
 import org.optaplanner.core.api.solver.SolverStatus
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class TimeTableResource {
     @Inject
     lateinit var solverManager: SolverManager<TimeTable, Long>
     @Inject
-    lateinit var scoreManager: ScoreManager<TimeTable, HardSoftScore>
+    lateinit var solutionManager: SolutionManager<TimeTable, HardSoftScore>
 
     // To try, open http://localhost:8080/timeTable
     @GET
@@ -41,7 +41,7 @@ class TimeTableResource {
         // to avoid the race condition that the solver terminates between them
         val solverStatus = getSolverStatus()
         val solution: TimeTable = findById(SINGLETON_TIME_TABLE_ID)
-        scoreManager.updateScore(solution) // Sets the score
+        solutionManager.update(solution) // Sets the score
         solution.solverStatus = solverStatus
         return solution
     }

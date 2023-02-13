@@ -1,8 +1,5 @@
 package org.acme.maintenancescheduling.domain;
 
-import java.time.Duration;
-import java.time.LocalDate;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;

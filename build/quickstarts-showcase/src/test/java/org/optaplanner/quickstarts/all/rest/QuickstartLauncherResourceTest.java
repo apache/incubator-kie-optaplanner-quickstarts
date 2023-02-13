@@ -1,7 +1,7 @@
 package org.optaplanner.quickstarts.all.rest;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.List;
 

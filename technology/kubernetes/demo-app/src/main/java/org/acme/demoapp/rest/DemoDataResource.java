@@ -16,7 +16,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.acme.common.domain.TimeTable;
-import org.acme.common.event.SolverEvent;
 import org.acme.common.message.SolverRequest;
 import org.acme.common.message.SolverResponse;
 import org.acme.common.persistence.TimeTableRepository;
@@ -26,8 +25,8 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 import org.eclipse.microprofile.reactive.messaging.Message;
-import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.optaplanner.core.api.solver.SolutionManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,7 +46,7 @@ public class DemoDataResource {
 
     private final EventResource eventResource;
 
-    private final ScoreManager<TimeTable, HardSoftScore> scoreManager;
+    private final SolutionManager<TimeTable, HardSoftScore> solutionManager;
 
     private final ObjectMapper objectMapper;
 
@@ -56,13 +55,13 @@ public class DemoDataResource {
     @Inject
     public DemoDataResource(DemoDataGenerator demoDataGenerator, TimeTableRepository timeTableRepository,
                             @Channel("solver_request") Emitter<String> solverRequestEmitter,
-                            EventResource eventResource, ScoreManager<TimeTable, HardSoftScore> scoreManager,
+                            EventResource eventResource, SolutionManager<TimeTable, HardSoftScore> solutionManager,
                             ObjectMapper objectMapper) {
         this.demoDataGenerator = demoDataGenerator;
         this.timeTableRepository = timeTableRepository;
         this.solverRequestEmitter = solverRequestEmitter;
         this.eventResource = eventResource;
-        this.scoreManager = scoreManager;
+        this.solutionManager = solutionManager;
         this.objectMapper = objectMapper;
     }
 
@@ -114,7 +113,7 @@ public class DemoDataResource {
                 solverResponseMessage.nack(exception);
                 throw exception;
             }
-            scoreManager.updateScore(timeTable);
+            solutionManager.update(timeTable);
             Dataset dataset = datasets.get(problemId);
             if (dataset == null) {
                 throw new IllegalStateException("Impossible state: Received a notification about a solved dataset ("
