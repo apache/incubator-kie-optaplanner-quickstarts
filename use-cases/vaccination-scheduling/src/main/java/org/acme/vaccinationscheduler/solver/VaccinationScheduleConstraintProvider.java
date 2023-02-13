@@ -4,7 +4,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 import static java.time.temporal.ChronoUnit.MINUTES;
 
 import java.time.LocalDateTime;
-import java.util.function.Predicate;
 
 import org.acme.vaccinationscheduler.domain.solver.PersonAssignment;
 import org.optaplanner.core.api.score.buildin.bendablelong.BendableLongScore;

@@ -11,8 +11,8 @@ import org.acme.schooltimetabling.domain.TimeTable;
 import org.acme.schooltimetabling.persistence.LessonRepository;
 import org.acme.schooltimetabling.persistence.RoomRepository;
 import org.acme.schooltimetabling.persistence.TimeslotRepository;
-import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.optaplanner.core.api.solver.SolutionManager;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 
@@ -33,7 +33,7 @@ public class TimeTableResource {
     @Inject
     SolverManager<TimeTable, Long> solverManager;
     @Inject
-    ScoreManager<TimeTable, HardSoftScore> scoreManager;
+    SolutionManager<TimeTable, HardSoftScore> solutionManager;
 
     // To try, open http://localhost:8080/timeTable
     @GET
@@ -42,7 +42,7 @@ public class TimeTableResource {
         // to avoid the race condition that the solver terminates between them
         SolverStatus solverStatus = getSolverStatus();
         TimeTable solution = findById(SINGLETON_TIME_TABLE_ID);
-        scoreManager.updateScore(solution); // Sets the score
+        solutionManager.update(solution); // Sets the score
         solution.setSolverStatus(solverStatus);
         return solution;
     }

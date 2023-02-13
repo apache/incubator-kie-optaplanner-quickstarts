@@ -12,8 +12,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.acme.vehiclerouting.domain.VehicleRoutingSolution;
 import org.acme.vehiclerouting.persistence.VehicleRoutingSolutionRepository;
-import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
+import org.optaplanner.core.api.solver.SolutionManager;
 import org.optaplanner.core.api.solver.SolverManager;
 
 @Path("/vrp")
@@ -27,18 +27,19 @@ public class SolverResource {
 
     private final VehicleRoutingSolutionRepository repository;
     private final SolverManager<VehicleRoutingSolution, Long> solverManager;
-    private final ScoreManager<VehicleRoutingSolution, HardSoftLongScore> scoreManager;
+    private final SolutionManager<VehicleRoutingSolution, HardSoftLongScore> solutionManager;
 
     public SolverResource(VehicleRoutingSolutionRepository repository,
             SolverManager<VehicleRoutingSolution, Long> solverManager,
-            ScoreManager<VehicleRoutingSolution, HardSoftLongScore> scoreManager) {
+            SolutionManager<VehicleRoutingSolution, HardSoftLongScore> solutionManager) {
         this.repository = repository;
         this.solverManager = solverManager;
-        this.scoreManager = scoreManager;
+        this.solutionManager = solutionManager;
     }
 
     private Status statusFromSolution(VehicleRoutingSolution solution) {
-        return new Status(solution, scoreManager.explainScore(solution).getSummary(),
+        return new Status(solution,
+                solutionManager.explain(solution).getSummary(),
                 solverManager.getSolverStatus(PROBLEM_ID));
     }
 

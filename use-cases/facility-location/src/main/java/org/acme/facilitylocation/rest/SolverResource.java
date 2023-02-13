@@ -6,13 +6,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 
 import org.acme.facilitylocation.domain.FacilityLocationProblem;
 import org.acme.facilitylocation.persistence.FacilityLocationProblemRepository;
-import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoftlong.HardSoftLongScore;
+import org.optaplanner.core.api.solver.SolutionManager;
 import org.optaplanner.core.api.solver.SolverManager;
 
 @Path("/flp")
@@ -24,21 +22,19 @@ public class SolverResource {
 
     private final FacilityLocationProblemRepository repository;
     private final SolverManager<FacilityLocationProblem, Long> solverManager;
-    private final ScoreManager<FacilityLocationProblem, HardSoftLongScore> scoreManager;
+    private final SolutionManager<FacilityLocationProblem, HardSoftLongScore> solutionManager;
 
-    public SolverResource(
-            FacilityLocationProblemRepository repository,
+    public SolverResource(FacilityLocationProblemRepository repository,
             SolverManager<FacilityLocationProblem, Long> solverManager,
-            ScoreManager<FacilityLocationProblem, HardSoftLongScore> scoreManager) {
+            SolutionManager<FacilityLocationProblem, HardSoftLongScore> solutionManager) {
         this.repository = repository;
         this.solverManager = solverManager;
-        this.scoreManager = scoreManager;
+        this.solutionManager = solutionManager;
     }
 
     private Status statusFromSolution(FacilityLocationProblem solution) {
-        return new Status(
-                solution,
-                scoreManager.explainScore(solution).getSummary(),
+        return new Status(solution,
+                solutionManager.explain(solution).getSummary(),
                 solverManager.getSolverStatus(PROBLEM_ID));
     }
 

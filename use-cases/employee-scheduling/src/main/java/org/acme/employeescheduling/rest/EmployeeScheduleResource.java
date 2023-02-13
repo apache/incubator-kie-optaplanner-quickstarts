@@ -16,8 +16,8 @@ import org.acme.employeescheduling.persistence.AvailabilityRepository;
 import org.acme.employeescheduling.persistence.EmployeeRepository;
 import org.acme.employeescheduling.persistence.ScheduleStateRepository;
 import org.acme.employeescheduling.persistence.ShiftRepository;
-import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.optaplanner.core.api.solver.SolutionManager;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 
@@ -43,7 +43,7 @@ public class EmployeeScheduleResource {
     @Inject
     SolverManager<EmployeeSchedule, Long> solverManager;
     @Inject
-    ScoreManager<EmployeeSchedule, HardSoftScore> scoreManager;
+    SolutionManager<EmployeeSchedule, HardSoftScore> solutionManager;
 
     // To try, open http://localhost:8080/schedule
     @GET
@@ -52,7 +52,7 @@ public class EmployeeScheduleResource {
         // to avoid the race condition that the solver terminates between them
         SolverStatus solverStatus = getSolverStatus();
         EmployeeSchedule solution = findById(SINGLETON_SCHEDULE_ID);
-        scoreManager.updateScore(solution); // Sets the score
+        solutionManager.update(solution); // Sets the score
         solution.setSolverStatus(solverStatus);
         return solution;
     }

@@ -5,11 +5,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static java.time.temporal.ChronoUnit.DAYS;
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sum;
-import static org.optaplanner.core.api.score.stream.ConstraintCollectors.sumDuration;
 import static org.optaplanner.core.api.score.stream.Joiners.equal;
 import static org.optaplanner.core.api.score.stream.Joiners.filtering;
-import static org.optaplanner.core.api.score.stream.Joiners.lessThan;
 import static org.optaplanner.core.api.score.stream.Joiners.overlapping;
 
 import org.acme.maintenancescheduling.domain.Job;

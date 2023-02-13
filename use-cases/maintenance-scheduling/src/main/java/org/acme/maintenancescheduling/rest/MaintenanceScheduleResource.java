@@ -1,8 +1,5 @@
 package org.acme.maintenancescheduling.rest;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
@@ -11,12 +8,11 @@ import javax.ws.rs.Path;
 
 import org.acme.maintenancescheduling.domain.Job;
 import org.acme.maintenancescheduling.domain.MaintenanceSchedule;
-import org.acme.maintenancescheduling.domain.WorkCalendar;
 import org.acme.maintenancescheduling.persistence.CrewRepository;
 import org.acme.maintenancescheduling.persistence.JobRepository;
 import org.acme.maintenancescheduling.persistence.WorkCalendarRepository;
-import org.optaplanner.core.api.score.ScoreManager;
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore;
+import org.optaplanner.core.api.solver.SolutionManager;
 import org.optaplanner.core.api.solver.SolverManager;
 import org.optaplanner.core.api.solver.SolverStatus;
 
@@ -37,7 +33,7 @@ public class MaintenanceScheduleResource {
     @Inject
     SolverManager<MaintenanceSchedule, Long> solverManager;
     @Inject
-    ScoreManager<MaintenanceSchedule, HardSoftScore> scoreManager;
+    SolutionManager<MaintenanceSchedule, HardSoftScore> solutionManager;
 
     // To try, open http://localhost:8080/schedule
     @GET
@@ -46,7 +42,7 @@ public class MaintenanceScheduleResource {
         // to avoid the race condition that the solver terminates between them
         SolverStatus solverStatus = getSolverStatus();
         MaintenanceSchedule solution = findById(SINGLETON_SCHEDULE_ID);
-        scoreManager.updateScore(solution); // Sets the score
+        solutionManager.update(solution); // Sets the score
         solution.setSolverStatus(solverStatus);
         return solution;
     }
