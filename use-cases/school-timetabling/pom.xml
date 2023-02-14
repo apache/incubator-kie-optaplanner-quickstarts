@@ -11,8 +11,14 @@
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.io.quarkus>2.16.1.Final</version.io.quarkus>
-    <version.org.optaplanner>8.35.0-SNAPSHOT</version.org.optaplanner>
+    <quarkus-plugin.version>2.16.1.Final</quarkus-plugin.version>
+    <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+    <quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.version>2.16.1.Final</quarkus.platform.version>
+
+    <optaplanner.bom.group-id>org.optaplanner</optaplanner.bom.group-id>
+    <optaplanner.bom.artifact-id>optaplanner-bom</optaplanner.bom.artifact-id>
+    <optaplanner.bom.version>8.35.0-SNAPSHOT</optaplanner.bom.version>
     
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.surefire.plugin>3.0.0-M8</version.surefire.plugin>
@@ -21,18 +27,16 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.quarkus</groupId>
-        <!-- Alternatively, use <artifactId>quarkus-universe-bom</artifactId>
-         which includes both quarkus-bom and optaplanner-bom. -->
-        <artifactId>quarkus-bom</artifactId>
-        <version>${version.io.quarkus}</version>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>${quarkus.platform.artifact-id}</artifactId>
+        <version>${quarkus.platform.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>org.optaplanner</groupId>
-        <artifactId>optaplanner-bom</artifactId>
-        <version>${version.org.optaplanner}</version>
+        <groupId>${optaplanner.bom.group-id}</groupId>
+        <artifactId>${optaplanner.bom.artifact-id}</artifactId>
+        <version>${optaplanner.bom.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -139,9 +143,9 @@
         <version>${version.compiler.plugin}</version>
       </plugin>
       <plugin>
-        <groupId>io.quarkus</groupId>
+        <groupId>${quarkus.platform.group-id}</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
-        <version>${version.io.quarkus}</version>
+        <version>${quarkus-plugin.version}</version>
         <executions>
           <execution>
             <goals>
