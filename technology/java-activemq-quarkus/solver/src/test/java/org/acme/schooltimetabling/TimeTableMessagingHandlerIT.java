@@ -18,10 +18,10 @@ package org.acme.schooltimetabling;
 
 import org.junit.jupiter.api.Disabled;
 
-import io.quarkus.test.junit.NativeImageTest;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
 
 @Disabled("The native test hangs after starting the native image and before entering the first test method.")
-@NativeImageTest
+@QuarkusIntegrationTest
 public class TimeTableMessagingHandlerIT extends TimeTableMessagingHandlerTest {
 
 }
