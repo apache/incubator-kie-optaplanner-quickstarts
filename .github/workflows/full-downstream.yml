@@ -50,9 +50,9 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.java-version }}-m2
       - name: Build Chain ${{ matrix.java-version }}
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v2.6.8
+        uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@1.13.x
         with:
-          definition-file: https://raw.githubusercontent.com/${GROUP}/kogito-pipelines/main/.ci/pull-request-config.yaml
+          annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}
         env:
           BUILD_MVN_OPTS: '-Dproductized'
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
