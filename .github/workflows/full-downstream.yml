@@ -52,6 +52,7 @@ jobs:
         id: build-chain
         uses: kiegroup/kogito-pipelines/.ci/actions/build-chain@1.13.x
         with:
+          definition-file: https://raw.githubusercontent.com/kiegroup/kogito-pipelines/1.13.x/.ci/pull-request-config.yaml
           annotations-prefix: ${{ runner.os }}-${{ matrix.java-version }}
         env:
           BUILD_MVN_OPTS: '-Dproductized'
