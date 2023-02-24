@@ -7,7 +7,6 @@ import org.optaplanner.core.api.domain.variable.PlanningVariable;
 @PlanningEntity
 public class Lesson {
 
-    @PlanningId
     private Long id;
 
     private String subject;
@@ -45,6 +44,7 @@ public class Lesson {
     // Getters and setters
     // ************************************************************************
 
+    @PlanningId
     public Long getId() {
         return id;
     }

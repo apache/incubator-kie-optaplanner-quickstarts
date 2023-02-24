@@ -24,24 +24,28 @@ public class TimeTableApp {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeTableApp.class);
 
-    public static void main(String[] args) {
-        SolverFactory<TimeTable> solverFactory = SolverFactory.create(new SolverConfig()
-                .withSolutionClass(TimeTable.class)
-                .withEntityClasses(Lesson.class)
-                .withConstraintProviderClass(TimeTableConstraintProvider.class)
-                // The solver runs only for 5 seconds on this small dataset.
-                // It's recommended to run for at least 5 minutes ("5m") otherwise.
-                .withTerminationSpentLimit(Duration.ofSeconds(5)));
+    public static void main(String[] args) throws InterruptedException {
+        while(true) {
+            SolverFactory<TimeTable> solverFactory = SolverFactory.create(new SolverConfig()
+                    .withSolutionClass(TimeTable.class)
+                    .withEntityClasses(Lesson.class)
+                    .withConstraintProviderClass(TimeTableConstraintProvider.class)
+                    // The solver runs only for 5 seconds on this small dataset.
+                    // It's recommended to run for at least 5 minutes ("5m") otherwise.
+                    .withTerminationSpentLimit(Duration.ofSeconds(5)));
 
-        // Load the problem
-        TimeTable problem = generateDemoData();
+            // Load the problem
+            TimeTable problem = generateDemoData();
 
-        // Solve the problem
-        Solver<TimeTable> solver = solverFactory.buildSolver();
-        TimeTable solution = solver.solve(problem);
+            // Solve the problem
+            Solver<TimeTable> solver = solverFactory.buildSolver();
+            TimeTable solution = solver.solve(problem);
 
-        // Visualize the solution
-        printTimetable(solution);
+            Thread.sleep(1000);
+        }
+
+//        // Visualize the solution
+//        printTimetable(solution);
     }
 
     public static TimeTable generateDemoData() {
