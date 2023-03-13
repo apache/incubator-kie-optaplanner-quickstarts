@@ -14,6 +14,17 @@
   <name>OptaPlanner Distribution</name>
   <description>This module builds the download zip.</description>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.optaplanner</groupId>
+        <artifactId>optaplanner-distribution-internal</artifactId>
+        <version>${project.version}</version>
+        <type>zip</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <build>
     <plugins>
       <plugin>
