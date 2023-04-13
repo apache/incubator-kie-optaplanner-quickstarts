@@ -39,9 +39,10 @@
           <name>!productized</name>
         </property>
       </activation>
-      <modules>
+      <!--  TODO: enable after migrating the quickstart to Quarkus 3. -->
+<!--      <modules>
         <module>technology/kubernetes</module>
-      </modules>
+      </modules>-->
     </profile>
 
     <profile>
