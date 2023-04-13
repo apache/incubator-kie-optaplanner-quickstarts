@@ -1,16 +1,16 @@
 plugins {
-    id "org.springframework.boot" version "2.6.6"
+    id "org.springframework.boot" version "3.0.1"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id "java"
 }
 
-def optaplannerVersion = "8.38.0-SNAPSHOT"
+def optaplannerVersion = "9.37.0-SNAPSHOT"
 def assertjVersion = "3.24.2"
 
 group = "org.acme"
 archivesBaseName = "optaplanner-spring-boot-school-timetabling-quickstart"
 version = "1.0-SNAPSHOT"
-sourceCompatibility = "11"
+sourceCompatibility = "17"
 
 repositories {
     mavenCentral()
