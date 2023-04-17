@@ -31,6 +31,12 @@ jobs:
       - name: Support long paths
         if: ${{ matrix.os == 'windows-latest' }}
         uses: kiegroup/kogito-pipelines/.ci/actions/long-paths@main
+      - name: Sets the migration env variable on Windows
+        if: runner.os == 'Windows'
+        run: echo "MIGRATE_TO_9=${{ github.base_ref == 'development' }}" >> $env:GITHUB_ENV
+      - name: Sets the migration env variable on Linux
+        if: runner.os != 'Windows'
+        run: echo "MIGRATE_TO_9=${{ github.base_ref == 'development' }}" >> $GITHUB_ENV
       - name: Java and Maven Setup
         uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
         with:
