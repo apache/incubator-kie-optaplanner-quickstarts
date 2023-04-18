@@ -1,7 +1,7 @@
 package org.optaplanner.quickstarts.all.rest;
 
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
 
 import io.quarkus.runtime.Quarkus;
 

@@ -27,6 +27,7 @@ Map getMultijobPRConfig() {
                 env : [
                     BUILD_MVN_OPTS_CURRENT: '-Dfull',
                     OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: '-Dfull',
+                    MIGRATE_TO_9: Utils.isMainBranch(this)
                 ]
             ]
         ],

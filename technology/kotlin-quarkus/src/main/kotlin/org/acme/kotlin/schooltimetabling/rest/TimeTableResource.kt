@@ -10,11 +10,11 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore
 import org.optaplanner.core.api.solver.SolutionManager
 import org.optaplanner.core.api.solver.SolverManager
 import org.optaplanner.core.api.solver.SolverStatus
-import javax.inject.Inject
-import javax.transaction.Transactional
-import javax.ws.rs.GET
-import javax.ws.rs.POST
-import javax.ws.rs.Path
+import jakarta.inject.Inject
+import jakarta.transaction.Transactional
+import jakarta.ws.rs.GET
+import jakarta.ws.rs.POST
+import jakarta.ws.rs.Path
 
 
 @Path("timeTable")
