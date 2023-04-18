@@ -25,12 +25,11 @@ Login as a user with the `cluster-admin` role using the `oc login` command.
 To set up the demo, run `./demo.sh setup [path to the OptaPlanner distribution]`.
 
 The script installs KEDA, ArtemisCloud, and OptaPlanner operators and creates a single Artemis AMQ broker in the OpenShift cluster.
-It also prints information about the Artemis AMQ broker required in the next steps.
+It also prints information about the Artemis AMQ broker required in the next steps. You can skip following instructions and jump right into <<#createSolver, creating the school-timetabling solver>>.
 
 === Install the required operators and deploy the Demo application manually
 
 This section describes a manual set up as an alternative to <<#setupByScript>>.
-If you have already set up the demo by the script, proceed to <<#createSolver, creating the school-timetabling solver>>.
 
 ==== Create a project
 

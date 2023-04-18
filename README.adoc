@@ -20,9 +20,7 @@ a|* link:use-cases/school-timetabling/README.adoc[Quarkus] (Java, Maven or Gradl
 * link:technology/kotlin-quarkus/README.adoc[Kotlin] (Kotlin, Maven, Quarkus, H2)
 * link:technology/python/README.adoc[Python (experimental)] (Python, Pip)
 
-2+a|* <<optaweb-vehicle-routing, OptaWeb Vehicle Routing>>
-* <<optaweb-employee-rostering, OptaWeb Employee Rostering>>
-* <<optaplanner-examples, OptaPlanner examples (desktop)>>
+2+a|* <<optaplanner-examples, OptaPlanner examples (desktop)>>
 |===
 
 == Get started
@@ -121,24 +119,6 @@ Find the most efficient routes for a fleet of vehicles.
 image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/quarkus-vehicle-routing-screenshot.png[]
 
 * link:use-cases/vehicle-routing/README.adoc[Run quarkus-vehicle-routing] (Java, Maven, Quarkus)
-
-[[optaweb-vehicle-routing]]
-=== OptaWeb Vehicle Routing
-
-Find the most efficient routes for a fleet of vehicles.
-
-image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/optaweb-vehicle-routing-screenshot.png[]
-
-* https://github.com/kiegroup/optaweb-vehicle-routing[Try me on GitHub!]
-
-[[optaweb-employee-rostering]]
-=== OptaWeb Employee Rostering
-
-Assign employees to shifts to improve shifts schedule.
-
-image::build/quickstarts-showcase/src/main/resources/META-INF/resources/screenshot/optaweb-employee-rostering-screenshot.png[]
-
-* https://github.com/kiegroup/optaweb-employee-rostering[Try me on GitHub!]
 
 [[optaplanner-examples]]
 === OptaPlanner examples (desktop)

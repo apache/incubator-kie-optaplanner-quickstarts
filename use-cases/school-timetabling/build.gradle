@@ -1,10 +1,10 @@
 plugins {
     id "java"
-    id "io.quarkus" version "2.16.4.Final"
+    id "io.quarkus" version "2.16.6.Final"
 }
 
-def quarkusVersion = "2.16.4.Final"
-def optaplannerVersion = "8.36.0-SNAPSHOT"
+def quarkusVersion = "2.16.6.Final"
+def optaplannerVersion = "8.38.0-SNAPSHOT"
 def assertjVersion = "3.24.2"
 
 group = "org.acme"
