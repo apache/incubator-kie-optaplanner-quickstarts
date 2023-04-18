@@ -7,7 +7,7 @@ optaplannerRepo = 'optaplanner'
 
 pipeline {
     agent {
-        label 'kie-rhel7 && kie-mem16g && !built-in'
+        label 'kie-rhel8 && !built-in'
     }
 
     tools {
@@ -88,16 +88,6 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to repository') {
-            when {
-                expression { return shouldDeployToRepository() }
-            }
-            steps {
-                script {
-                    runMavenDeploy(getRepoName())
-                }
-            }
-        }
     }
     post {
         unsuccessful {
@@ -129,10 +119,6 @@ void checkoutRepo(String repository, String branch) {
     }
 }
 
-boolean shouldDeployToRepository() {
-    return env.MAVEN_DEPLOY_REPOSITORY || getGitAuthor() == 'kiegroup'
-}
-
 String getRepoName() {
     return env.REPO_NAME
 }
@@ -158,16 +144,4 @@ MavenCommand getMavenCommand(String directory) {
     return new MavenCommand(this, ['-fae', '-ntp'])
                 .withSettingsXmlId(env.MAVEN_SETTINGS_CONFIG_FILE_ID)
                 .inDirectory(directory)
-}
-
-void runMavenDeploy(String directory) {
-    mvnCmd = getMavenCommand(directory)
-
-    mvnCmd.withOptions(['-pl', ':optaplanner-distribution']).withProperty('full')
-
-    if (env.MAVEN_DEPLOY_REPOSITORY) {
-        mvnCmd.withDeployRepository(env.MAVEN_DEPLOY_REPOSITORY)
-    }
-
-    mvnCmd.skipTests(true).run('clean deploy')
 }
