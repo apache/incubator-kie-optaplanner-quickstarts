@@ -2,7 +2,7 @@ package org.acme.common.persistence;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.acme.common.domain.Timeslot;
 

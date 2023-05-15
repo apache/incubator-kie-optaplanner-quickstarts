@@ -1,6 +1,6 @@
 package org.acme.common.domain;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class Room extends AbstractPersistable {
