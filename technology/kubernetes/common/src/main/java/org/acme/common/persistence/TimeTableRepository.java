@@ -1,8 +1,8 @@
 package org.acme.common.persistence;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 
 import org.acme.common.domain.Lesson;
 import org.acme.common.domain.TimeTable;

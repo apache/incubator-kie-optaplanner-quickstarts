@@ -3,15 +3,15 @@ package org.acme.schooltimetabling.messaging;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSConsumer;
-import javax.jms.JMSContext;
-import javax.jms.JMSProducer;
-import javax.jms.Message;
-import javax.jms.Queue;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.inject.Inject;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.JMSConsumer;
+import jakarta.jms.JMSContext;
+import jakarta.jms.JMSProducer;
+import jakarta.jms.Message;
+import jakarta.jms.Queue;
 
 import org.acme.common.domain.TimeTable;
 import org.acme.common.message.SolverRequest;

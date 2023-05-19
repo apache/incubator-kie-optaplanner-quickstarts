@@ -47,8 +47,7 @@
       <dependency>
         <groupId>io.quarkiverse.artemis</groupId>
         <artifactId>quarkus-artemis-jms</artifactId>
-        <!-- TODO: upgrade to Final when it's available. -->
-        <version>3.0.0.CR1</version>
+        <version>3.0.0</version>
       </dependency>
       <dependency>
         <groupId>org.acme</groupId>
