@@ -2,8 +2,8 @@ package org.acme.demoapp.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.enterprise.inject.Any;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Any;
+import jakarta.inject.Inject;
 
 import org.acme.common.domain.TimeTable;
 import org.acme.common.message.SolverRequest;
@@ -18,8 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
-import io.smallrye.reactive.messaging.providers.connectors.InMemoryConnector;
-import io.smallrye.reactive.messaging.providers.connectors.InMemorySink;
+import io.smallrye.reactive.messaging.memory.InMemoryConnector;
+import io.smallrye.reactive.messaging.memory.InMemorySink;
 
 @QuarkusTest
 @QuarkusTestResource(InMemoryBrokerLifecycleManager.class)

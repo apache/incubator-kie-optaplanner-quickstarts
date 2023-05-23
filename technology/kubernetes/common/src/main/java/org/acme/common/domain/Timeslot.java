@@ -3,7 +3,7 @@ package org.acme.common.domain;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class Timeslot extends AbstractPersistable {
