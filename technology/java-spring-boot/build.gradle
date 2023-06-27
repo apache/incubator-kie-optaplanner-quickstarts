@@ -4,7 +4,7 @@ plugins {
     id "java"
 }
 
-def optaplannerVersion = "9.40.0.Final"
+def optaplannerVersion = "9.40.1-SNAPSHOT"
 def assertjVersion = "3.24.2"
 
 group = "org.acme"

@@ -21,7 +21,7 @@
 
     <version.org.apache.activemq>2.28.0</version.org.apache.activemq>
     <version.io.quarkus>3.0.0.Final</version.io.quarkus>
-    <version.org.optaplanner>9.40.0.Final</version.org.optaplanner>
+    <version.org.optaplanner>9.40.1-SNAPSHOT</version.org.optaplanner>
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.jandex.plugin>1.0.8</version.jandex.plugin>
     <version.surefire.plugin>3.0.0-M8</version.surefire.plugin>
