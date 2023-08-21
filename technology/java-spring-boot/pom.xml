@@ -11,7 +11,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.org.optaplanner>9.43.0.Final</version.org.optaplanner>
+    <version.org.optaplanner>9.43.1-SNAPSHOT</version.org.optaplanner>
     <version.org.springframework.boot>3.0.7</version.org.springframework.boot>
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
