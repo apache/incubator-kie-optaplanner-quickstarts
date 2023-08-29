@@ -11,7 +11,7 @@
     <maven.compiler.release>11</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <version.io.quarkus>2.16.9.Final</version.io.quarkus>
+    <version.io.quarkus>2.16.10.Final</version.io.quarkus>
     <version.org.optaplanner>8.44.0-SNAPSHOT</version.org.optaplanner>
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
