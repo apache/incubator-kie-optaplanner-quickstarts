@@ -35,9 +35,7 @@ Map getMultijobPRConfig() {
 }
 
 // Optaplanner PR checks
-// Deactivated due to ghprb not available on Apache Jenkins
-// TODO create PR job with branch source plugin
-// KogitoJobUtils.createAllEnvironmentsPerRepoPRJobs(this) { jobFolder -> getMultijobPRConfig() }
+Utils.isMainBranch(this) && KogitoJobTemplate.createPullRequestMultibranchPipelineJob(this, "${jenkins_path}/Jenkinsfile")
 
 // Init branch
 createSetupBranchJob()
