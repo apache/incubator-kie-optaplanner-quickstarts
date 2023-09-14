@@ -42,7 +42,7 @@ jobs:
         quickstartDir: ['hello-world', 'use-cases/school-timetabling', 'technology/java-spring-boot']
         java-version: [17] # JDK 19 not yet supported by Gradle.
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
