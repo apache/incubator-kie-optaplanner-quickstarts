@@ -19,7 +19,7 @@ and also the external https://github.com/quarkusio/quarkus-quickstarts/tree/main
 ### Referenced pull requests
 
 <!-- Add URLs of all referenced pull requests if they exist. This is only required when making
-changes that span multiple apache repositories and depend on each other. -->
+changes that span multiple KIE repositories and depend on each other. -->
 <!-- Example:
 - https://github.com/kiegroup/droolsjbpm-build-bootstrap/pull/1234
 - https://github.com/apache/incubator-kie-drools/pull/3000
