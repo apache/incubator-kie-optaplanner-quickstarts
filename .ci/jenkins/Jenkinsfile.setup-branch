@@ -3,16 +3,18 @@ import org.jenkinsci.plugins.workflow.libs.Library
 
 import org.kie.jenkins.MavenCommand
 
-optaplannerRepo = 'optaplanner'
+optaplannerRepo = 'incubator-kie-optaplanner'
 
 pipeline {
     agent {
-        label util.avoidFaultyNodes('kie-rhel8 && !built-in')
+        label 'ubuntu'
     }
 
     tools {
-        maven env.BUILD_MAVEN_TOOL
-        jdk env.BUILD_JDK_TOOL
+        docker { 
+            image env.AGENT_DOCKER_BUILDER_IMAGE
+            args env.AGENT_DOCKER_BUILDER_ARGS
+        }
     }
 
     options {
@@ -20,17 +22,8 @@ pipeline {
         timeout(time: 60, unit: 'MINUTES')
     }
 
-    // parameters {
-    // For parameters, check into ./dsl/jobs.groovy file
-    // }
-
     environment {
-        // Static env is defined into ./dsl/jobs.groovy file
-
         OPTAPLANNER_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
-
-        // Keep here for visitibility
-        MAVEN_OPTS = '-Xms1024m -Xmx4g'
     }
 
     stages {
@@ -43,7 +36,8 @@ pipeline {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
-                    checkoutRepo(optaplannerRepo, getBuildBranch())
+                    optaplannerBranch = getBuildBranch() == 'development' ? '9.x' : getBuildBranch() == '8.x' ? 'main' : getBuildBranch()
+                    checkoutRepo(optaplannerRepo, optaplannerBranch)
                     checkoutRepo(getRepoName(), getBuildBranch())
                 }
             }
@@ -75,12 +69,12 @@ pipeline {
                     dir(getRepoName()) {
                         if (githubscm.isThereAnyChanges()) {
                             def commitMsg = "Update version to ${getOptaPlannerVersion()}"
-                            githubscm.setUserConfigFromCreds(getGitAuthorPushCredsId())
+
                             githubscm.commitChanges(commitMsg, { 
                                 githubscm.findAndStageNotIgnoredFiles('pom.xml') 
                                 githubscm.findAndStageNotIgnoredFiles('build.gradle')
                             })
-                            githubscm.pushObject('origin', getBuildBranch(), getGitAuthorPushCredsId())
+                            githubscm.pushObject('origin', getBuildBranch(), getGitAuthorCredsID())
                         } else {
                             println '[WARN] no changes to commit'
                         }
@@ -113,7 +107,7 @@ void sendErrorNotification() {
 void checkoutRepo(String repository, String branch) {
     dir(repository) {
         deleteDir()
-        checkout(githubscm.resolveRepository(repository, getGitAuthor(), branch, false, getGitAuthorCredsId()))
+        checkout(githubscm.resolveRepository(repository, getGitAuthor(), branch, false))
         // need to manually checkout branch since on a detached branch after checkout command
         sh "git checkout ${branch}"
     }
@@ -136,12 +130,8 @@ String getOptaPlannerVersion() {
     return params.OPTAPLANNER_VERSION
 }
 
-String getGitAuthorCredsId() {
-    return env.GIT_AUTHOR_CREDS_ID
-}
-
-String getGitAuthorPushCredsId() {
-    return env.GIT_AUTHOR_PUSH_CREDS_ID
+String getGitAuthorCredsID() {
+    return env.AUTHOR_CREDS_ID
 }
 
 MavenCommand getMavenCommand(String directory) {
