@@ -52,9 +52,9 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.java-version }}-m2
       - name: Build Chain ${{ matrix.java-version }}
         id: build-chain
-        uses: kiegroup/github-action-build-chain@v3.1.10
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/github-action-build-chain@v3.1.10
         with:
-          definition-file: https://raw.githubusercontent.com/${GROUP}/optaplanner/main/.ci/buildchain-config.yaml
+          definition-file: https://raw.githubusercontent.com/${GROUP}/incubator-kie-optaplanner/main/.ci/buildchain-config.yaml
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: "-Dfull"
