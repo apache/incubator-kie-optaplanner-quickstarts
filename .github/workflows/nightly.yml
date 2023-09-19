@@ -8,7 +8,7 @@ on:
 
 jobs:
   nightly:
-    if: github.repository == 'kiegroup/optaplanner-quickstarts'
+    if: github.repository == 'apache/incubator-kie-optaplanner-quickstarts'
     concurrency:
       group: nightly
       cancel-in-progress: true
@@ -22,9 +22,9 @@ jobs:
     steps:
       - name: Support long paths
         if: ${{ matrix.os == 'windows-latest' }}
-        uses: kiegroup/kogito-pipelines/.ci/actions/long-paths@main
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/long-paths@main
       - name: Java and Maven Setup
-        uses: kiegroup/kogito-pipelines/.ci/actions/maven@main
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/maven@main
         with:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
