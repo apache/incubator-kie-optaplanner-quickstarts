@@ -30,7 +30,7 @@ pipeline {
         stage('Initialize') {
             steps {
                 script {
-                    cleanWs()
+                    cleanWs(disableDeferredWipeout: true)
 
                     if (params.DISPLAY_NAME) {
                         currentBuild.displayName = params.DISPLAY_NAME
@@ -45,17 +45,34 @@ pipeline {
         stage('Build OptaPlanner parents') {
             steps {
                 script {
-                    getMavenCommand(optaplannerRepo)
-                        .withOptions(['-U', '-pl org.optaplanner:optaplanner-build-parent,org.optaplanner:optaplanner-bom,org.optaplanner:optaplanner-operator', '-am'])
-                        .run('clean install')
+                    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+                        getMavenCommand(optaplannerRepo)
+                            .withOptions([
+                                '-U',
+                                '-pl org.optaplanner:optaplanner-build-parent,org.optaplanner:optaplanner-bom,org.optaplanner:optaplanner-operator',
+                                '-am'
+                            ])
+                            .withSettingsXmlFile(MAVEN_SETTINGS_FILE)
+                            .run('clean install')
+                    }
                 }
             }
         }
         stage('Update project version') {
             steps {
                 script {
-                    maven.mvnSetVersionProperty(getMavenCommand(getRepoName()), 'version.org.optaplanner', getOptaPlannerVersion())
-                    maven.mvnVersionsUpdateParentAndChildModules(getMavenCommand(getRepoName()), getOptaPlannerVersion(), true)
+                    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+                        maven.mvnSetVersionProperty(
+                            getMavenCommand(getRepoName()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            'version.org.optaplanner',
+                            getOptaPlannerVersion()
+                        )
+                        maven.mvnVersionsUpdateParentAndChildModules(
+                            getMavenCommand(getRepoName()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            getOptaPlannerVersion(),
+                            true
+                        )
+                    }
 
                     dir(getRepoName()) {
                         sh "find . -name build.gradle -exec sed -i -E 's/def optaplannerVersion = \"[^\"\\s]+\"/def optaplannerVersion = \"${getOptaPlannerVersion()}\"/' {} \\;"
@@ -89,7 +106,7 @@ pipeline {
         }
         cleanup {
             script {
-                util.cleanNode('docker')
+                util.cleanNode()
             }
         }
     }
@@ -136,6 +153,5 @@ String getGitAuthorCredsID() {
 
 MavenCommand getMavenCommand(String directory) {
     return new MavenCommand(this, ['-fae', '-ntp'])
-                .withSettingsXmlId(env.MAVEN_SETTINGS_CONFIG_FILE_ID)
                 .inDirectory(directory)
 }
