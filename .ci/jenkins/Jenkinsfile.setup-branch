@@ -61,8 +61,18 @@ pipeline {
         stage('Update project version') {
             steps {
                 script {
-                    maven.mvnSetVersionProperty(getMavenCommand(getRepoName()), 'version.org.optaplanner', getOptaPlannerVersion())
-                    maven.mvnVersionsUpdateParentAndChildModules(getMavenCommand(getRepoName()), getOptaPlannerVersion(), true)
+                    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+                        maven.mvnSetVersionProperty(
+                            getMavenCommand(getRepoName()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            'version.org.optaplanner',
+                            getOptaPlannerVersion()
+                        )
+                        maven.mvnVersionsUpdateParentAndChildModules(
+                            getMavenCommand(getRepoName()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            getOptaPlannerVersion(),
+                            true
+                        )
+                    }
 
                     dir(getRepoName()) {
                         sh "find . -name build.gradle -exec sed -i -E 's/def optaplannerVersion = \"[^\"\\s]+\"/def optaplannerVersion = \"${getOptaPlannerVersion()}\"/' {} \\;"
