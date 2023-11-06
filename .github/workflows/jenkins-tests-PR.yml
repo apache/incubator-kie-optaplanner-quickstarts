@@ -22,7 +22,7 @@ jobs:
         fi
         echo "BASE_BRANCH=${branch}"  >> $GITHUB_ENV
     - name: DSL tests
-      uses: kiegroup/kie-ci/.ci/actions/dsl-tests@main
+      uses: apache/incubator-kie-kogito-pipelines/.ci/actions/dsl-tests@main
       with:
         project: optaplanner
         main-config-file-repo: kiegroup/optaplanner
