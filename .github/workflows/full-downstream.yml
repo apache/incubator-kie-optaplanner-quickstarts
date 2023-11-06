@@ -52,7 +52,7 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.java-version }}-m2
       - name: Build Chain ${{ matrix.java-version }}
         id: build-chain
-        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/github-action-build-chain@v3.1.10
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/build-chain@main
         with:
           definition-file: https://raw.githubusercontent.com/${GROUP}/incubator-kie-optaplanner/main/.ci/buildchain-config.yaml
         env:
