@@ -7,10 +7,6 @@ optaplannerRepo = 'incubator-kie-optaplanner'
 
 pipeline {
     agent {
-        label 'ubuntu'
-    }
-
-    tools {
         docker { 
             image env.AGENT_DOCKER_BUILDER_IMAGE
             args env.AGENT_DOCKER_BUILDER_ARGS
