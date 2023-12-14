@@ -76,7 +76,7 @@ pipeline {
                     dir(getRepoName()) {
                         if (githubscm.isThereAnyChanges()) {
                             def commitMsg = "Update version to ${getOptaPlannerVersion()}"
-
+                            githubscm.setUserConfigFromCreds(getGitAuthorPushCredsId())
                             githubscm.commitChanges(commitMsg, { 
                                 githubscm.findAndStageNotIgnoredFiles('pom.xml') 
                                 githubscm.findAndStageNotIgnoredFiles('build.gradle')
