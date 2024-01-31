@@ -17,7 +17,7 @@ jobs:
     - name: Set correct base branch
       run: |
         branch="${{ github.base_ref }}"
-        if [ "${branch}" = "development" ]; then
+        if [ "${branch}" = "development" ] || [ "${branch}" = "8.x" ]; then
           branch='main'
         fi
         echo "BASE_BRANCH=${branch}"  >> $GITHUB_ENV
