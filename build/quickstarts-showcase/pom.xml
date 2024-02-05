@@ -16,6 +16,12 @@
     <java.module.name>org.optaplanner.quickstarts.showcase</java.module.name>
     <!-- Workaround for https://github.com/quarkusio/quarkus/issues/15817. -->
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
+
+    <!-- reproducible build -->
+    <project.build.outputTimestamp>2024-01-12T00:00:00Z</project.build.outputTimestamp>
+    <version.artifact.plugin>3.4.1</version.artifact.plugin>
+    <version.jar.plugin>3.3.0</version.jar.plugin>
+    <version.source.plugin>3.3.0</version.source.plugin>
   </properties>
 
   <dependencyManagement>
@@ -127,6 +133,14 @@
             <phase>none</phase>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-artifact-plugin</artifactId>
+        <version>${version.artifact.plugin}</version>
+        <configuration>
+          <outputTimestamp>${project.build.outputTimestamp}</outputTimestamp>
+        </configuration>
       </plugin>
     </plugins>
   </build>

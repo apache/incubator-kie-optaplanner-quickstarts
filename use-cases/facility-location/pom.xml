@@ -16,6 +16,11 @@
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
     <version.surefire.plugin>3.0.0-M8</version.surefire.plugin>
+
+    <!-- reproducible build -->
+    <project.build.outputTimestamp>2024-01-12T00:00:00Z</project.build.outputTimestamp>
+    <version.artifact.plugin>3.4.1</version.artifact.plugin>
+    <version.jar.plugin>3.3.0</version.jar.plugin>
   </properties>
 
   <dependencyManagement>
@@ -126,6 +131,19 @@
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
             <maven.home>${maven.home}</maven.home>
           </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${version.jar.plugin}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-artifact-plugin</artifactId>
+        <version>${version.artifact.plugin}</version>
+        <configuration>
+          <outputTimestamp>${project.build.outputTimestamp}</outputTimestamp>
         </configuration>
       </plugin>
     </plugins>
