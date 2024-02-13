@@ -8,7 +8,7 @@ on:
 
 jobs:
   nightly:
-    if: github.repository == 'kiegroup/optaplanner-quickstarts'
+    if: github.repository == 'apache/incubator-kie-optaplanner-quickstarts'
     concurrency:
       group: nightly
       cancel-in-progress: true
@@ -22,14 +22,14 @@ jobs:
     steps:
       - name: Support long paths
         if: ${{ matrix.os == 'windows-latest' }}
-        uses: kiegroup/kie-ci/.ci/actions/long-paths@main
+        uses: apache/incubator-kie-kogito-pipelines/.ci/actions/long-paths@main
       - name: Java and Maven Setup
         uses: apache/incubator-kie-kogito-pipelines/.ci/actions/maven@main
         with:
           java-version: ${{ matrix.java-version }}
           maven-version: ${{ matrix.maven-version }}
           cache-key-prefix: ${{ runner.os }}-${{ matrix.java-version }}-maven${{ matrix.maven-version }}
-      - uses: actions/checkout@v3      
+      - uses: actions/checkout@v3
       - name: Build with Maven
         run: mvn -B clean install --file pom.xml dependency:tree -Dmaven.wagon.httpconnectionManager.ttlSeconds=25 -Dmaven.wagon.http.retryHandler.count=3
       - name: Set build information
@@ -40,10 +40,10 @@ jobs:
           echo "action_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
       - name: Set failure message
         if: ${{ failure() }}
-        run: echo "zulip_message=:cross_mark:Build ERROR. See ${{env.action_url}}" >> $GITHUB_ENV  
+        run: echo "zulip_message=:cross_mark:Build ERROR. See ${{env.action_url}}" >> $GITHUB_ENV
       - name: Set success message
         if: ${{ success() }}
-        run: echo "zulip_message=:check:Build OK. See ${{env.action_url}}" >> $GITHUB_ENV  
+        run: echo "zulip_message=:check:Build OK. See ${{env.action_url}}" >> $GITHUB_ENV
       - name: Send a stream message
         if: ${{ always() }}
         uses: zulip/github-actions-zulip/send-message@v1
