@@ -60,8 +60,8 @@
   <repositories>
     <!-- To get snapshots during development. Remove this in the "stable" branch (which doesn't use snapshots). -->
     <repository>
-      <id>jboss-public-repository-group</id>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <id>apache-public-repository-group</id>
+      <url>https://repository.apache.org/content/groups/public/</url>
       <releases>
         <!-- Get releases only from Maven Central which is faster. -->
         <enabled>false</enabled>

@@ -14,7 +14,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url "https://repository.jboss.org/nexus/content/groups/public/"
+        url "https://repository.apache.org/content/groups/public/"
         mavenContent {
             snapshotsOnly()
         }
