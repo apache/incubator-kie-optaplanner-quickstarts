@@ -4,7 +4,7 @@ plugins {
     id "java"
 }
 
-def optaplannerVersion = "9.45.0-SNAPSHOT"
+def optaplannerVersion = "999-SNAPSHOT"
 def assertjVersion = "3.24.2"
 
 group = "org.acme"
@@ -16,7 +16,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url "https://repository.jboss.org/nexus/content/groups/public/"
+        url "https://repository.apache.org/content/groups/public/"
         mavenContent {
             snapshotsOnly()
         }

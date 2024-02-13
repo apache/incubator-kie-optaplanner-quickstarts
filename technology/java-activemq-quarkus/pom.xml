@@ -10,14 +10,16 @@
   <packaging>pom</packaging>
 
   <properties>
-    <version.org.apache.activemq>2.28.0</version.org.apache.activemq>
-    <version.io.quarkus>3.0.0.Final</version.io.quarkus>
-    <version.org.optaplanner>9.45.0-SNAPSHOT</version.org.optaplanner>
-
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <maven.compiler.release>11</maven.compiler.release>
-    <surefire-plugin.version>3.0.0-M8</surefire-plugin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <version.io.quarkus>3.0.0.Final</version.io.quarkus>
+    <version.org.apache.activemq>2.28.0</version.org.apache.activemq>
+    <version.org.optaplanner>999-SNAPSHOT</version.org.optaplanner>
+
+    <version.compiler.plugin>3.8.1</version.compiler.plugin>
+    <version.jandex.plugin>1.0.8</version.jandex.plugin>
+    <version.surefire.plugin>3.0.0-M8</version.surefire.plugin>
   </properties>
 
   <modules>
@@ -102,7 +104,7 @@
       <plugins>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>${compiler-plugin.version}</version>
+          <version>${version.compiler.plugin}</version>
         </plugin>
         <plugin>
           <groupId>io.quarkus</groupId>
@@ -119,11 +121,11 @@
         <plugin>
           <groupId>org.jboss.jandex</groupId>
           <artifactId>jandex-maven-plugin</artifactId>
-          <version>1.0.8</version>
+          <version>${version.jandex.plugin}</version>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>${surefire-plugin.version}</version>
+          <version>${version.surefire.plugin}</version>
           <configuration>
             <systemPropertyVariables>
               <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
@@ -146,7 +148,7 @@
         <plugins>
           <plugin>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>${surefire-plugin.version}</version>
+            <version>${version.surefire.plugin}</version>
             <executions>
               <execution>
                 <goals>
@@ -174,8 +176,8 @@
 
   <repositories>
     <repository>
-      <id>jboss-public-repository-group</id>
-      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+      <id>apache-public-repository-group</id>
+      <url>https://repository.apache.org/content/groups/public/</url>
       <releases>
         <!-- Get releases only from Maven Central which is faster. -->
         <enabled>false</enabled>

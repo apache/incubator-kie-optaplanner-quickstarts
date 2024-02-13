@@ -54,7 +54,7 @@ jobs:
         id: build-chain
         uses: apache/incubator-kie-kogito-pipelines/.ci/actions/build-chain@main
         with:
-          definition-file: https://raw.githubusercontent.com/${GROUP}/optaplanner/main/.ci/buildchain-config.yaml
+          definition-file: https://raw.githubusercontent.com/${GROUP:apache}/incubator-kie-optaplanner/${BRANCH:main}/.ci/buildchain-config.yaml
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
           OPTAPLANNER_BUILD_MVN_OPTS_UPSTREAM: "-Dfull"

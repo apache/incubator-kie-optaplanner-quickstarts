@@ -3,7 +3,7 @@ plugins {
     id "application"
 }
 
-def optaplannerVersion = "9.45.0-SNAPSHOT"
+def optaplannerVersion = "999-SNAPSHOT"
 def logbackVersion = "1.2.11"
 def junitJupiterVersion = "5.9.0"
 def assertjVersion = "3.24.2"
@@ -15,7 +15,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven {
-        url "https://repository.jboss.org/nexus/content/groups/public/"
+        url "https://repository.apache.org/content/groups/public/"
         mavenContent {
             snapshotsOnly()
         }
