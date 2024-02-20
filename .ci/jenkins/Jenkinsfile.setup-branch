@@ -7,7 +7,7 @@ optaplannerRepo = 'optaplanner'
 
 pipeline {
     agent {
-        label 'kie-rhel8 && !built-in'
+        label util.avoidFaultyNodes('kie-rhel8 && !built-in')
     }
 
     tools {
