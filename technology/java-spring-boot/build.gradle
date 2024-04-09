@@ -1,8 +1,8 @@
 plugins {
-    id "org.springframework.boot" version "3.0.7"
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id "java"
+    id "org.springframework.boot" version "3.2.4"
 }
+apply plugin: 'io.spring.dependency-management'
 
 def optaplannerVersion = "999-SNAPSHOT"
 def assertjVersion = "3.24.2"

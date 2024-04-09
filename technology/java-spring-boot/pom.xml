@@ -12,10 +12,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <version.org.optaplanner>999-SNAPSHOT</version.org.optaplanner>
-    <version.org.springframework.boot>3.0.7</version.org.springframework.boot>
+    <version.org.springframework.boot>3.2.4</version.org.springframework.boot>
 
     <version.compiler.plugin>3.8.1</version.compiler.plugin>
-    <version.surefire.plugin>3.0.0-M8</version.surefire.plugin>
+    <version.surefire.plugin>3.2.5</version.surefire.plugin>
   </properties>
 
   <dependencyManagement>
