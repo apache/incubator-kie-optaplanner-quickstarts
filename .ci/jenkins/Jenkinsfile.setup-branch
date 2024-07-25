@@ -33,7 +33,7 @@ pipeline {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
-                    optaplannerBranch = getBuildBranch() == 'development' ? '9.x' : getBuildBranch() == '8.x' ? 'main' : getBuildBranch()
+                    optaplannerBranch = getBuildBranch() == 'development' ? 'main' : getBuildBranch()
                     checkoutRepo(optaplannerRepo, optaplannerBranch)
                     checkoutRepo(getRepoName(), getBuildBranch())
                 }
