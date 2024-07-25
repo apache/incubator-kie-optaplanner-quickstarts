@@ -73,7 +73,7 @@ Follow the https://keda.sh/docs/deploy/[documentation] to install the KEDA opera
 
 ==== Deploy the OptaPlanner Operator
 
-Follow the https://github.com/kiegroup/optaplanner/tree/main/optaplanner-operator#deploy-the-optaplanner-operator[README] to install the OptaPlanner operator.
+Follow the https://github.com/apache/incubator-kie-optaplanner/tree/main/optaplanner-operator#deploy-the-optaplanner-operator[README] to install the OptaPlanner operator.
 
 ==== Deploy the Demo App
 

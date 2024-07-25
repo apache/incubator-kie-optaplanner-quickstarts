@@ -12,7 +12,7 @@ On Windows:
 Run the quickstarts in IDE
 ----------------------------
 
-Please refer to https://github.com/kiegroup/optaplanner-quickstarts/blob/stable/README.adoc.
+Please refer to https://github.com/apache/incubator-kie-optaplanner-quickstarts/blob/stable/README.adoc.
 
 Run the examples
 ----------------
@@ -56,7 +56,7 @@ Sources
 -------
 
 But to build from sources, pull the sources with git:
-  https://github.com/kiegroup/optaplanner
+  https://github.com/apache/incubator-kie-optaplanner
 
 Backwards compatibility
 -----------------------

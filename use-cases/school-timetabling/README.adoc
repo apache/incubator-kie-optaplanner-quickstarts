@@ -16,9 +16,9 @@ image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/sc
 +
 [source, shell]
 ----
-$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+$ git clone https://github.com/apache/incubator-kie-optaplanner-quickstarts.git
 ...
-$ cd optaplanner-quickstarts/use-cases/school-timetabling
+$ cd incubator-kie-optaplanner-quickstarts/use-cases/school-timetabling
 ----
 
 . Start the application with Maven:
@@ -108,7 +108,7 @@ To deploy the application on OpenShift:
 . In the OpenShift web console, verify that the top left combobox is set to _Developer_ (not _Administrator_).
 . In the menu, select *Add* to create an application.
 . Under *Git Repository*, click *Import from Git* and fill in these parameters:
-.. Set *Git Repo URL* to `https://github.com/kiegroup/optaplanner-quickstarts`
+.. Set *Git Repo URL* to `https://github.com/apache/incubator-kie-optaplanner-quickstarts`
 .. Under _Show advanced Git options_, set *Context dir* to `/use-cases/school-timetabling`
 .. Press the *Create* button.
 . In the _Topology_ view, there is a new deployment:
