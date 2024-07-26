@@ -13,9 +13,9 @@ image::../../build/quickstarts-showcase/src/main/resources/META-INF/resources/sc
 +
 [source, shell]
 ----
-$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+$ git clone https://github.com/apache/incubator-kie-optaplanner-quickstarts.git
 ...
-$ cd optaplanner-quickstarts/technology/java-spring-boot
+$ cd incubator-kie-optaplanner-quickstarts/technology/java-spring-boot
 ----
 
 . Start the application with Maven:

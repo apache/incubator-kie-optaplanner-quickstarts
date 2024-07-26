@@ -3,16 +3,15 @@ import org.jenkinsci.plugins.workflow.libs.Library
 
 import org.kie.jenkins.MavenCommand
 
-optaplannerRepo = 'optaplanner'
+optaplannerRepo = 'incubator-kie-optaplanner'
 
 pipeline {
     agent {
-        label util.avoidFaultyNodes('kie-rhel8 && !built-in')
-    }
-
-    tools {
-        maven env.BUILD_MAVEN_TOOL
-        jdk env.BUILD_JDK_TOOL
+        docker { 
+            image env.AGENT_DOCKER_BUILDER_IMAGE
+            args env.AGENT_DOCKER_BUILDER_ARGS
+            label util.avoidFaultyNodes('ubuntu')
+        }
     }
 
     options {
@@ -20,30 +19,22 @@ pipeline {
         timeout(time: 60, unit: 'MINUTES')
     }
 
-    // parameters {
-    // For parameters, check into ./dsl/jobs.groovy file
-    // }
-
     environment {
-        // Static env is defined into ./dsl/jobs.groovy file
-
         OPTAPLANNER_CI_EMAIL_TO = credentials("${JENKINS_EMAIL_CREDS_ID}")
-
-        // Keep here for visitibility
-        MAVEN_OPTS = '-Xms1024m -Xmx4g'
     }
 
     stages {
         stage('Initialize') {
             steps {
                 script {
-                    cleanWs()
+                    cleanWs(disableDeferredWipeout: true)
 
                     if (params.DISPLAY_NAME) {
                         currentBuild.displayName = params.DISPLAY_NAME
                     }
 
-                    checkoutRepo(optaplannerRepo, getBuildBranch())
+                    optaplannerBranch = getBuildBranch() == 'development' ? 'main' : getBuildBranch()
+                    checkoutRepo(optaplannerRepo, optaplannerBranch)
                     checkoutRepo(getRepoName(), getBuildBranch())
                 }
             }
@@ -51,17 +42,34 @@ pipeline {
         stage('Build OptaPlanner parents') {
             steps {
                 script {
-                    getMavenCommand(optaplannerRepo)
-                        .withOptions(['-U', '-pl org.optaplanner:optaplanner-build-parent,org.optaplanner:optaplanner-bom,org.optaplanner:optaplanner-operator', '-am'])
-                        .run('clean install')
+                    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+                        getMavenCommand(optaplannerRepo)
+                            .withOptions([
+                                '-U',
+                                '-pl org.optaplanner:optaplanner-build-parent,org.optaplanner:optaplanner-bom,org.optaplanner:optaplanner-operator',
+                                '-am'
+                            ])
+                            .withSettingsXmlFile(MAVEN_SETTINGS_FILE)
+                            .run('clean install')
+                    }
                 }
             }
         }
         stage('Update project version') {
             steps {
                 script {
-                    maven.mvnSetVersionProperty(getMavenCommand(getRepoName()), 'version.org.optaplanner', getOptaPlannerVersion())
-                    maven.mvnVersionsUpdateParentAndChildModules(getMavenCommand(getRepoName()), getOptaPlannerVersion(), true)
+                    configFileProvider([configFile(fileId: env.MAVEN_SETTINGS_CONFIG_FILE_ID, variable: 'MAVEN_SETTINGS_FILE')]){
+                        maven.mvnSetVersionProperty(
+                            getMavenCommand(getRepoName()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            'version.org.optaplanner',
+                            getOptaPlannerVersion()
+                        )
+                        maven.mvnVersionsUpdateParentAndChildModules(
+                            getMavenCommand(getRepoName()).withSettingsXmlFile(MAVEN_SETTINGS_FILE),
+                            getOptaPlannerVersion(),
+                            true
+                        )
+                    }
 
                     dir(getRepoName()) {
                         sh "find . -name build.gradle -exec sed -i -E 's/def optaplannerVersion = \"[^\"\\s]+\"/def optaplannerVersion = \"${getOptaPlannerVersion()}\"/' {} \\;"
@@ -95,7 +103,7 @@ pipeline {
         }
         cleanup {
             script {
-                util.cleanNode('docker')
+                util.cleanNode()
             }
         }
     }
@@ -146,6 +154,5 @@ String getGitAuthorPushCredsId() {
 
 MavenCommand getMavenCommand(String directory) {
     return new MavenCommand(this, ['-fae', '-ntp'])
-                .withSettingsXmlId(env.MAVEN_SETTINGS_CONFIG_FILE_ID)
                 .inDirectory(directory)
 }

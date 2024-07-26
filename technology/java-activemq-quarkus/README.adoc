@@ -11,9 +11,9 @@ The quickstart consists of two modules:
 +
 [source, shell]
 ----
-$ git clone https://github.com/kiegroup/optaplanner-quickstarts.git
+$ git clone https://github.com/apache/incubator-kie-optaplanner-quickstarts.git
 ...
-$ cd optaplanner-quickstarts/technology/java-activemq-quarkus
+$ cd incubator-kie-optaplanner-quickstarts/technology/java-activemq-quarkus
 ----
 
 . Build the project:
